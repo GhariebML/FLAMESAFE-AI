@@ -16,6 +16,7 @@ from app.models.multi_agent import (
     ResearchRequest,
     WorkflowEvent,
 )
+from app.rag.generator import sanitize_secret
 
 
 class ChiefIntelligenceOrchestrator:
@@ -40,9 +41,25 @@ class ChiefIntelligenceOrchestrator:
         to_state: str,
         message: str,
         full_state: ResearchWorkflowState,
+        provider: str = "deterministic",
+        model: str = "deterministic-engine-v1",
+        is_mock_provider: bool = False,
+        token_usage: dict[str, int] | None = None,
+        error_message: str | None = None,
     ) -> None:
         """Persists AgentRun, WorkflowEvent, and AgentCheckpoint rows for full scientific auditability."""
         now = datetime.now(timezone.utc)
+        sanitized_err = sanitize_secret(error_message) if error_message else None
+        enriched_output = {
+            **output_summary,
+            "provider": provider,
+            "model": model,
+            "is_mock_provider": is_mock_provider,
+            "token_usage": token_usage or {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0},
+        }
+        if sanitized_err:
+            enriched_output["error_message"] = sanitized_err
+
         run_row = AgentRun(
             request_id=request_id,
             thread_id=thread_id,
@@ -50,9 +67,10 @@ class ChiefIntelligenceOrchestrator:
             agent_name=agent_name,
             status="COMPLETED",
             input_summary=input_summary,
-            output_summary=output_summary,
+            output_summary=enriched_output,
             tools_invoked=tools_invoked,
             retry_count=0,
+            error_message=sanitized_err,
             started_at=started_at,
             completed_at=now,
         )
@@ -66,7 +84,7 @@ class ChiefIntelligenceOrchestrator:
             from_state=from_state,
             to_state=to_state,
             message=message,
-            payload=output_summary,
+            payload=enriched_output,
         )
         self.db.add(event_row)
 
@@ -92,6 +110,8 @@ class ChiefIntelligenceOrchestrator:
             prev = state.get("workflow_status", "PARSING_INTENT")
             updates = await self.nodes.agent_02_query_understanding(state)
             merged = {**state, **updates}
+            intent_data = dict(updates.get("research_intent", {}))
+            ai_exec = intent_data.pop("_ai_execution", {}) if isinstance(intent_data, dict) else {}
             await self._log_agent_step(
                 request_id=state["request_id"],
                 thread_id=thread_id,
@@ -100,12 +120,17 @@ class ChiefIntelligenceOrchestrator:
                 step_index=1,
                 tools_invoked=["parse_research_intent", "extract_domain_entities"],
                 input_summary={"query": state.get("user_query")},
-                output_summary=updates.get("research_intent", {}),
+                output_summary=intent_data,
                 started_at=t0,
                 from_state=prev,
                 to_state=updates["workflow_status"],
-                message=f"Parsed scientific intent: domain='{updates['research_intent'].get('research_domain')}'",
+                message=f"Parsed scientific intent: domain='{intent_data.get('research_domain')}'",
                 full_state=merged,
+                provider=ai_exec.get("provider", "mock"),
+                model=ai_exec.get("model", "deterministic-intent-parser-v1"),
+                is_mock_provider=bool(ai_exec.get("is_mock_provider", True)),
+                token_usage=ai_exec.get("token_usage"),
+                error_message=ai_exec.get("error_message"),
             )
             return updates
 
@@ -323,6 +348,7 @@ class ChiefIntelligenceOrchestrator:
             prev = state.get("workflow_status", "GENERATING_INSIGHTS")
             updates = await self.nodes.agent_11_research_intelligence(state)
             merged = {**state, **updates}
+            final_resp = updates.get("final_response", {}) or {}
             await self._log_agent_step(
                 request_id=state["request_id"],
                 thread_id=thread_id,
@@ -333,13 +359,19 @@ class ChiefIntelligenceOrchestrator:
                 input_summary={"dataset_code": state.get("dataset_code")},
                 output_summary={
                     "citations_count": len(updates.get("evidence_citations", [])),
-                    "has_sufficient_evidence": updates.get("final_response", {}).get("has_sufficient_evidence"),
+                    "has_sufficient_evidence": final_resp.get("has_sufficient_evidence"),
+                    "execution_mode": final_resp.get("execution_mode"),
                 },
                 started_at=t0,
                 from_state=prev,
                 to_state=updates["workflow_status"],
                 message=f"Generated evidence-grounded synthesis with {len(updates.get('evidence_citations', []))} verified citations.",
                 full_state=merged,
+                provider=final_resp.get("ai_provider", "mock"),
+                model=final_resp.get("model_name", "deterministic-grounded-synthesizer-v1"),
+                is_mock_provider=bool(final_resp.get("is_mock_provider", True)),
+                token_usage=final_resp.get("token_usage"),
+                error_message=final_resp.get("ai_error"),
             )
             return updates
 

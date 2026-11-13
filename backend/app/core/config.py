@@ -31,17 +31,22 @@ class Settings(BaseSettings):
     USE_SQLITE_FALLBACK: bool = True
     SQLITE_DATABASE_URL: str = "sqlite+aiosqlite:///./flamesafe_dev.db"
 
-    # AI & LLM Provider Configuration (mock | gemini | openai)
-    # Uses current official non-deprecated Gemini models when GEMINI_API_KEY is configured.
-    AI_PROVIDER: str = "mock"
-    AI_MODEL_NAME: str = "gemini-2.5-flash"
-    GEMINI_API_KEY: Optional[str] = None
-    OPENAI_API_KEY: Optional[str] = None
-
-    # Embedding Provider Configuration (mock | gemini | openai)
-    EMBEDDING_PROVIDER: str = "mock"
-    EMBEDDING_MODEL_NAME: str = "gemini-embedding-001"
+    # AI & LLM Provider Configuration (gemini | mock | openai)
+    # Uses official Google GenAI SDK (`google-genai`) when AI_PROVIDER="gemini" and GEMINI_API_KEY is configured.
+    AI_PROVIDER: str = "gemini"
+    GEMINI_API_KEY: str = ""
+    GEMINI_MODEL: str = "gemini-3.8-flash"
+    AI_MODEL_NAME: str = "gemini-3.8-flash"
+    GEMINI_EMBEDDING_MODEL: str = "gemini-embedding-2"
+    EMBEDDING_PROVIDER: str = "gemini"
+    EMBEDDING_MODEL_NAME: str = "gemini-embedding-2"
+    GEMINI_EMBEDDING_DIMENSIONS: int = 768
     EMBEDDING_DIMENSION: int = 768
+    GEMINI_TIMEOUT_SECONDS: int = 60
+    GEMINI_MAX_RETRIES: int = 3
+    GEMINI_TEMPERATURE: float = 0.2
+    AI_FALLBACK_TO_MOCK: bool = True
+    OPENAI_API_KEY: Optional[str] = None
     VECTOR_TOP_K: int = 5
     SIMILARITY_THRESHOLD: float = 0.65
 
@@ -61,7 +66,7 @@ class Settings(BaseSettings):
     NASA_PSI_BULK_EMAIL_THRESHOLD_BYTES: int = 1024 * 1024 * 1024
 
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=(".env", "backend/.env", "../.env"),
         env_file_encoding="utf-8",
         extra="ignore"
     )

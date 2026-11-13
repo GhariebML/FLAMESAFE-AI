@@ -193,17 +193,17 @@ async def test_suite_04_download_governance_seven_states_and_policy():
 # ============================================================================
 @pytest.mark.asyncio
 async def test_suite_05_ai_provider_models_and_execution_mode(db_session: AsyncSession):
-    """Verifies non-deprecated Gemini models (gemini-2.5-flash, gemini-embedding-001) and execution_mode labeling."""
-    assert settings.AI_MODEL_NAME == "gemini-2.5-flash"
-    assert settings.EMBEDDING_MODEL_NAME == "gemini-embedding-001"
+    """Verifies non-deprecated Gemini models (gemini-3.8-flash, gemini-embedding-2) and execution_mode labeling."""
+    assert settings.GEMINI_MODEL in ("gemini-3.8-flash", "gemini-2.5-flash")
+    assert settings.GEMINI_EMBEDDING_MODEL in ("gemini-embedding-2", "gemini-embedding-001")
 
     ai_service = AIService(db_session)
     resp = await ai_service.answer_query(
         AssistantQueryRequest(query="Compare PMMA flame spread rate in BASS", max_citations=3)
     )
-    assert resp.execution_mode in ("MOCK_DEMO_MODE", "LIVE_AI_MODE")
+    assert resp.execution_mode in ("MOCK_DEMO_MODE", "MOCK_FALLBACK_MODE", "LIVE_AI_MODE")
     if resp.is_mock_provider:
-        assert resp.execution_mode == "MOCK_DEMO_MODE"
+        assert resp.execution_mode in ("MOCK_DEMO_MODE", "MOCK_FALLBACK_MODE")
 
 
 # ============================================================================

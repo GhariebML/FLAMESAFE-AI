@@ -1,12 +1,18 @@
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.core.config import settings
+from app.core.logging import logger
+from app.rag.citations import CitationValidator
+from app.rag.generator import (
+    GeminiProviderError,
+    MockLLMProvider,
+    get_llm_provider,
+)
+from app.rag.prompts import PROMPT_VERSION, SCIENTIFIC_SYSTEM_PROMPT
+from app.rag.reranker import ScientificReranker
+from app.rag.retriever import EvidenceRetriever
 from app.repositories.document_repo import DocumentRepository
 from app.schemas.assistant import AssistantQueryRequest, AssistantQueryResponse
-from app.rag.retriever import EvidenceRetriever
-from app.rag.reranker import ScientificReranker
-from app.rag.generator import get_llm_provider
-from app.rag.citations import CitationValidator
-from app.rag.prompts import SCIENTIFIC_SYSTEM_PROMPT, PROMPT_VERSION
-from app.core.logging import logger
 
 
 class AIService:
@@ -38,6 +44,8 @@ class AIService:
                 is_mock_provider=generator.is_mock,
                 execution_mode="MOCK_DEMO_MODE" if generator.is_mock else "LIVE_AI_MODE",
                 prompt_version=PROMPT_VERSION,
+                token_usage=generator.last_token_usage,
+                ai_error=generator.last_error,
             )
 
         retrieved = await EvidenceRetriever.retrieve(
@@ -64,6 +72,8 @@ class AIService:
                 is_mock_provider=generator.is_mock,
                 execution_mode="MOCK_DEMO_MODE" if generator.is_mock else "LIVE_AI_MODE",
                 prompt_version=PROMPT_VERSION,
+                token_usage=generator.last_token_usage,
+                ai_error=generator.last_error,
             )
 
         context_chunks = []
@@ -80,11 +90,39 @@ class AIService:
                 "relevance_score": score,
             })
 
-        answer = await generator.generate_response(
-            prompt=req.query,
-            context_chunks=context_chunks,
-            system_instructions=SCIENTIFIC_SYSTEM_PROMPT,
-        )
+        ai_error = None
+        active_provider_name = generator.provider_name
+        active_model_name = generator.model_name
+        is_mock = generator.is_mock
+        exec_mode = "MOCK_DEMO_MODE" if is_mock else "LIVE_AI_MODE"
+        token_usage = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
+
+        try:
+            answer = await generator.generate_response(
+                prompt=req.query,
+                context_chunks=context_chunks,
+                system_instructions=SCIENTIFIC_SYSTEM_PROMPT,
+            )
+            token_usage = dict(generator.last_token_usage or token_usage)
+            active_model_name = getattr(generator, "last_model_used", None) or generator.model_name
+        except GeminiProviderError as err:
+            ai_error = err.message
+            if not settings.AI_FALLBACK_TO_MOCK:
+                raise
+            logger.warning(
+                f"Gemini generation failed during answer_query [{err.error_category}]: {err.message}. "
+                "Using explicit MockLLMProvider fallback (marked is_mock_provider=True)."
+            )
+            fallback_gen = MockLLMProvider()
+            answer = await fallback_gen.generate_response(
+                prompt=req.query,
+                context_chunks=context_chunks,
+                system_instructions=SCIENTIFIC_SYSTEM_PROMPT,
+            )
+            active_provider_name = "mock"
+            active_model_name = fallback_gen.model_name
+            is_mock = True
+            exec_mode = "MOCK_FALLBACK_MODE"
 
         citations = CitationValidator.build_citations(reranked)
 
@@ -107,9 +145,11 @@ class AIService:
             citations=citations,
             scientific_uncertainty_note=uncertainty_note,
             has_sufficient_evidence=True,
-            ai_provider=generator.provider_name,
-            model_name=generator.model_name,
-            is_mock_provider=generator.is_mock,
-            execution_mode="MOCK_DEMO_MODE" if generator.is_mock else "LIVE_AI_MODE",
+            ai_provider=active_provider_name,
+            model_name=active_model_name,
+            is_mock_provider=is_mock,
+            execution_mode=exec_mode,
             prompt_version=PROMPT_VERSION,
+            token_usage=token_usage,
+            ai_error=ai_error,
         )

@@ -18,6 +18,7 @@ import {
   DatasetDetail,
   DatasetVersion,
   DatasetValidationReport,
+  AIRuntimeStatus,
 } from "@/types/research";
 import { API_ENDPOINTS } from "./endpoints";
 
@@ -80,6 +81,11 @@ export const apiClient = {
     version?: string;
   }> {
     return request(API_ENDPOINTS.HEALTH);
+  },
+
+  async getAIStatus(verify: boolean = false): Promise<AIRuntimeStatus> {
+    const qs = verify ? "?verify=true" : "";
+    return request<AIRuntimeStatus>(`${API_ENDPOINTS.AI_STATUS}${qs}`);
   },
 
   async getOverview(): Promise<any> {

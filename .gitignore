@@ -9,6 +9,12 @@ desktop.ini
 
 # Environment Variables & Secrets
 .env
+backend/.env
+frontend/.env
+.env.*
+!.env.example
+!backend/.env.example
+!frontend/.env.example
 .env.local
 .env.development.local
 .env.test.local

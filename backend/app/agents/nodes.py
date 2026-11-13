@@ -19,7 +19,9 @@ from app.models.evidence_chunk import EvidenceChunk
 from app.models.investigation import Investigation
 from app.models.multi_agent import AcquisitionJob, Dataset, FileAsset
 from app.models.research_document import ResearchDocument
+from app.rag.generator import GeminiProviderError, get_llm_provider, sanitize_secret
 from app.schemas.assistant import AssistantQueryRequest
+from app.schemas.multi_agent import ResearchIntentSchema
 from app.services.ai_service import AIService
 
 KNOWN_CAMPAIGNS = [
@@ -146,8 +148,72 @@ class MultiAgentNodes:
             "ambiguities_detected": [],
             "search_strategy": "hybrid_local_and_psi_catalog",
         }
+
+        llm = get_llm_provider()
+        ai_meta: dict[str, Any] = {
+            "provider": llm.provider_name,
+            "model": llm.model_name,
+            "is_mock_provider": llm.is_mock,
+            "token_usage": {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0},
+            "error_message": None,
+        }
+
+        if not llm.is_mock:
+            try:
+                structured_intent = await llm.generate_structured(
+                    prompt=(
+                        f"Decompose the following microgravity combustion research question into a structured "
+                        f"ResearchIntentSchema JSON object.\nQuestion: {query}\n"
+                        f"Known NASA PSI campaigns: {', '.join(KNOWN_CAMPAIGNS)}"
+                    ),
+                    response_schema=ResearchIntentSchema,
+                    system_instructions=(
+                        "You are the FlameSafe AI Query Understanding Agent (Agent 02). "
+                        "Extract accurate scientific intent, target NASA PSI investigations, fuel_type, "
+                        "gravity_regime, and variables_of_interest in valid JSON matching ResearchIntentSchema."
+                    ),
+                )
+                llm_dict = structured_intent.model_dump()
+                # Merge LLM structured fields while ensuring deterministic campaign/variable coverage is preserved
+                for key in (
+                    "intent_type",
+                    "research_domain",
+                    "fuel_type",
+                    "gravity_regime",
+                    "research_objectives",
+                    "required_file_types",
+                    "required_outputs",
+                    "ambiguities_detected",
+                    "search_strategy",
+                ):
+                    if llm_dict.get(key):
+                        intent[key] = llm_dict[key]
+                if llm_dict.get("target_investigations"):
+                    merged_camps = list(dict.fromkeys([*campaigns, *llm_dict["target_investigations"]]))
+                    intent["target_investigations"] = merged_camps
+                if llm_dict.get("variables_of_interest"):
+                    merged_vars = list(dict.fromkeys([*variables, *llm_dict["variables_of_interest"]]))
+                    intent["variables_of_interest"] = merged_vars
+                ai_meta["token_usage"] = dict(llm.last_token_usage or ai_meta["token_usage"])
+                ai_meta["model"] = getattr(llm, "last_model_used", None) or llm.model_name
+            except GeminiProviderError as err:
+                ai_meta["is_mock_provider"] = True
+                ai_meta["provider"] = "mock"
+                ai_meta["model"] = "deterministic-intent-parser-v1"
+                ai_meta["error_message"] = sanitize_secret(err.message)
+            except Exception as exc:
+                ai_meta["is_mock_provider"] = True
+                ai_meta["provider"] = "mock"
+                ai_meta["model"] = "deterministic-intent-parser-v1"
+                ai_meta["error_message"] = sanitize_secret(str(exc))
+
+        # Validate final dictionary against ResearchIntentSchema
+        validated_schema = ResearchIntentSchema.model_validate(intent)
+        final_intent_dict = validated_schema.model_dump()
+        final_intent_dict["_ai_execution"] = ai_meta
+
         return {
-            "research_intent": intent,
+            "research_intent": final_intent_dict,
             "workflow_status": "CHECKING_EXISTING_DATA",
         }
 
@@ -659,6 +725,8 @@ class MultiAgentNodes:
             "model_name": rag_resp.model_name,
             "is_mock_provider": rag_resp.is_mock_provider,
             "execution_mode": rag_resp.execution_mode,
+            "token_usage": rag_resp.token_usage or {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0},
+            "ai_error": rag_resp.ai_error,
             "dataset_id": ds_summary.get("dataset_id"),
             "dataset_code": ds_summary.get("dataset_code"),
             "dataset_version": ds_summary.get("version_tag"),

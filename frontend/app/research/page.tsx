@@ -26,7 +26,9 @@ import {
   ResearchRequestDetail,
   DatasetDetail,
   PSIFileManifestItem,
+  AIRuntimeStatus,
 } from "@/types/research";
+import { AIRuntimeStatusCard } from "@/components/research/AIRuntimeStatusCard";
 
 const SAMPLE_PROMPTS = [
   "Compare opposed and concurrent flame spread rates and oxygen extinction limits for PMMA and SIBAL fabric across BASS and SAFFIRE.",
@@ -58,6 +60,8 @@ export default function ResearchIntelligenceWorkspacePage() {
 
   const [activeRequest, setActiveRequest] = useState<ResearchRequestDetail | null>(null);
   const [recentRequests, setRecentRequests] = useState<ResearchRequestDetail[]>([]);
+  const [aiStatus, setAiStatus] = useState<AIRuntimeStatus | null>(null);
+  const [verifyingAI, setVerifyingAI] = useState<boolean>(false);
   const [datasetDetail, setDatasetDetail] = useState<DatasetDetail | null>(null);
   const [datasetAnalysis, setDatasetAnalysis] = useState<Record<string, any> | null>(null);
   const [datasetCoverage, setDatasetCoverage] = useState<Record<string, any> | null>(null);
@@ -121,8 +125,12 @@ export default function ResearchIntelligenceWorkspacePage() {
     let mounted = true;
     async function initWorkspace() {
       try {
-        const list = await apiClient.listResearchRequests();
+        const [list, statusInfo] = await Promise.all([
+          apiClient.listResearchRequests(),
+          apiClient.getAIStatus(false).catch(() => null),
+        ]);
         if (!mounted) return;
+        if (statusInfo) setAiStatus(statusInfo);
         setRecentRequests(list);
         if (list.length > 0) {
           await syncRequestState(list[0]);
@@ -151,6 +159,18 @@ export default function ResearchIntelligenceWorkspacePage() {
     };
   }, [syncRequestState]);
 
+  const handleVerifyAIStatus = async () => {
+    setVerifyingAI(true);
+    try {
+      const updatedStatus = await apiClient.getAIStatus(true);
+      setAiStatus(updatedStatus);
+    } catch {
+      // Keep previous status if network fails
+    } finally {
+      setVerifyingAI(false);
+    }
+  };
+
   const handleLaunchWorkflow = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (!question.trim()) return;
@@ -164,6 +184,8 @@ export default function ResearchIntelligenceWorkspacePage() {
       });
       setRecentRequests((prev) => [created, ...prev.filter((r) => r.id !== created.id)]);
       await syncRequestState(created);
+      const updatedStatus = await apiClient.getAIStatus(false).catch(() => null);
+      if (updatedStatus) setAiStatus(updatedStatus);
     } catch (err: any) {
       setError(err?.message || "Failed to execute multi-agent workflow.");
     } finally {
@@ -273,6 +295,13 @@ export default function ResearchIntelligenceWorkspacePage() {
           )}
         </div>
       </div>
+
+      {/* AI INFRASTRUCTURE & PROVIDER TELEMETRY */}
+      <AIRuntimeStatusCard
+        status={aiStatus}
+        onRefresh={handleVerifyAIStatus}
+        refreshing={verifyingAI}
+      />
 
       {error && (
         <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-600 dark:text-red-300 flex items-center gap-3">

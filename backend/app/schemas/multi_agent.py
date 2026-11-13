@@ -222,6 +222,10 @@ class AgentRunSchema(BaseModel):
     agent_id: str
     agent_name: str
     status: str
+    provider: Optional[str] = "deterministic"
+    model: Optional[str] = "deterministic-engine-v1"
+    is_mock_provider: bool = False
+    token_usage: Optional[Dict[str, int]] = None
     input_summary: Optional[Dict[str, Any]] = None
     output_summary: Optional[Dict[str, Any]] = None
     tools_invoked: List[str] = Field(default_factory=list)

@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 from app.api.v1.endpoints import (
     acquisitions,
+    ai_status,
     assistant,
     comparison,
     datasets,
@@ -17,6 +18,7 @@ from app.api.v1.endpoints import (
 api_v1_router = APIRouter()
 
 api_v1_router.include_router(health.router)
+api_v1_router.include_router(ai_status.router)
 api_v1_router.include_router(overview.router)
 api_v1_router.include_router(investigations.router)
 api_v1_router.include_router(comparison.router)

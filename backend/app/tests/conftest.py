@@ -1,12 +1,19 @@
+import os
 import pytest
 import asyncio
 from typing import AsyncGenerator
 from httpx import AsyncClient, ASGITransport
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
+from app.core.config import settings
 from app.models.base import Base
 from app.core.database import get_db
 from app.main import app
 from scripts.seed_data import seed_database_if_empty
+
+# Default unit/integration test suite to offline-safe Mock provider unless RUN_LIVE_GEMINI_TESTS=1
+if os.getenv("RUN_LIVE_GEMINI_TESTS") != "1":
+    settings.AI_PROVIDER = "mock"
+    settings.EMBEDDING_PROVIDER = "mock"
 
 TEST_DB_URL = "sqlite+aiosqlite:///:memory:"
 

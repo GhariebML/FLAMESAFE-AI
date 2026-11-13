@@ -221,3 +221,21 @@ export interface DatasetDetail extends DatasetSummary {
   items: DatasetItemRecord[];
   quality_report?: DatasetValidationReport | null;
 }
+
+export interface AIRuntimeStatus {
+  provider: string;
+  configured: boolean;
+  connected: boolean;
+  generation_model: string;
+  embedding_model: string;
+  embedding_dimensions: number;
+  is_mock_provider: boolean;
+  last_successful_request_at?: string | null;
+  last_error?: string | null;
+  error_category?: string | null;
+  token_usage?: {
+    prompt_tokens: number;
+    completion_tokens: number;
+    total_tokens: number;
+  } | null;
+}

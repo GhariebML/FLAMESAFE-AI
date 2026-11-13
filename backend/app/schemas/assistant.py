@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Dict, List, Optional
 from pydantic import BaseModel, Field
 
 
@@ -34,3 +34,5 @@ class AssistantQueryResponse(BaseModel):
     is_mock_provider: bool = False
     execution_mode: str = "MOCK_DEMO_MODE"
     prompt_version: str = "1.1.0"
+    token_usage: Optional[Dict[str, int]] = None
+    ai_error: Optional[str] = None

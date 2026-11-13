@@ -1,5 +1,6 @@
 export const API_ENDPOINTS = {
   HEALTH: "/health",
+  AI_STATUS: "/ai/status",
   OVERVIEW: "/overview",
   INVESTIGATIONS: "/investigations",
   INVESTIGATION_DETAIL: (id: string) => `/investigations/${id}`,

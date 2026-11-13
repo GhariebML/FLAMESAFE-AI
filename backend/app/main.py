@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from app.core.config import settings
 from app.core.logging import logger
-from app.core.database import init_db, AsyncSessionLocal
+from app.core import database
 from app.core.exceptions import FlameSafeException
 from app.api.v1.router import api_v1_router
 from app.schemas.common import APIErrorResponse, ErrorDetail
@@ -13,11 +13,11 @@ from app.schemas.common import APIErrorResponse, ErrorDetail
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info(f"Starting {settings.APP_NAME} v{settings.APP_VERSION} ({settings.ENVIRONMENT})")
-    await init_db()
+    await database.init_db()
 
     # Automatically check and seed database if empty
     from scripts.seed_data import seed_database_if_empty
-    async with AsyncSessionLocal() as session:
+    async with database.AsyncSessionLocal() as session:
         await seed_database_if_empty(session)
 
     yield

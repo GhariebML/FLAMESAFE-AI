@@ -1,4 +1,4 @@
-from app.ranking.scoring import RelevanceScorer
 from app.ranking.explainability import RankingExplainability
+from app.ranking.scoring import RelevanceScorer
 
-__all__ = ["RelevanceScorer", "RankingExplainability"]
+__all__ = ["RankingExplainability", "RelevanceScorer"]

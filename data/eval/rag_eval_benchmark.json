@@ -1,0 +1,222 @@
+[
+  {
+    "id": "EVAL-001",
+    "query": "What is the concurrent airflow velocity threshold below which flames extinguish in BASS?",
+    "category": "in_domain_grounded",
+    "expected_acronym": "BASS",
+    "expected_doi": "10.1016/j.proci.2014.05.077",
+    "expected_chunk_id": "chunk-bass-001-01",
+    "expected_abstain": false,
+    "expected_advisory": false,
+    "description": "BASS forced airflow extinction limit (0.8 cm/s) for PMMA."
+  },
+  {
+    "id": "EVAL-002",
+    "query": "How does limiting oxygen concentration (LOC) in microgravity compare to terrestrial upward tests in BASS?",
+    "category": "in_domain_grounded",
+    "expected_acronym": "BASS",
+    "expected_doi": "10.1016/j.proci.2014.05.077",
+    "expected_chunk_id": "chunk-bass-001-02",
+    "expected_abstain": false,
+    "expected_advisory": false,
+    "description": "BASS cotton-fiberglass limiting oxygen concentration under hypoxic atmosphere."
+  },
+  {
+    "id": "EVAL-003",
+    "query": "What flame spread rate was observed on large-scale fabric samples in the Saffire-I experiment?",
+    "category": "in_domain_grounded",
+    "expected_acronym": "SAFFIRE",
+    "expected_doi": "10.2514/1.A34167",
+    "expected_chunk_id": "chunk-saf-001-01",
+    "expected_abstain": false,
+    "expected_advisory": false,
+    "description": "Saffire-I large-scale fabric flame propagation (0.18 cm/s)."
+  },
+  {
+    "id": "EVAL-004",
+    "query": "What post-fire atmospheric hazards persist inside the spacecraft cabin following Saffire combustion?",
+    "category": "in_domain_grounded",
+    "expected_acronym": "SAFFIRE",
+    "expected_doi": "10.2514/1.A34167",
+    "expected_chunk_id": "chunk-saf-001-02",
+    "expected_abstain": false,
+    "expected_advisory": false,
+    "description": "Saffire post-fire carbon monoxide and particulate persistence in cabin atmosphere."
+  },
+  {
+    "id": "EVAL-005",
+    "query": "At what droplet diameter does hot flame extinction occur in n-heptane droplet combustion in FLEX?",
+    "category": "in_domain_grounded",
+    "expected_acronym": "FLEX",
+    "expected_doi": "10.1016/j.combustflame.2013.06.023",
+    "expected_chunk_id": "chunk-flex-001-01",
+    "expected_abstain": false,
+    "expected_advisory": false,
+    "description": "FLEX droplet combustion hot extinction diameter (~1.9 mm)."
+  },
+  {
+    "id": "EVAL-006",
+    "query": "What chemical kinetics sustain low-temperature cool flames after hot extinction in FLEX?",
+    "category": "in_domain_grounded",
+    "expected_acronym": "FLEX",
+    "expected_doi": "10.1016/j.combustflame.2013.06.023",
+    "expected_chunk_id": "chunk-flex-001-01",
+    "expected_abstain": false,
+    "expected_advisory": false,
+    "description": "FLEX alkylperoxy radical kinetics sustaining cool flames at 600-800 K."
+  },
+  {
+    "id": "EVAL-007",
+    "query": "How does microgravity affect smoke particle size distribution from overheated wires in SAME?",
+    "category": "in_domain_grounded",
+    "expected_acronym": "SAME",
+    "expected_doi": "10.4271/2009-01-2481",
+    "expected_chunk_id": "chunk-same-001-01",
+    "expected_abstain": false,
+    "expected_advisory": false,
+    "description": "SAME particulate mean diameter (0.35-0.45 microns) in microgravity."
+  },
+  {
+    "id": "EVAL-008",
+    "query": "Why do smoke aerosols agglomerate to larger diameters in microgravity compared to normal gravity?",
+    "category": "in_domain_grounded",
+    "expected_acronym": "SAME",
+    "expected_doi": "10.4271/2009-01-2481",
+    "expected_chunk_id": "chunk-same-001-01",
+    "expected_abstain": false,
+    "expected_advisory": false,
+    "description": "Absence of buoyant convection extends residence time and enhances coagulation."
+  },
+  {
+    "id": "EVAL-009",
+    "query": "What is the PMMA solid fuel extinction airflow rate in low-speed orbital flight tests?",
+    "category": "in_domain_grounded",
+    "expected_acronym": "BASS",
+    "expected_doi": "10.1016/j.proci.2014.05.077",
+    "expected_chunk_id": "chunk-bass-001-01",
+    "expected_abstain": false,
+    "expected_advisory": false,
+    "description": "Alternative query phrasing for BASS PMMA airflow extinction limit."
+  },
+  {
+    "id": "EVAL-010",
+    "query": "What thermal feedback mechanism accelerates flame spread in vehicle-scale Saffire burns?",
+    "category": "in_domain_grounded",
+    "expected_acronym": "SAFFIRE",
+    "expected_doi": "10.2514/1.A34167",
+    "expected_chunk_id": "chunk-saf-001-01",
+    "expected_abstain": false,
+    "expected_advisory": false,
+    "description": "Pyrolysis gas accumulation and downstream preheating in large samples."
+  },
+  {
+    "id": "EVAL-011",
+    "query": "How does flame propagation across fabric change on lunar habitat surface at 0.166g?",
+    "category": "partial_gravity",
+    "expected_acronym": "BASS",
+    "expected_doi": "10.1016/j.proci.2014.05.077",
+    "expected_chunk_id": "chunk-bass-001-02",
+    "expected_abstain": false,
+    "expected_advisory": true,
+    "description": "Fabric flammability with explicit partial-gravity advisory requirement."
+  },
+  {
+    "id": "EVAL-012",
+    "query": "What particulate filtration and scrubbing are needed after a fire in a Mars habitat?",
+    "category": "partial_gravity",
+    "expected_acronym": "SAFFIRE",
+    "expected_doi": "10.2514/1.A34167",
+    "expected_chunk_id": "chunk-saf-001-02",
+    "expected_abstain": false,
+    "expected_advisory": true,
+    "description": "Post-fire particulate scrubbing in Mars habitat with advisory requirement."
+  },
+  {
+    "id": "EVAL-013",
+    "query": "How does buoyant flow at fractional gravity (1/6 g) compare to microgravity flame extinction?",
+    "category": "partial_gravity",
+    "expected_acronym": "BASS",
+    "expected_doi": "10.1016/j.proci.2014.05.077",
+    "expected_chunk_id": "chunk-bass-001-01",
+    "expected_abstain": false,
+    "expected_advisory": true,
+    "description": "1/6 g fractional gravity inquiry requiring partial-gravity advisory."
+  },
+  {
+    "id": "EVAL-014",
+    "query": "What are the laminar flame speeds of methane-air premixed flames in microgravity?",
+    "category": "in_domain_insufficient_evidence",
+    "expected_acronym": null,
+    "expected_doi": null,
+    "expected_chunk_id": null,
+    "expected_abstain": true,
+    "expected_advisory": false,
+    "description": "In-domain query for unindexed methane premixed flame speeds; system must abstain."
+  },
+  {
+    "id": "EVAL-015",
+    "query": "What are the burning rates of titanium and zirconium metal powders in spacecraft fires?",
+    "category": "in_domain_insufficient_evidence",
+    "expected_acronym": null,
+    "expected_doi": null,
+    "expected_chunk_id": null,
+    "expected_abstain": true,
+    "expected_advisory": false,
+    "description": "In-domain query for unindexed metal powder combustion; system must abstain."
+  },
+  {
+    "id": "EVAL-016",
+    "query": "How do acoustic sound wave frequencies extinguish microgravity flames in spacecraft?",
+    "category": "in_domain_insufficient_evidence",
+    "expected_acronym": null,
+    "expected_doi": null,
+    "expected_chunk_id": null,
+    "expected_abstain": true,
+    "expected_advisory": false,
+    "description": "In-domain query for unindexed acoustic flame extinction; system must abstain."
+  },
+  {
+    "id": "EVAL-017",
+    "query": "What is the best recipe for baking chocolate chip cookies?",
+    "category": "out_of_domain",
+    "expected_acronym": null,
+    "expected_doi": null,
+    "expected_chunk_id": null,
+    "expected_abstain": true,
+    "expected_advisory": false,
+    "description": "Completely out-of-domain culinary query; system must abstain without advisory."
+  },
+  {
+    "id": "EVAL-018",
+    "query": "What is the physical distance from the Earth to the Moon in kilometers?",
+    "category": "out_of_domain",
+    "expected_acronym": null,
+    "expected_doi": null,
+    "expected_chunk_id": null,
+    "expected_abstain": true,
+    "expected_advisory": false,
+    "description": "Astronomical query with Moon mention but zero combustion context; must abstain without advisory."
+  },
+  {
+    "id": "EVAL-019",
+    "query": "Who was the first president of the United States?",
+    "category": "out_of_domain",
+    "expected_acronym": null,
+    "expected_doi": null,
+    "expected_chunk_id": null,
+    "expected_abstain": true,
+    "expected_advisory": false,
+    "description": "Historical query unrelated to space fire safety; system must abstain."
+  },
+  {
+    "id": "EVAL-020",
+    "query": "How do I implement binary search in Python?",
+    "category": "out_of_domain",
+    "expected_acronym": null,
+    "expected_doi": null,
+    "expected_chunk_id": null,
+    "expected_abstain": true,
+    "expected_advisory": false,
+    "description": "Programming query unrelated to spacecraft combustion; system must abstain."
+  }
+]

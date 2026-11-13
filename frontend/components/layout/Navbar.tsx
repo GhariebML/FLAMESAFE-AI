@@ -1,159 +1,82 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { Flame, Github, Menu, Search, Cpu } from "lucide-react";
-import { apiClient } from "@/lib/api/client";
+import { usePathname } from "next/navigation";
+import { Flame, Activity, Cpu } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
 
-const ROUTE_TITLES: Record<string, string> = {
-  "/": "Mission Hub",
-  "/dashboard": "Mission Overview",
-  "/investigations": "Investigation Explorer",
-  "/compare": "Comparison Lab",
-  "/insights": "Scientific Insights",
-  "/scenarios": "Mission Scenarios",
-  "/assistant": "SI Research Assistant",
-  "/evidence": "Evidence & Sources Center",
-};
+const TOP_LINKS = [
+  { label: "Dashboard", href: "/dashboard" },
+  { label: "Research Intelligence", href: "/research" },
+  { label: "Investigations", href: "/investigations" },
+  { label: "Comparison Lab", href: "/compare" },
+  { label: "Insights", href: "/insights" },
+  { label: "Scenarios", href: "/scenarios" },
+  { label: "AI Assistant", href: "/assistant" },
+  { label: "Evidence", href: "/evidence" },
+];
 
-interface NavbarProps {
-  onOpenMobileMenu?: () => void;
-}
-
-export const Navbar: React.FC<NavbarProps> = ({ onOpenMobileMenu }) => {
+export function Navbar({ onOpenMobileMenu }: { onOpenMobileMenu?: () => void } = {}) {
   const pathname = usePathname();
-  const router = useRouter();
-  const [backendStatus, setBackendStatus] = useState<"checking" | "online" | "offline">("checking");
-  const [aiProvider, setAiProvider] = useState<string>("mock");
-  const [quickQuery, setQuickQuery] = useState("");
-
-  useEffect(() => {
-    let isMounted = true;
-    apiClient
-      .getHealth()
-      .then((res) => {
-        if (isMounted) {
-          setBackendStatus("online");
-          if (res?.ai_provider) setAiProvider(res.ai_provider);
-        }
-      })
-      .catch(() => {
-        if (isMounted) setBackendStatus("offline");
-      });
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  const currentTitle =
-    ROUTE_TITLES[pathname || "/"] ||
-    (pathname?.startsWith("/investigations/") ? "Investigation Profile" : "Mission Control");
-
-  const handleQuickSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    const trimmed = quickQuery.trim();
-    if (!trimmed) return;
-    router.push(`/investigations?query=${encodeURIComponent(trimmed)}`);
-    setQuickQuery("");
-  };
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-space-800 bg-space-950/90 backdrop-blur-xl transition-colors">
-      <div className="flex h-16 items-center justify-between gap-3 px-3 sm:px-6">
-        {/* Left: Mobile Drawer Toggle + Brand + Breadcrumb */}
-        <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
-          {onOpenMobileMenu && (
-            <button
-              type="button"
-              onClick={onOpenMobileMenu}
-              aria-label="Open navigation menu"
-              className="p-2 rounded-lg text-fg-secondary hover:text-fg-primary hover:bg-space-800 md:hidden shrink-0"
-            >
-              <Menu className="h-5 w-5" />
-            </button>
-          )}
-
-          <Link href="/" className="flex items-center gap-2 group shrink-0">
-            <div className="h-9 w-9 rounded-lg bg-flame-500/15 border border-flame-500/40 flex items-center justify-center text-flame-500 group-hover:scale-105 transition-transform">
-              <Flame className="h-5 w-5" />
-            </div>
-            <div>
-              <span className="text-sm sm:text-base font-bold tracking-tight text-fg-primary flex items-center gap-1">
-                FlameSafe <span className="text-flame-500">AI</span>
+    <header className="sticky top-0 z-40 h-16 w-full border-b border-slate-200/80 dark:border-slate-800/80 bg-white/85 dark:bg-slate-950/80 backdrop-blur-xl transition-colors">
+      <div className="max-w-[1600px] mx-auto h-full px-4 sm:px-6 flex items-center justify-between gap-4">
+        {/* Brand Logo */}
+        <Link href="/dashboard" className="flex items-center gap-3 group shrink-0">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-orange-500 via-amber-500 to-red-600 flex items-center justify-center shadow-md shadow-orange-500/20 group-hover:scale-105 transition-transform">
+            <Flame className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-base tracking-tight text-slate-900 dark:text-white">
+                FLAMESAFE <span className="text-orange-600 dark:text-orange-400">AI</span>
               </span>
-              <span className="hidden sm:block text-[10px] text-fg-muted font-medium -mt-0.5">
-                Space Apps 2026 · Team R²
+              <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-semibold bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20">
+                <Cpu className="w-2.5 h-2.5" />
+                MULTI-AGENT v2.0
               </span>
             </div>
-          </Link>
-
-          {/* Dynamic Module Breadcrumb */}
-          <div className="hidden lg:flex items-center gap-2 ml-3 pl-3 border-l border-space-800 text-xs">
-            <span className="text-fg-muted">Module</span>
-            <span className="text-fg-muted">/</span>
-            <span className="font-semibold text-fg-primary truncate">{currentTitle}</span>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 hidden sm:block">
+              Microgravity Combustion &amp; Fire Safety Intelligence
+            </p>
           </div>
-        </div>
+        </Link>
 
-        {/* Center: Global Quick Search (Desktop) */}
-        <form
-          onSubmit={handleQuickSearch}
-          className="hidden md:flex items-center relative w-60 lg:w-72"
-        >
-          <Search className="h-3.5 w-3.5 text-fg-muted absolute left-3 pointer-events-none" />
-          <input
-            id="global-investigation-search"
-            name="query"
-            type="search"
-            value={quickQuery}
-            onChange={(e) => setQuickQuery(e.target.value)}
-            placeholder="Quick search investigations (e.g., PMMA)..."
-            aria-label="Global investigation search"
-            className="w-full pl-8 pr-3 py-1.5 rounded-lg bg-space-900 border border-space-800 text-xs text-fg-primary placeholder:text-fg-muted focus:outline-none focus:border-blue-500 transition-colors"
-          />
-        </form>
-
-        {/* Right: Theme Switcher + Telemetry Status + AI Mode + GitHub */}
-        <div className="flex items-center gap-2 shrink-0">
-          <ThemeToggle />
-
-          <div
-            className="hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-space-800 bg-space-900/90 text-[11px] text-fg-secondary font-mono"
-            title="Active AI / RAG Synthesis Provider"
-          >
-            <Cpu className="h-3 w-3 text-plasma-600 dark:text-plasma-400" />
-            <span>{aiProvider === "mock" ? "AI: Mock Mode" : `AI: ${aiProvider}`}</span>
-          </div>
-
-          <div
-            className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-space-800 bg-space-900/90 text-[11px] text-fg-secondary font-mono"
-            title="Backend API Health"
-          >
-            <span
-              className={`h-2 w-2 rounded-full ${backendStatus === "online"
-                ? "bg-emerald-500 dark:bg-emerald-400 animate-pulse"
-                : backendStatus === "checking"
-                  ? "bg-amber-500 dark:bg-amber-400"
-                  : "bg-red-500 dark:bg-red-400"
+        {/* Quick Mobile / Tablet Horizontal Links */}
+        <nav className="flex lg:hidden items-center gap-1 overflow-x-auto max-w-full py-1">
+          {TOP_LINKS.map((item) => {
+            const active =
+              pathname === item.href ||
+              (item.href !== "/dashboard" && pathname?.startsWith(item.href));
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`px-2.5 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition ${
+                  active
+                    ? "bg-orange-500/15 text-orange-600 dark:text-orange-400 font-semibold"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                 }`}
-            />
-            <span className="hidden sm:inline">API:</span>
-            <span className="capitalize">{backendStatus}</span>
-          </div>
+              >
+                {item.label}
+              </Link>
+            );
+          })}
+        </nav>
 
-          <a
-            href="https://github.com/GhariebML/FLAMESAFE-AI"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="p-2 rounded-lg text-fg-muted hover:text-fg-primary hover:bg-space-800 transition-colors"
-            title="GitHub Repository"
-          >
-            <Github className="h-4 w-4 sm:h-5 sm:w-5" />
-          </a>
+        {/* Right Controls: Telemetry Pill + Dual Theme Switcher */}
+        <div className="flex items-center gap-3 shrink-0">
+          <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-mono bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20">
+            <Activity className="w-3.5 h-3.5 animate-pulse" />
+            <span>PSI + 11-AGENT GRAPH ONLINE</span>
+          </div>
+          <ThemeToggle />
         </div>
       </div>
     </header>
   );
-};
+}
+
+export default Navbar;

@@ -241,3 +241,54 @@ All error responses return standard HTTP error codes (`400`, `404`, `422`, `500`
 - **Route**: `GET /api/v1/sources/{source_id}`
 - **Path Parameters**: `source_id` (UUID).
 - **Response**: Provenance archive name, DOI, version, and access timestamp.
+
+
+---
+
+## 9. Multi-Agent Research Intelligence Endpoints (`/api/v1/research`)
+
+### `POST /api/v1/research/requests`
+- **Request Body**: `{ "question": "string", "require_approval": false, "force_psi_discovery": true }`
+- **Response (`201 Created`)**: `APIResponseEnvelope[ResearchRequestDetailResponse]` containing thread ID, status (`READY` or `AWAITING_APPROVAL`), parsed `research_intent`, `existing_data_coverage`, `discovered_investigations`, `candidate_files`, `selected_files`, `dataset_id`, `final_answer`, `final_report`, `agent_runs`, and `workflow_events`.
+
+### `GET /api/v1/research/requests`
+- **Response (`200 OK`)**: `APIResponseEnvelope[list[ResearchRequestDetailResponse]]`
+
+### `GET /api/v1/research/requests/{request_id}`
+- **Response (`200 OK`)**: `APIResponseEnvelope[ResearchRequestDetailResponse]`
+
+### `GET /api/v1/research/requests/{request_id}/events`
+- **Response (`200 OK`)**: `APIResponseEnvelope[list[WorkflowEventSchema]]`
+
+### `POST /api/v1/research/requests/{request_id}/approve`
+- **Request Body**: `{ "decision": "APPROVE | REJECT | MODIFY_PLAN | RESUME_WORKFLOW", "selected_file_identifiers": ["..."], "decided_by": "string", "reason": "string" }`
+- **Response (`200 OK`)**: `APIResponseEnvelope[ResearchRequestDetailResponse]`
+
+### `POST /api/v1/research/requests/{request_id}/revise`
+- **Request Body**: `{ "updated_question": "string", "fuel_type": "string", "gravity_regime": "string", "variables_of_interest": ["..."], "require_approval": false }`
+- **Response (`200 OK`)**: `APIResponseEnvelope[ResearchRequestDetailResponse]`
+
+### `POST /api/v1/research/requests/{request_id}/resume`
+- **Response (`200 OK`)**: `APIResponseEnvelope[ResearchRequestDetailResponse]`
+
+---
+
+## 10. NASA PSI Connector & Acquisition Endpoints (`/api/v1/psi` & `/api/v1/acquisitions`)
+
+- `GET /api/v1/psi/investigations/search?query=...&fuel_type=...&research_domain=...`
+- `GET /api/v1/psi/investigations/{investigation_id}`
+- `GET /api/v1/psi/investigations/{investigation_id}/files?question=...`
+- `GET /api/v1/psi/files/{file_id}`
+- `POST /api/v1/acquisitions` (`{ "request_id": "...", "file_identifiers": ["PSI-FILE-BASS-TABLE-01"] }`)
+- `GET /api/v1/acquisitions/{acquisition_id}`
+
+---
+
+## 11. Dynamic Dataset Engine Endpoints (`/api/v1/datasets`)
+
+- `GET /api/v1/datasets`
+- `GET /api/v1/datasets/{dataset_id}`
+- `GET /api/v1/datasets/{dataset_id}/versions`
+- `GET /api/v1/datasets/{dataset_id}/quality-report`
+- `POST /api/v1/datasets/{dataset_id}/analyze`
+- `GET /api/v1/datasets/{dataset_id}/export?format=json|csv|parquet`

@@ -51,6 +51,8 @@ htmlcov/
 alembic_db.sqlite3
 *.db
 *.sqlite3
+backend/data/vault/
+data/vault/
 
 # Node / Frontend
 node_modules/

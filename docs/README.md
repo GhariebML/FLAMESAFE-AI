@@ -32,6 +32,18 @@ Welcome to the comprehensive technical documentation for **FlameSafe AI**, an AI
 | [BACKEND_IMPLEMENTATION_PLAN.md](BACKEND_IMPLEMENTATION_PLAN.md) | FastAPI `/sources`, Gemini HTTP providers, Alembic `002_add_embedding_metadata`, and ingestion pipeline. | Backend & AI Engineers |
 | [INTEGRATION_ROADMAP.md](INTEGRATION_ROADMAP.md) | Contract synchronization between frontend telemetry views and backend endpoints. | Full-Stack Leads |
 | [QUALITY_GATE.md](QUALITY_GATE.md) | Automated verification commands, RAG scientific evaluation cases, and merge readiness checklist. | QA & Release Engineers |
+| [MULTI_AGENT_SYSTEM_AUDIT.md](MULTI_AGENT_SYSTEM_AUDIT.md) | Pre-implementation repository audit for the 11-Agent Scientific Data Intelligence expansion. | Principal Architects |
+| [MULTI_AGENT_ARCHITECTURE.md](MULTI_AGENT_ARCHITECTURE.md) | 11-Agent LangGraph supervisor topology, state schema, and deterministic vs. AI boundaries. | Multi-Agent Engineers |
+| [DATASET_ENGINE.md](DATASET_ENGINE.md) | Dynamic Dataset Engine canonical schema, unit normalization, and deterministic physical validation. | Scientific Data Engineers |
+| [PSI_INTEGRATION.md](PSI_INTEGRATION.md) | NASA PSI 11-campaign catalog discovery and file scoring formula $F = 0.35Q + 0.25T + 0.20C + 0.10P + 0.10A$. | Ingestion & Data Engineers |
+| [AGENT_TOOL_REGISTRY.md](AGENT_TOOL_REGISTRY.md) | Least-privilege tool access matrix and database/network scope for Agents 01–11. | Security & AI Architects |
+| [AGENT_EVALUATION.md](AGENT_EVALUATION.md) | Multi-agent evaluation metrics across intent accuracy, file selection, data quality, and RAG faithfulness. | AI/ML & QA Engineers |
+| [DATASET_VERSIONING.md](DATASET_VERSIONING.md) | SHA-256 content fingerprinting, idempotent version reuse, and CSV/JSON/Parquet snapshot exports. | Data Engineers |
+| [RESEARCH_WORKFLOW.md](RESEARCH_WORKFLOW.md) | 17-state autonomous research lifecycle and Human-in-the-Loop approval gate (`AWAITING_APPROVAL`). | Full-Stack Engineers |
+| [MULTI_AGENT_IMPLEMENTATION_ROADMAP.md](MULTI_AGENT_IMPLEMENTATION_ROADMAP.md) | Phased engineering milestones and production scaling roadmap for the Multi-Agent Platform. | Engineering Leads |
+| [SECURITY_AND_GOVERNANCE.md](SECURITY_AND_GOVERNANCE.md) | Allowlisted domain enforcement, SSRF protection, path sanitization, and human governance gates. | Security Engineers |
+| [FRONTEND_RESEARCH_WORKSPACE.md](FRONTEND_RESEARCH_WORKSPACE.md) | Specification for the 8-panel `/research` workspace in Next.js 15 with White/Black dual-theme support. | Frontend Engineers |
+| [MULTI_AGENT_TESTING.md](MULTI_AGENT_TESTING.md) | Automated test matrix (`test_multi_agent_system.py`) covering all 11 agents and REST endpoints. | QA Engineers |
 
 ---
 

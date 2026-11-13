@@ -5,6 +5,22 @@ from app.models.measurement import Measurement
 from app.models.research_document import ResearchDocument
 from app.models.evidence_chunk import EvidenceChunk
 from app.models.data_source import DataSource
+from app.models.multi_agent import (
+    ResearchRequest,
+    AgentRun,
+    AgentCheckpoint,
+    WorkflowEvent,
+    PSIInvestigationCatalog,
+    PSIFileCatalog,
+    AcquisitionJob,
+    FileAsset,
+    DatasetJob,
+    Dataset,
+    DatasetVersion,
+    DatasetItem,
+    DatasetValidationReport,
+    DatasetApproval,
+)
 
 __all__ = [
     "Base",
@@ -16,4 +32,18 @@ __all__ = [
     "ResearchDocument",
     "EvidenceChunk",
     "DataSource",
+    "ResearchRequest",
+    "AgentRun",
+    "AgentCheckpoint",
+    "WorkflowEvent",
+    "PSIInvestigationCatalog",
+    "PSIFileCatalog",
+    "AcquisitionJob",
+    "FileAsset",
+    "DatasetJob",
+    "Dataset",
+    "DatasetVersion",
+    "DatasetItem",
+    "DatasetValidationReport",
+    "DatasetApproval",
 ]

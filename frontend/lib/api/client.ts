@@ -9,6 +9,16 @@ import {
 import { ComparisonRequest, ComparisonResponse } from "@/types/comparison";
 import { ScenarioRequest, ScenarioAnalysisResponse } from "@/types/scenario";
 import { AssistantQueryRequest, AssistantQueryResponse } from "@/types/assistant";
+import {
+  ResearchRequestDetail,
+  WorkflowEventItem,
+  PSICatalogEntry,
+  PSIFileManifestItem,
+  DatasetSummary,
+  DatasetDetail,
+  DatasetVersion,
+  DatasetValidationReport,
+} from "@/types/research";
 import { API_ENDPOINTS } from "./endpoints";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
@@ -142,5 +152,107 @@ export const apiClient = {
 
   async getSourceDetail(id: string): Promise<DataSource> {
     return request<DataSource>(API_ENDPOINTS.SOURCE_DETAIL(id));
+  },
+
+  // Multi-Agent Research Intelligence Endpoints
+  async createResearchRequest(payload: {
+    question: string;
+    require_approval?: boolean;
+    force_psi_discovery?: boolean;
+  }): Promise<ResearchRequestDetail> {
+    return request<ResearchRequestDetail>(API_ENDPOINTS.RESEARCH_REQUESTS, {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  },
+
+  async listResearchRequests(): Promise<ResearchRequestDetail[]> {
+    return request<ResearchRequestDetail[]>(API_ENDPOINTS.RESEARCH_REQUESTS);
+  },
+
+  async getResearchRequest(id: string): Promise<ResearchRequestDetail> {
+    return request<ResearchRequestDetail>(API_ENDPOINTS.RESEARCH_REQUEST_DETAIL(id));
+  },
+
+  async getResearchRequestEvents(id: string): Promise<WorkflowEventItem[]> {
+    return request<WorkflowEventItem[]>(API_ENDPOINTS.RESEARCH_REQUEST_EVENTS(id));
+  },
+
+  async approveResearchRequest(
+    id: string,
+    payload: {
+      decision: "APPROVE" | "REJECT" | "MODIFY_PLAN" | "RESUME_WORKFLOW";
+      selected_file_identifiers?: string[];
+      decided_by?: string;
+      reason?: string;
+    }
+  ): Promise<ResearchRequestDetail> {
+    return request<ResearchRequestDetail>(API_ENDPOINTS.RESEARCH_REQUEST_APPROVE(id), {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  },
+
+  async reviseResearchIntent(
+    id: string,
+    payload: {
+      updated_question?: string;
+      fuel_type?: string;
+      gravity_regime?: string;
+      variables_of_interest?: string[];
+      require_approval?: boolean;
+    }
+  ): Promise<ResearchRequestDetail> {
+    return request<ResearchRequestDetail>(API_ENDPOINTS.RESEARCH_REQUEST_REVISE(id), {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  },
+
+  async searchPSIInvestigations(
+    params: { query?: string; fuel_type?: string; research_domain?: string } = {}
+  ): Promise<PSICatalogEntry[]> {
+    const search = new URLSearchParams();
+    if (params.query) search.append("query", params.query);
+    if (params.fuel_type) search.append("fuel_type", params.fuel_type);
+    if (params.research_domain) search.append("research_domain", params.research_domain);
+    const qs = search.toString();
+    return request<PSICatalogEntry[]>(`${API_ENDPOINTS.PSI_SEARCH}${qs ? `?${qs}` : ""}`);
+  },
+
+  async getPSIInvestigationFiles(
+    investigationId: string,
+    question?: string
+  ): Promise<PSIFileManifestItem[]> {
+    const qs = question ? `?question=${encodeURIComponent(question)}` : "";
+    return request<PSIFileManifestItem[]>(
+      `${API_ENDPOINTS.PSI_INVESTIGATION_FILES(investigationId)}${qs}`
+    );
+  },
+
+  async listDatasets(): Promise<DatasetSummary[]> {
+    return request<DatasetSummary[]>(API_ENDPOINTS.DATASETS);
+  },
+
+  async getDatasetDetail(id: string): Promise<DatasetDetail> {
+    return request<DatasetDetail>(API_ENDPOINTS.DATASET_DETAIL(id));
+  },
+
+  async getDatasetVersions(id: string): Promise<DatasetVersion[]> {
+    return request<DatasetVersion[]>(API_ENDPOINTS.DATASET_VERSIONS(id));
+  },
+
+  async getDatasetQualityReport(id: string): Promise<DatasetValidationReport> {
+    return request<DatasetValidationReport>(API_ENDPOINTS.DATASET_QUALITY_REPORT(id));
+  },
+
+  async analyzeDataset(id: string): Promise<Record<string, any>> {
+    return request<Record<string, any>>(API_ENDPOINTS.DATASET_ANALYZE(id), {
+      method: "POST",
+    });
+  },
+
+  getDatasetExportUrl(id: string, format: "json" | "csv" | "parquet"): string {
+    return `${BASE_URL}${API_ENDPOINTS.DATASET_EXPORT(id, format)}`;
   },
 };

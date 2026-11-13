@@ -1,6 +1,7 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
+  darkMode: "class",
   content: [
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
@@ -12,11 +13,16 @@ const config: Config = {
     extend: {
       colors: {
         space: {
-          950: "#071525", // Deep Space Navy (Primary Background)
-          900: "#0D2035", // Midnight Blue (Secondary Elevated Surface)
-          800: "#152C47", // Orbital Slate Border / Input Surface
-          700: "#1E3A5F", // Hover / Active Border
-          600: "#2B5282", // Muted Accent Surface
+          950: "rgb(var(--space-950) / <alpha-value>)", // #071525 (Dark) | #F8FAFC (Light)
+          900: "rgb(var(--space-900) / <alpha-value>)", // #0D2035 (Dark) | #FFFFFF (Light)
+          800: "rgb(var(--space-800) / <alpha-value>)", // #152C47 (Dark) | #E2E8F0 (Light)
+          700: "rgb(var(--space-700) / <alpha-value>)", // #1E3A5F (Dark) | #CBD5E1 (Light)
+          600: "rgb(var(--space-600) / <alpha-value>)", // #2B5282 (Dark) | #94A3B8 (Light)
+        },
+        fg: {
+          primary: "var(--text-primary)",
+          secondary: "var(--text-secondary)",
+          muted: "var(--text-muted)",
         },
         electric: {
           500: "#3B82F6", // Primary Accent — Electric Blue
@@ -44,8 +50,8 @@ const config: Config = {
         "2xl": "1rem",
       },
       boxShadow: {
-        panel: "0 4px 20px -2px rgba(3, 10, 22, 0.65)",
-        glow: "0 0 24px -4px rgba(59, 130, 246, 0.22)",
+        panel: "var(--shadow-panel)",
+        glow: "var(--shadow-glow)",
       },
     },
   },

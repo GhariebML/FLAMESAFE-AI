@@ -12,7 +12,7 @@ import {
   Legend,
 } from "recharts";
 import { ChartContainer } from "@/components/ui/ChartContainer";
-import { DESIGN_TOKENS } from "@/lib/design-system/tokens";
+import { useChartTheme } from "@/lib/design-system/useChartTheme";
 
 interface DomainItem {
   domain: string;
@@ -21,6 +21,7 @@ interface DomainItem {
 }
 
 export const DomainDistribution: React.FC<{ items: DomainItem[] }> = ({ items }) => {
+  const chartTheme = useChartTheme();
   const chartData = items.map((item) => ({
     name:
       item.domain.length > 22 ? `${item.domain.slice(0, 20)}...` : item.domain,
@@ -44,10 +45,10 @@ export const DomainDistribution: React.FC<{ items: DomainItem[] }> = ({ items })
           data={chartData}
           margin={{ top: 10, right: 16, left: -12, bottom: 24 }}
         >
-          <CartesianGrid strokeDasharray="3 3" stroke="#152C47" />
+          <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.gridStroke} />
           <XAxis
             dataKey="name"
-            tick={{ fill: "#94A3B8", fontSize: 10 }}
+            tick={{ fill: chartTheme.axisTickColor, fontSize: 10 }}
             angle={-14}
             textAnchor="end"
             interval={0}
@@ -55,29 +56,30 @@ export const DomainDistribution: React.FC<{ items: DomainItem[] }> = ({ items })
           />
           <YAxis
             allowDecimals={false}
-            tick={{ fill: "#94A3B8", fontSize: 11 }}
+            tick={{ fill: chartTheme.axisTickColor, fontSize: 11 }}
           />
           <Tooltip
+            cursor={{ fill: chartTheme.cursorFill }}
             contentStyle={{
-              backgroundColor: "#0D2035",
-              borderColor: "#1E3A5F",
+              backgroundColor: chartTheme.tooltipBg,
+              borderColor: chartTheme.tooltipBorder,
               borderRadius: "0.75rem",
               fontSize: "12px",
-              color: "#F8FAFC",
+              color: chartTheme.tooltipText,
             }}
             labelFormatter={(_, payload) =>
               payload?.[0]?.payload?.fullName || ""
             }
           />
-          <Legend wrapperStyle={{ fontSize: "11px", paddingTop: "4px" }} />
+          <Legend wrapperStyle={{ fontSize: "11px", paddingTop: "4px", color: chartTheme.axisTickColor }} />
           <Bar
             dataKey="Programs"
-            fill={DESIGN_TOKENS.colors.accent.electricBlue}
+            fill={chartTheme.palette[0]}
             radius={[4, 4, 0, 0]}
           />
           <Bar
             dataKey="Runs"
-            fill={DESIGN_TOKENS.colors.accent.scientificCyan}
+            fill={chartTheme.palette[1]}
             radius={[4, 4, 0, 0]}
           />
         </BarChart>

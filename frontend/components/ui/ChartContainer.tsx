@@ -32,20 +32,20 @@ export const ChartContainer: React.FC<ChartContainerProps> = ({
   footerNote,
 }) => {
   return (
-    <Card className="flex flex-col justify-between space-y-4 border-space-800 bg-space-900/80 shadow-panel">
+    <Card className="flex flex-col justify-between space-y-4 border-space-800 bg-space-900 shadow-panel">
       <div className="flex flex-wrap items-start justify-between gap-2 border-b border-space-800/80 pb-3">
         <div>
-          <h3 className="text-sm font-semibold text-slate-100 flex items-center gap-2">
-            <BarChart3 className="h-4 w-4 text-electric-400 shrink-0" />
+          <h3 className="text-sm font-semibold text-fg-primary flex items-center gap-2">
+            <BarChart3 className="h-4 w-4 text-electric-600 dark:text-electric-400 shrink-0" />
             <span>{title}</span>
           </h3>
           {description && (
-            <p className="text-xs text-slate-400 mt-0.5 leading-relaxed">{description}</p>
+            <p className="text-xs text-fg-muted mt-0.5 leading-relaxed">{description}</p>
           )}
         </div>
         <div className="flex items-center gap-1.5">
           {unitLabel && (
-            <span className="px-2 py-0.5 rounded bg-space-950 border border-space-800 font-mono text-[11px] text-plasma-400">
+            <span className="px-2 py-0.5 rounded bg-space-950 border border-space-800 font-mono text-[11px] text-plasma-600 dark:text-plasma-400">
               Unit: {unitLabel}
             </span>
           )}
@@ -57,13 +57,13 @@ export const ChartContainer: React.FC<ChartContainerProps> = ({
         {isLoading ? (
           <LoadingSkeleton className="w-full h-full rounded-xl" />
         ) : error ? (
-          <div className="flex flex-col items-center justify-center h-full min-h-[220px] p-4 rounded-xl bg-red-950/20 border border-red-500/30 text-center">
-            <AlertTriangle className="h-6 w-6 text-red-400 mb-2" />
-            <p className="text-xs font-medium text-red-300">{error}</p>
+          <div className="flex flex-col items-center justify-center h-full min-h-[220px] p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-center">
+            <AlertTriangle className="h-6 w-6 text-red-600 dark:text-red-400 mb-2" />
+            <p className="text-xs font-medium text-red-700 dark:text-red-300">{error}</p>
           </div>
         ) : isEmpty ? (
-          <div className="flex flex-col items-center justify-center h-full min-h-[220px] p-4 rounded-xl bg-space-950/50 border border-space-800 text-center">
-            <p className="text-xs text-slate-400">{emptyMessage}</p>
+          <div className="flex flex-col items-center justify-center h-full min-h-[220px] p-4 rounded-xl bg-space-950/60 border border-space-800 text-center">
+            <p className="text-xs text-fg-muted">{emptyMessage}</p>
           </div>
         ) : (
           <div className="w-full" style={{ height: `${height}px` }}>
@@ -73,7 +73,7 @@ export const ChartContainer: React.FC<ChartContainerProps> = ({
       </div>
 
       {footerNote && (
-        <div className="pt-2 border-t border-space-800/60 text-[11px] text-slate-400 font-mono">
+        <div className="pt-2 border-t border-space-800/60 text-[11px] text-fg-muted font-mono">
           {footerNote}
         </div>
       )}

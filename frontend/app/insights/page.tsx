@@ -6,7 +6,7 @@ import { apiClient } from "@/lib/api/client";
 import { FUEL_CATEGORIES } from "@/lib/constants/domains";
 import { SPACE_ENVIRONMENTS } from "@/lib/constants/environments";
 import { ChartContainer, UncertaintyBanner, Card, Button, Badge } from "@/components/ui";
-import { DESIGN_TOKENS } from "@/lib/design-system/tokens";
+import { useChartTheme } from "@/lib/design-system";
 import {
   ResponsiveContainer,
   BarChart,
@@ -20,6 +20,7 @@ import {
 import { Sparkles, Sliders, ArrowRight, CheckCircle2, AlertCircle, ExternalLink } from "lucide-react";
 
 export default function InsightsPage() {
+  const chartTheme = useChartTheme();
   const [query, setQuery] = useState(
     "Solid polymer flammability and airflow quench limits in microgravity"
   );
@@ -162,27 +163,28 @@ export default function InsightsPage() {
         >
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={chartData} margin={{ top: 10, right: 16, left: -12, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#152C47" />
-              <XAxis dataKey="name" tick={{ fill: "#CBD5E1", fontSize: 11 }} />
-              <YAxis domain={[0, 100]} tick={{ fill: "#94A3B8", fontSize: 11 }} />
+              <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.gridStroke} />
+              <XAxis dataKey="name" tick={{ fill: chartTheme.axisTickColor, fontSize: 11 }} />
+              <YAxis domain={[0, 100]} tick={{ fill: chartTheme.axisTickColor, fontSize: 11 }} />
               <Tooltip
+                cursor={{ fill: chartTheme.cursorFill }}
                 contentStyle={{
-                  backgroundColor: "#0D2035",
-                  borderColor: "#1E3A5F",
+                  backgroundColor: chartTheme.tooltipBg,
+                  borderColor: chartTheme.tooltipBorder,
                   borderRadius: "0.75rem",
                   fontSize: "12px",
-                  color: "#F8FAFC",
+                  color: chartTheme.tooltipText,
                 }}
               />
-              <Legend wrapperStyle={{ fontSize: "11px" }} />
+              <Legend wrapperStyle={{ fontSize: "11px", color: chartTheme.axisTickColor }} />
               <Bar
                 dataKey="Relevance Score"
-                fill={DESIGN_TOKENS.colors.accent.controlledAmber}
+                fill={chartTheme.palette[2]}
                 radius={[4, 4, 0, 0]}
               />
               <Bar
                 dataKey="Measurement Completeness (%)"
-                fill={DESIGN_TOKENS.colors.accent.scientificCyan}
+                fill={chartTheme.palette[1]}
                 radius={[4, 4, 0, 0]}
               />
             </BarChart>

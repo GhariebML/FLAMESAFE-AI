@@ -5,7 +5,7 @@ import { ComparisonResponse } from "@/types/comparison";
 import { Card } from "@/components/shared/Card";
 import { Badge } from "@/components/shared/Badge";
 import { ChartContainer } from "@/components/ui/ChartContainer";
-import { DESIGN_TOKENS } from "@/lib/design-system/tokens";
+import { useChartTheme } from "@/lib/design-system/useChartTheme";
 import {
   ResponsiveContainer,
   BarChart,
@@ -24,6 +24,7 @@ import {
 import { Info, AlertTriangle, ExternalLink } from "lucide-react";
 
 export const ComparisonMatrix: React.FC<{ data: ComparisonResponse }> = ({ data }) => {
+  const chartTheme = useChartTheme();
   // Compatible quantitative chart data (only unit-matched averages)
   const quantData = data.investigations.map((inv) => ({
     name: inv.acronym,
@@ -104,27 +105,28 @@ export const ComparisonMatrix: React.FC<{ data: ComparisonResponse }> = ({ data 
         >
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={quantData} margin={{ top: 10, right: 16, left: -12, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#152C47" />
-              <XAxis dataKey="name" tick={{ fill: "#CBD5E1", fontSize: 11 }} />
-              <YAxis tick={{ fill: "#94A3B8", fontSize: 11 }} />
+              <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.gridStroke} />
+              <XAxis dataKey="name" tick={{ fill: chartTheme.axisTickColor, fontSize: 11 }} />
+              <YAxis tick={{ fill: chartTheme.axisTickColor, fontSize: 11 }} />
               <Tooltip
+                cursor={{ fill: chartTheme.cursorFill }}
                 contentStyle={{
-                  backgroundColor: "#0D2035",
-                  borderColor: "#1E3A5F",
+                  backgroundColor: chartTheme.tooltipBg,
+                  borderColor: chartTheme.tooltipBorder,
                   borderRadius: "0.75rem",
                   fontSize: "12px",
-                  color: "#F8FAFC",
+                  color: chartTheme.tooltipText,
                 }}
               />
-              <Legend wrapperStyle={{ fontSize: "11px" }} />
+              <Legend wrapperStyle={{ fontSize: "11px", color: chartTheme.axisTickColor }} />
               <Bar
                 dataKey="Mean O2 (% O2)"
-                fill={DESIGN_TOKENS.colors.accent.electricBlue}
+                fill={chartTheme.palette[0]}
                 radius={[4, 4, 0, 0]}
               />
               <Bar
                 dataKey="Mean Airflow (cm/s)"
-                fill={DESIGN_TOKENS.colors.accent.scientificCyan}
+                fill={chartTheme.palette[1]}
                 radius={[4, 4, 0, 0]}
               />
             </BarChart>
@@ -142,27 +144,27 @@ export const ComparisonMatrix: React.FC<{ data: ComparisonResponse }> = ({ data 
         >
           <ResponsiveContainer width="100%" height="100%">
             <RadarChart cx="50%" cy="50%" outerRadius="72%" data={radarData}>
-              <PolarGrid stroke="#1E3A5F" />
-              <PolarAngleAxis dataKey="subject" tick={{ fill: "#CBD5E1", fontSize: 11 }} />
-              <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fill: "#64748B", fontSize: 10 }} />
+              <PolarGrid stroke={chartTheme.axisLineColor} />
+              <PolarAngleAxis dataKey="subject" tick={{ fill: chartTheme.axisTickColor, fontSize: 11 }} />
+              <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fill: chartTheme.axisTickColor, fontSize: 10 }} />
               {data.investigations.map((inv, idx) => (
                 <Radar
                   key={inv.id}
                   name={inv.acronym}
                   dataKey={inv.acronym}
-                  stroke={DESIGN_TOKENS.colors.chartPalette[idx % DESIGN_TOKENS.colors.chartPalette.length]}
-                  fill={DESIGN_TOKENS.colors.chartPalette[idx % DESIGN_TOKENS.colors.chartPalette.length]}
+                  stroke={chartTheme.palette[idx % chartTheme.palette.length]}
+                  fill={chartTheme.palette[idx % chartTheme.palette.length]}
                   fillOpacity={0.22}
                 />
               ))}
-              <Legend wrapperStyle={{ fontSize: "11px" }} />
+              <Legend wrapperStyle={{ fontSize: "11px", color: chartTheme.axisTickColor }} />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: "#0D2035",
-                  borderColor: "#1E3A5F",
+                  backgroundColor: chartTheme.tooltipBg,
+                  borderColor: chartTheme.tooltipBorder,
                   borderRadius: "0.75rem",
                   fontSize: "12px",
-                  color: "#F8FAFC",
+                  color: chartTheme.tooltipText,
                 }}
               />
             </RadarChart>

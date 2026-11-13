@@ -10,7 +10,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-space-950 text-slate-100 flex flex-col font-sans selection:bg-blue-500/30 selection:text-white overflow-x-hidden">
+    <div className="min-h-screen bg-space-950 text-fg-primary flex flex-col font-sans selection:bg-blue-500/30 overflow-x-hidden transition-colors">
       <Navbar onOpenMobileMenu={() => setMobileMenuOpen(true)} />
       <div className="flex-1 flex min-w-0">
         <Sidebar isOpen={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />

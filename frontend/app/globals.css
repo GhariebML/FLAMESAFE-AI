@@ -6,10 +6,103 @@
 
 @layer base {
   body {
-    background-color: #071525;
-    color: #F8FAFC;
+    background-color: var(--bg-deep-space);
+    color: var(--text-primary);
     overflow-x: hidden;
+    transition: background-color 180ms ease, color 180ms ease;
   }
+}
+
+/* White "Cleanroom Lab" Mode high-contrast utility normalization */
+html.light .text-white:not([class*="bg-blue-6"]):not([class*="bg-blue-5"]):not([class*="bg-flame-"]):not([class*="bg-emerald-6"]):not([class*="bg-amber-6"]):not([class*="bg-red-6"]):not([class*="bg-cyan-6"]) {
+  color: #0F172A;
+}
+
+html.light .text-slate-50,
+html.light .text-slate-100 {
+  color: #0F172A;
+}
+
+html.light .text-slate-200 {
+  color: #1E293B;
+}
+
+html.light .text-slate-300 {
+  color: #334155;
+}
+
+html.light .text-slate-400 {
+  color: #475569;
+}
+
+html.light .text-slate-500 {
+  color: #64748B;
+}
+
+html.light .text-blue-200,
+html.light .text-blue-300 {
+  color: #1D4ED8;
+}
+
+html.light .text-blue-400,
+html.light .text-electric-400 {
+  color: #2563EB;
+}
+
+html.light .text-cyan-200,
+html.light .text-cyan-300,
+html.light .text-cyan-400,
+html.light .text-plasma-400 {
+  color: #0E7490;
+}
+
+html.light .text-amber-200,
+html.light .text-amber-300,
+html.light .text-amber-400 {
+  color: #B45309;
+}
+
+html.light .text-orange-200,
+html.light .text-orange-300,
+html.light .text-orange-400,
+html.light .text-flame-400 {
+  color: #C2410C;
+}
+
+html.light .text-emerald-200,
+html.light .text-emerald-300,
+html.light .text-emerald-400 {
+  color: #047857;
+}
+
+html.light .text-red-200,
+html.light .text-red-300,
+html.light .text-red-400 {
+  color: #B91C1C;
+}
+
+html.light [class*="bg-blue-950"] {
+  background-color: rgba(219, 234, 254, 0.75);
+}
+
+html.light [class*="bg-cyan-950"] {
+  background-color: rgba(207, 250, 254, 0.75);
+}
+
+html.light [class*="bg-amber-950"] {
+  background-color: rgba(254, 243, 199, 0.8);
+}
+
+html.light [class*="bg-orange-950"] {
+  background-color: rgba(255, 237, 213, 0.8);
+}
+
+html.light [class*="bg-emerald-950"] {
+  background-color: rgba(209, 250, 229, 0.75);
+}
+
+html.light [class*="bg-red-950"] {
+  background-color: rgba(254, 226, 226, 0.8);
 }
 
 /* Custom sleek scrollbars for scientific tables and panels */
@@ -19,14 +112,14 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #071525;
+  background: var(--scrollbar-track);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #152C47;
+  background: var(--scrollbar-thumb);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #1E3A5F;
+  background: var(--scrollbar-thumb-hover);
 }

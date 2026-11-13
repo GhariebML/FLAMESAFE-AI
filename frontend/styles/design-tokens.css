@@ -1,4 +1,60 @@
-:root {
+/* FlameSafe AI — Dual-Theme Design System Tokens
+ * White Mode (:root / html.light) — "Cleanroom Lab" High-Contrast Telemetry
+ * Black Mode (html.dark) — "Mission Control" Deep Space Telemetry
+ * Canonical Dark Hex Reference: #071525, #0D2035, #3B82F6, #22D3EE, #F59E0B, #F97316
+ * Canonical Light Hex Reference: #F8FAFC, #FFFFFF, #2563EB, #0891B2, #D97706, #EA580C
+ */
+
+:root,
+html.light,
+[data-theme="light"] {
+  color-scheme: light;
+
+  /* RGB Triplets for Tailwind Opacity Support */
+  --space-950: 248 250 252; /* #F8FAFC — Cleanroom Alabaster Canvas */
+  --space-900: 255 255 255; /* #FFFFFF — Pure Lab White Panel */
+  --space-800: 226 232 240; /* #E2E8F0 — Instrument Hairline Border / Subtle Surface */
+  --space-700: 203 213 225; /* #CBD5E1 — Interactive / Active Steel Border */
+  --space-600: 148 163 184; /* #94A3B8 — Calibrated Muted Accent */
+
+  /* Semantic Hex Tokens */
+  --bg-deep-space: #F8FAFC;
+  --bg-midnight-blue: #FFFFFF;
+  --border-orbital-slate: #E2E8F0;
+  --border-orbital-hover: #CBD5E1;
+  --accent-electric-blue: #2563EB;
+  --accent-scientific-cyan: #0891B2;
+  --accent-controlled-amber: #D97706;
+  --accent-coral-warning: #EA580C;
+  --accent-telemetry-emerald: #059669;
+
+  /* Typography */
+  --text-primary: #0F172A;
+  --text-secondary: #334155;
+  --text-muted: #475569;
+  --text-slate-white: #0F172A;
+  --text-muted-slate: #475569;
+
+  /* Elevation & Scrollbars */
+  --shadow-panel: 0 4px 20px -2px rgba(15, 23, 42, 0.07), 0 1px 3px 0 rgba(15, 23, 42, 0.04);
+  --shadow-glow: 0 0 24px -4px rgba(37, 99, 235, 0.16);
+  --scrollbar-track: #F1F5F9;
+  --scrollbar-thumb: #CBD5E1;
+  --scrollbar-thumb-hover: #94A3B8;
+}
+
+html.dark,
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* RGB Triplets for Tailwind Opacity Support */
+  --space-950: 7 21 37;   /* #071525 — Deep Space Navy */
+  --space-900: 13 32 53;  /* #0D2035 — Midnight Blue */
+  --space-800: 21 44 71;  /* #152C47 — Orbital Slate */
+  --space-700: 30 58 95;  /* #1E3A5F — Active Telemetry Slate */
+  --space-600: 43 82 130; /* #2B5282 — Muted Orbital Blue */
+
+  /* Semantic Hex Tokens */
   --bg-deep-space: #071525;
   --bg-midnight-blue: #0D2035;
   --border-orbital-slate: #152C47;
@@ -8,8 +64,20 @@
   --accent-controlled-amber: #F59E0B;
   --accent-coral-warning: #F97316;
   --accent-telemetry-emerald: #10B981;
+
+  /* Typography */
+  --text-primary: #F8FAFC;
+  --text-secondary: #CBD5E1;
+  --text-muted: #94A3B8;
   --text-slate-white: #F8FAFC;
   --text-muted-slate: #94A3B8;
+
+  /* Elevation & Scrollbars */
+  --shadow-panel: 0 4px 20px -2px rgba(3, 10, 22, 0.65);
+  --shadow-glow: 0 0 24px -4px rgba(59, 130, 246, 0.22);
+  --scrollbar-track: #071525;
+  --scrollbar-thumb: #152C47;
+  --scrollbar-thumb-hover: #1E3A5F;
 }
 
 /* Accessible keyboard focus ring */

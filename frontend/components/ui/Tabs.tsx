@@ -43,8 +43,8 @@ export const Tabs: React.FC<TabsProps> = ({
             className={cn(
               "px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5",
               isSelected
-                ? "bg-blue-600/20 text-blue-300 border border-blue-500/40 shadow-sm"
-                : "text-slate-400 hover:text-slate-200 hover:bg-space-900"
+                ? "bg-blue-600/15 text-blue-700 dark:text-blue-300 border border-blue-500/40 shadow-sm font-semibold"
+                : "text-fg-muted hover:text-fg-primary hover:bg-space-900"
             )}
           >
             <span>{tab.label}</span>
@@ -52,7 +52,9 @@ export const Tabs: React.FC<TabsProps> = ({
               <span
                 className={cn(
                   "px-1.5 py-0.2 rounded text-[10px] font-mono",
-                  isSelected ? "bg-blue-500/30 text-blue-200" : "bg-space-800 text-slate-400"
+                  isSelected
+                    ? "bg-blue-500/20 text-blue-800 dark:text-blue-200"
+                    : "bg-space-800 text-fg-muted"
                 )}
               >
                 {tab.count}

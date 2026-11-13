@@ -13,7 +13,7 @@ import {
   Card,
   Badge,
 } from "@/components/ui";
-import { DESIGN_TOKENS } from "@/lib/design-system/tokens";
+import { DESIGN_TOKENS, useChartTheme } from "@/lib/design-system";
 import {
   ResponsiveContainer,
   PieChart,
@@ -67,6 +67,7 @@ const FALLBACK_OVERVIEW = {
 
 export default function DashboardPage() {
   const { data, isLoading, error, isUsingFallback } = useOverview();
+  const chartTheme = useChartTheme();
 
   if (isLoading) {
     return (
@@ -210,8 +211,8 @@ export default function DashboardPage() {
                   <Cell
                     key={`cell-${index}`}
                     fill={
-                      DESIGN_TOKENS.colors.chartPalette[
-                        index % DESIGN_TOKENS.colors.chartPalette.length
+                      chartTheme.palette[
+                        index % chartTheme.palette.length
                       ]
                     }
                   />
@@ -219,14 +220,14 @@ export default function DashboardPage() {
               </Pie>
               <Tooltip
                 contentStyle={{
-                  backgroundColor: "#0D2035",
-                  borderColor: "#1E3A5F",
+                  backgroundColor: chartTheme.tooltipBg,
+                  borderColor: chartTheme.tooltipBorder,
                   borderRadius: "0.75rem",
                   fontSize: "12px",
-                  color: "#F8FAFC",
+                  color: chartTheme.tooltipText,
                 }}
               />
-              <Legend wrapperStyle={{ fontSize: "11px" }} />
+              <Legend wrapperStyle={{ fontSize: "11px", color: chartTheme.axisTickColor }} />
             </PieChart>
           </ResponsiveContainer>
         </ChartContainer>

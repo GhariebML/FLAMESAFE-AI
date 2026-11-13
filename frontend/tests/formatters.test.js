@@ -39,14 +39,21 @@ test("truncateText truncates longer strings with ellipsis", () => {
   assert.strictEqual(truncateText("Short text", 20), "Short text");
 });
 
-test("aerospace design tokens exist and match canonical palette", () => {
+test("dual-theme aerospace design tokens exist for both Black and White modes", () => {
   const tsTokensPath = path.join(__dirname, "..", "lib", "design-system", "tokens.ts");
   const cssTokensPath = path.join(__dirname, "..", "styles", "design-tokens.css");
 
   const tsContent = fs.readFileSync(tsTokensPath, "utf8");
   const cssContent = fs.readFileSync(cssTokensPath, "utf8");
 
+  // Black ("Mission Control") Mode canonical palette
   for (const hex of ["#071525", "#0D2035", "#3B82F6", "#22D3EE", "#F59E0B", "#F97316"]) {
+    assert.ok(tsContent.includes(hex), `Expected ${hex} in tokens.ts`);
+    assert.ok(cssContent.toLowerCase().includes(hex.toLowerCase()), `Expected ${hex} in design-tokens.css`);
+  }
+
+  // White ("Cleanroom Lab") Mode canonical palette
+  for (const hex of ["#F8FAFC", "#FFFFFF", "#0F172A", "#2563EB"]) {
     assert.ok(tsContent.includes(hex), `Expected ${hex} in tokens.ts`);
     assert.ok(cssContent.toLowerCase().includes(hex.toLowerCase()), `Expected ${hex} in design-tokens.css`);
   }

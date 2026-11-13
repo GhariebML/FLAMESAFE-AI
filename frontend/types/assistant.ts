@@ -25,4 +25,6 @@ export interface AssistantQueryResponse {
   has_sufficient_evidence: boolean;
   ai_provider: string;
   model_name: string;
+  is_mock_provider?: boolean;
+  prompt_version?: string;
 }

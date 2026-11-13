@@ -1,4 +1,4 @@
-from typing import List, Dict, Any, Optional
+from typing import List, Optional
 from app.schemas.ranking import RankingWeights, FactorBreakdown, RankedInvestigationItem
 from app.models.investigation import Investigation
 
@@ -14,6 +14,8 @@ class RelevanceScorer:
     - C = Experimental conditions compatibility (0 - 100)
     - M = Mission applicability (0 - 100)
     - Q = Evidence and metadata quality (0 - 100)
+
+    Measurement Completeness is reported alongside R as a separate quality indicator.
     """
 
     DEFAULT_WEIGHTS = RankingWeights()
@@ -36,17 +38,21 @@ class RelevanceScorer:
         missing_factors: List[str] = []
 
         # 1. Research Domain Relevance (D)
-        domain_score = 50.0  # Base prior
+        domain_score = 50.0
         inv_domain = (investigation.research_area or "").lower()
         inv_title = (investigation.title or "").lower()
         inv_desc = (investigation.description or "").lower()
+        inv_obj = (investigation.objectives or "").lower()
 
         keywords = [k for k in q_lower.split() if len(k) > 3]
-        matches = sum(1 for kw in keywords if kw in inv_domain or kw in inv_title or kw in inv_desc)
+        matches = sum(
+            1 for kw in keywords
+            if kw in inv_domain or kw in inv_title or kw in inv_desc or kw in inv_obj
+        )
 
         if matches > 0:
             domain_score = min(100.0, 60.0 + (matches * 15.0))
-            matched_factors.append(f"Query terms matched research domain/title ({matches} keywords)")
+            matched_factors.append(f"Query terms matched research domain/objectives ({matches} keywords)")
         else:
             missing_factors.append("No explicit keyword matches in domain description")
 
@@ -65,17 +71,16 @@ class RelevanceScorer:
             else:
                 fuel_score = 25.0
                 missing_factors.append(f"No experimental runs with fuel category '{fuel_category}'")
-        elif any(f in q_lower for f in ["solid", "polymer", "pmma", "fabric", "cotton", "droplet", "gas"]):
-            for f in ["solid", "polymer", "pmma", "fabric", "cotton", "droplet", "gas"]:
+        elif any(f in q_lower for f in ["solid", "polymer", "pmma", "fabric", "cotton", "droplet", "heptane", "kapton", "wire", "methane", "gas"]):
+            for f in ["solid", "polymer", "pmma", "fabric", "cotton", "droplet", "heptane", "kapton", "wire", "methane", "gas"]:
                 if f in q_lower and f in all_fuels_str:
-                    fuel_score = 85.0
-                    matched_factors.append(f"Inferred fuel type '{f}' matched experimental data")
+                    fuel_score = 88.0
+                    matched_factors.append(f"Inferred fuel keyword '{f}' matched experimental run material")
                     break
         else:
-            fuel_score = 60.0  # neutral
+            fuel_score = 60.0
 
         # 3. Experimental Conditions Compatibility (C)
-        condition_score = 50.0
         has_pressure = any(r.pressure_value is not None for r in investigation.experimental_runs)
         has_airflow = any(r.airflow_velocity is not None for r in investigation.experimental_runs)
         has_oxygen = any(r.oxygen_concentration is not None for r in investigation.experimental_runs)
@@ -83,9 +88,9 @@ class RelevanceScorer:
         cond_matches = sum([has_pressure, has_airflow, has_oxygen])
         condition_score = min(100.0, 30.0 + (cond_matches * 23.0))
         if cond_matches >= 2:
-            matched_factors.append(f"Multi-parameter experimental conditions recorded ({cond_matches}/3 key parameters)")
+            matched_factors.append(f"Multi-parameter environmental telemetry recorded ({cond_matches}/3 core parameters)")
         else:
-            missing_factors.append("Incomplete experimental environmental conditions recorded")
+            missing_factors.append("Incomplete environmental boundary conditions recorded")
 
         # 4. Mission Applicability (M)
         mission_score = 50.0
@@ -95,18 +100,20 @@ class RelevanceScorer:
         if env_lower:
             if env_lower in target_envs or any(env_lower in e for e in target_envs):
                 mission_score = 95.0
-                matched_factors.append(f"Explicit applicability to target environment '{target_environment}'")
-            elif "spacecraft" in env_lower and "space station" in " ".join(target_envs):
+                matched_factors.append(f"Explicit applicability to target regime '{target_environment}'")
+            elif ("lunar" in env_lower or "mars" in env_lower) and any("habitat" in e for e in target_envs):
                 mission_score = 80.0
-                matched_factors.append("Applicable orbital environment analogy")
+                matched_factors.append(f"Applicable planetary habitat analogy for '{target_environment}' (requires partial-g scaling)")
+            elif "spacecraft" in env_lower and "space station" in " ".join(target_envs):
+                mission_score = 82.0
+                matched_factors.append("Applicable orbital spacecraft microgravity analogy")
             else:
                 mission_score = 35.0
-                missing_factors.append(f"Target environment '{target_environment}' not explicitly tested")
+                missing_factors.append(f"Target regime '{target_environment}' not directly covered (0g orbital baseline only)")
         else:
             mission_score = 65.0
 
-        # 5. Metadata & Evidence Quality (Q)
-        quality_score = 50.0
+        # 5. Evidence & Metadata Quality (Q)
         has_doi = bool(investigation.doi)
         has_runs = len(investigation.experimental_runs) > 0
         has_docs = len(investigation.research_documents) > 0
@@ -115,9 +122,19 @@ class RelevanceScorer:
         quality_pts = sum([has_doi * 25, has_runs * 25, has_docs * 25, has_psi * 25])
         quality_score = float(quality_pts)
         if quality_score >= 75.0:
-            matched_factors.append("High metadata completeness with verified DOI and PSI ID")
+            matched_factors.append("High provenance quality with verified DOI and NASA PSI identifier")
         else:
             missing_factors.append("Limited external citations or documentation records")
+
+        # Separate Indicator: Measurement Completeness
+        total_meas = 0
+        non_null_meas = 0
+        for r in investigation.experimental_runs:
+            for m in r.measurements:
+                total_meas += 1
+                if m.metric_value is not None:
+                    non_null_meas += 1
+        measurement_completeness = round((non_null_meas / total_meas) * 100.0, 1) if total_meas > 0 else 0.0
 
         # Total Weighted Relevance Score
         relevance_score = (
@@ -138,8 +155,10 @@ class RelevanceScorer:
         )
 
         explanation = (
-            f"Ranked {relevance_score}/100. Matches on {len(matched_factors)} factors: "
-            + ("; ".join(matched_factors[:2]) if matched_factors else "General combustion relevance")
+            f"Relevance score {relevance_score}/100 (D={round(domain_score)}, F={round(fuel_score)}, "
+            f"C={round(condition_score)}, M={round(mission_score)}, Q={round(quality_score)}; "
+            f"Measurement Completeness={measurement_completeness}%). "
+            + ("; ".join(matched_factors[:2]) if matched_factors else "General combustion alignment")
             + "."
         )
 
@@ -150,9 +169,11 @@ class RelevanceScorer:
             title=investigation.title,
             research_area=investigation.research_area,
             relevance_score=relevance_score,
+            measurement_completeness=measurement_completeness,
             factor_breakdown=factor_breakdown,
             matched_factors=matched_factors,
             missing_factors=missing_factors,
             explanation=explanation,
             supporting_evidence_count=len(investigation.research_documents),
+            doi=investigation.doi,
         )

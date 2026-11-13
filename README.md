@@ -242,17 +242,17 @@ flamesafe-ai/
 │   │   ├── ingestion/      # Source adapters, PDF extractor, normalizers
 │   │   ├── rag/            # Chunker, embeddings, retriever, citations
 │   │   ├── ranking/        # Scoring formula and explainability
-│   │   └── tests/          # Pytest automated test suite (11 passed tests)
-│   ├── migrations/         # Alembic database migrations
-│   └── scripts/            # Database seed and migration scripts
+│   │   └── tests/          # Pytest automated test suite (16 passed tests)
+│   ├── migrations/         # Alembic migrations (001_initial_schema, 002_add_embedding_metadata)
+│   └── scripts/            # Database seed and PDF ingestion CLI scripts
 │
 ├── frontend/
 │   ├── Dockerfile
 │   ├── package.json        # Next.js, React, Tailwind, and Recharts dependencies
 │   ├── tsconfig.json       # TypeScript configuration with strict mode
 │   ├── next.config.ts      # Next.js server configuration
-│   ├── tailwind.config.ts  # Space exploration theme tokens
-│   ├── app/                # Next.js 15 App Router pages (Dashboard, Explorer, etc.)
+│   ├── tailwind.config.ts  # Aerospace design system tokens
+│   ├── app/                # Next.js 15 App Router pages (/dashboard, /investigations, /compare, /insights, /scenarios, /assistant, /evidence)
 │   ├── components/         # Layout, shared, and domain-specific components
 │   ├── hooks/              # Custom React hooks (useInvestigations, useCompare, etc.)
 │   ├── lib/api/            # Centralized API client and route constants
@@ -272,7 +272,7 @@ flamesafe-ai/
 │   ├── run_dev.sh          # Concurrent development runner
 │   └── validate_project.sh # End-to-end monorepo validation script
 │
-└── docs/                   # 18 comprehensive technical specifications & guides
+└── docs/                   # 25 comprehensive technical specifications, audits & roadmaps
     ├── diagrams/           # 6 version-controlled Mermaid diagrams (.mmd)
     └── decisions/          # 4 Architecture Decision Records (ADR-001 to ADR-004)
 ```
@@ -384,6 +384,7 @@ All endpoints return standard envelope structures with explicit HTTP status code
 | `POST`| `/api/v1/rank` | Module 4 weighted scientific relevance scoring | `APIResponseEnvelope[RankingResponse]` |
 | `POST`| `/api/v1/scenarios/analyze` | Module 5 exploration regime safety evaluation | `APIResponseEnvelope[ScenarioAnalysisResponse]` |
 | `POST`| `/api/v1/assistant/query` | Module 6 evidence-based RAG query with citations | `APIResponseEnvelope[AssistantQueryResponse]` |
+| `GET` | `/api/v1/sources` | Complete provenance catalog of NASA sources, DOIs, and evidence chunks | `APIResponseEnvelope[SourceCatalogResponse]` |
 | `GET` | `/api/v1/sources/{source_id}` | Provenance and external DOI audit details | `APIResponseEnvelope[DataSourceSchema]` |
 
 For full request/response schemas, JSON examples, and error payloads, see [docs/API_CONTRACT.md](docs/API_CONTRACT.md).
@@ -489,13 +490,14 @@ The repository contains an automated test suite across backend and frontend laye
 cd backend
 python -m pytest -v
 ```
-*Current Status: 11 tests passed in 0.53s.*
+*Verified local test suite: 16 passed tests (covering APIs, ingestion validation, RAG evaluation, ranking, and scenarios in SQLite + mock AI mode).*
 
 ### Run Frontend Tests:
 ```bash
 cd frontend
 npm test
 ```
+*Verified local frontend checks: 3 passed unit tests, `npx tsc --noEmit` (0 errors), and `npm run build` (11 static/dynamic routes).*
 
 ### Run CI Validation:
 ```bash

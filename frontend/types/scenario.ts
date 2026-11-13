@@ -12,7 +12,15 @@ export interface ScenarioRequest {
 export interface ConditionMatchReport {
   parameter: string;
   scenario_input: string;
-  experimental_data_status: "Direct Match" | "Analogous Range" | "Extrapolated" | "No Data";
+  experimental_data_status:
+    | "Exact Match"
+    | "Partial Match"
+    | "Extrapolated Regime"
+    | "Unsupported Condition"
+    | "Direct Match"
+    | "Analogous Range"
+    | "Extrapolated"
+    | "No Data";
   notes?: string | null;
 }
 
@@ -34,5 +42,6 @@ export interface ScenarioAnalysisResponse {
   supporting_evidence: EvidenceSnippet[];
   research_gaps: string[];
   scientific_limitations: string[];
+  recommended_research_directions?: string[];
   safety_advisory: string;
 }

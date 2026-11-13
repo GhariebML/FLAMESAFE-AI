@@ -25,6 +25,13 @@ Welcome to the comprehensive technical documentation for **FlameSafe AI**, an AI
 | [SCIENTIFIC_INTEGRITY.md](SCIENTIFIC_INTEGRITY.md) | Strict principles separating empirical NASA data from AI inferences, null handling, and safety boundaries. | Entire Team, Judges |
 | [MVP_ROADMAP.md](MVP_ROADMAP.md) | Phased feature implementation roadmap from Hackathon MVP to advanced planetary fire safety intelligence. | Product Leads |
 | [TROUBLESHOOTING.md](TROUBLESHOOTING.md) | Step-by-step solutions for common port conflicts, migration locks, environment issues, and API errors. | All Developers |
+| [PRODUCT_AND_ENGINEERING_AUDIT.md](PRODUCT_AND_ENGINEERING_AUDIT.md) | Full 12-section repository audit separating verified capabilities from mock/pending subsystems. | Principal Architects, QA |
+| [PRODUCT_DESIGN_STRATEGY.md](PRODUCT_DESIGN_STRATEGY.md) | Aerospace visual identity (`#071525`), typography, WCAG 2.2 AA contrast, and IA strategy. | UI/UX Designers, Frontend |
+| [PRODUCT_DESIGN_ROADMAP.md](PRODUCT_DESIGN_ROADMAP.md) | Design system rollout milestones and accessibility compliance plan. | Product & Design Leads |
+| [FRONTEND_IMPLEMENTATION_PLAN.md](FRONTEND_IMPLEMENTATION_PLAN.md) | Next.js 15 App Router component architecture, `/evidence` page, and Recharts visualizations. | Frontend Engineers |
+| [BACKEND_IMPLEMENTATION_PLAN.md](BACKEND_IMPLEMENTATION_PLAN.md) | FastAPI `/sources`, Gemini HTTP providers, Alembic `002_add_embedding_metadata`, and ingestion pipeline. | Backend & AI Engineers |
+| [INTEGRATION_ROADMAP.md](INTEGRATION_ROADMAP.md) | Contract synchronization between frontend telemetry views and backend endpoints. | Full-Stack Leads |
+| [QUALITY_GATE.md](QUALITY_GATE.md) | Automated verification commands, RAG scientific evaluation cases, and merge readiness checklist. | QA & Release Engineers |
 
 ---
 

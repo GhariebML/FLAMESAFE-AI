@@ -34,6 +34,8 @@ class InvestigationComparisonProfile(BaseModel):
     typical_airflow_range: Optional[str] = None
     measurement_capabilities: List[str]
     identified_limitations: List[str]
+    doi: Optional[str] = None
+    numeric_metrics: Dict[str, Optional[float]] = Field(default_factory=dict)
 
 
 class ComparisonResponse(BaseModel):

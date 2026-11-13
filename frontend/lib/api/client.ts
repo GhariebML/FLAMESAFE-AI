@@ -4,6 +4,7 @@ import {
   InvestigationDetail,
   InvestigationFilterParams,
   DataSource,
+  SourceCatalogResponse,
 } from "@/types/investigation";
 import { ComparisonRequest, ComparisonResponse } from "@/types/comparison";
 import { ScenarioRequest, ScenarioAnalysisResponse } from "@/types/scenario";
@@ -61,7 +62,13 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
 }
 
 export const apiClient = {
-  async getHealth(): Promise<{ status: string; database_status: string }> {
+  async getHealth(): Promise<{
+    status: string;
+    database_status: string;
+    ai_provider?: string;
+    embedding_provider?: string;
+    version?: string;
+  }> {
     return request(API_ENDPOINTS.HEALTH);
   },
 
@@ -76,7 +83,9 @@ export const apiClient = {
     if (filters.query) params.append("query", filters.query);
     if (filters.research_area) params.append("research_area", filters.research_area);
     if (filters.fuel_type) params.append("fuel_type", filters.fuel_type);
+    if (filters.gravity_regime) params.append("gravity_regime", filters.gravity_regime);
     if (filters.acronym) params.append("acronym", filters.acronym);
+    if (filters.sort_by) params.append("sort_by", filters.sort_by);
     if (filters.page) params.append("page", filters.page.toString());
     if (filters.page_size) params.append("page_size", filters.page_size.toString());
 
@@ -119,6 +128,16 @@ export const apiClient = {
       method: "POST",
       body: JSON.stringify(payload),
     });
+  },
+
+  async getSourcesCatalog(
+    params: { investigation?: string; query?: string } = {}
+  ): Promise<SourceCatalogResponse> {
+    const search = new URLSearchParams();
+    if (params.investigation) search.append("investigation", params.investigation);
+    if (params.query) search.append("query", params.query);
+    const qs = search.toString();
+    return request<SourceCatalogResponse>(`${API_ENDPOINTS.SOURCES}${qs ? `?${qs}` : ""}`);
   },
 
   async getSourceDetail(id: string): Promise<DataSource> {

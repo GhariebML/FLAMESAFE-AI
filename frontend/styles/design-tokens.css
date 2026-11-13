@@ -1,0 +1,31 @@
+:root {
+  --bg-deep-space: #071525;
+  --bg-midnight-blue: #0D2035;
+  --border-orbital-slate: #152C47;
+  --border-orbital-hover: #1E3A5F;
+  --accent-electric-blue: #3B82F6;
+  --accent-scientific-cyan: #22D3EE;
+  --accent-controlled-amber: #F59E0B;
+  --accent-coral-warning: #F97316;
+  --accent-telemetry-emerald: #10B981;
+  --text-slate-white: #F8FAFC;
+  --text-muted-slate: #94A3B8;
+}
+
+/* Accessible keyboard focus ring */
+*:focus-visible {
+  outline: 2px solid var(--accent-electric-blue);
+  outline-offset: 2px;
+}
+
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

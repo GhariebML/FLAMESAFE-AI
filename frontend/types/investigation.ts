@@ -27,6 +27,17 @@ export interface ExperimentalRun {
   measurements: Measurement[];
 }
 
+export interface EvidenceChunk {
+  id: string;
+  document_id: string;
+  chunk_text: string;
+  page_number?: number | null;
+  section_name?: string | null;
+  embedding_provider?: string | null;
+  embedding_model?: string | null;
+  embedding_dimension?: number | null;
+}
+
 export interface ResearchDocument {
   id: string;
   investigation_id: string;
@@ -35,6 +46,7 @@ export interface ResearchDocument {
   doi?: string | null;
   source_url?: string | null;
   file_path?: string | null;
+  evidence_chunks?: EvidenceChunk[];
 }
 
 export interface DataSource {
@@ -58,6 +70,8 @@ export interface InvestigationSummary {
   source_url?: string | null;
   experimental_runs_count: number;
   documents_count: number;
+  primary_fuel_types?: string[];
+  gravity_regimes?: string[];
 }
 
 export interface InvestigationDetail {
@@ -82,7 +96,35 @@ export interface InvestigationFilterParams {
   query?: string;
   research_area?: string;
   fuel_type?: string;
+  gravity_regime?: string;
   acronym?: string;
+  sort_by?: string;
   page?: number;
   page_size?: number;
+}
+
+export interface EvidenceCatalogItem {
+  chunk_id: string;
+  document_id: string;
+  document_title: string;
+  document_type: string;
+  investigation_id: string;
+  investigation_acronym: string;
+  psi_id: string;
+  doi?: string | null;
+  source_url?: string | null;
+  page_number?: number | null;
+  section_name?: string | null;
+  chunk_text: string;
+  verification_status: string;
+  embedding_provider?: string | null;
+  embedding_model?: string | null;
+}
+
+export interface SourceCatalogResponse {
+  total_sources: number;
+  total_documents: number;
+  total_evidence_chunks: number;
+  sources: DataSource[];
+  evidence_items: EvidenceCatalogItem[];
 }

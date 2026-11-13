@@ -4,34 +4,33 @@ import React, { useState, useEffect } from "react";
 import { useInvestigations } from "@/hooks/useInvestigations";
 import { useCompare } from "@/hooks/useCompare";
 import { ComparisonMatrix } from "@/components/comparison/ComparisonMatrix";
+import { UncertaintyBanner } from "@/components/ui/UncertaintyBanner";
 import { Card } from "@/components/shared/Card";
 import { Button } from "@/components/shared/Button";
-import { Badge } from "@/components/shared/Badge";
 import { LoadingSkeleton } from "@/components/shared/LoadingSkeleton";
-import { Scale, Layers } from "lucide-react";
+import { Scale, Download } from "lucide-react";
 
 export default function ComparePage() {
-  const { investigations, isLoading: isInvLoading } = useInvestigations();
+  const { investigations, isLoading: isInvLoading, isUsingFallback } = useInvestigations();
   const { data: comparisonData, isLoading: isComparing, executeCompare, error } = useCompare();
 
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
-  // Automatically select first two investigations by default
   useEffect(() => {
     if (investigations.length >= 2 && selectedIds.length === 0) {
       const initial = [investigations[0].id, investigations[1].id];
       setSelectedIds(initial);
       executeCompare({ investigation_ids: initial });
     }
-  }, [investigations]);
+  }, [investigations, selectedIds.length, executeCompare]);
 
   const toggleSelect = (id: string) => {
     setSelectedIds((prev) => {
       if (prev.includes(id)) {
-        if (prev.length <= 2) return prev; // Keep at least 2
+        if (prev.length <= 2) return prev;
         return prev.filter((item) => item !== id);
       } else {
-        if (prev.length >= 4) return prev; // Maximum 4 for readable matrix
+        if (prev.length >= 4) return prev;
         return [...prev, id];
       }
     });
@@ -43,23 +42,77 @@ export default function ComparePage() {
     }
   };
 
+  const handleExportJSON = () => {
+    if (!comparisonData) return;
+    const blob = new Blob([JSON.stringify(comparisonData, null, 2)], {
+      type: "application/json",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "flamesafe-comparison-report.json";
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleExportCSV = () => {
+    if (!comparisonData) return;
+    const headers = ["Parameter", "Unit", ...comparisonData.investigations.map((i) => i.acronym)];
+    const rows = comparisonData.parameter_matrix.map((p) => [
+      `"${p.display_name}"`,
+      `"${p.unit || ""}"`,
+      ...comparisonData.investigations.map(
+        (i) => `"${String(p.values_by_investigation[i.acronym] ?? "Not recorded").replace(/"/g, '""')}"`
+      ),
+    ]);
+    const csv = [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "flamesafe-comparison-matrix.csv";
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
-    <div className="max-w-6xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2">
-          <Scale className="h-6 w-6 text-flame-400" />
-          Scientific Investigation Comparison
-        </h1>
-        <p className="text-xs text-slate-400 mt-1">
-          Select 2 to 4 NASA combustion investigations to compare experimental geometries, airflow regimes, and sensor setups.
-        </p>
+    <div className="max-w-7xl mx-auto space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-50 tracking-tight flex items-center gap-2">
+            <Scale className="h-6 w-6 text-electric-400 shrink-0" />
+            <span>Scientific Investigation Comparison Lab</span>
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-400 mt-1">
+            Select 2 to 4 NASA combustion programs to compare oxygen envelopes, airflow regimes, sensors, and compatible metrics.
+          </p>
+        </div>
+
+        {comparisonData && (
+          <div className="flex items-center gap-2 self-start sm:self-auto">
+            <Button size="sm" variant="outline" onClick={handleExportCSV} className="gap-1.5">
+              <Download className="h-3.5 w-3.5" /> CSV
+            </Button>
+            <Button size="sm" variant="outline" onClick={handleExportJSON} className="gap-1.5">
+              <Download className="h-3.5 w-3.5" /> JSON
+            </Button>
+          </div>
+        )}
       </div>
 
+      {isUsingFallback && (
+        <UncertaintyBanner
+          variant="demo"
+          title="Backend API Unavailable"
+          message="Comparison calculations require the live FastAPI comparison engine. Please verify the backend service on port 8000."
+        />
+      )}
+
       {/* Investigation Selector */}
-      <Card className="space-y-3">
-        <div className="flex items-center justify-between">
+      <Card className="space-y-3 border-space-800 bg-space-900/80">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <span className="text-xs font-semibold text-slate-300">
-            Select Investigations to Compare (Selected: {selectedIds.length})
+            Select 2–4 Investigations to Compare (Selected: {selectedIds.length})
           </span>
           <Button
             size="sm"
@@ -81,14 +134,16 @@ export default function ComparePage() {
               return (
                 <button
                   key={inv.id}
+                  type="button"
                   onClick={() => toggleSelect(inv.id)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${
+                  className={`px-3 py-2 rounded-lg text-xs font-medium border transition-all text-left ${
                     isSelected
-                      ? "bg-flame-500/20 text-flame-400 border-flame-500/50 shadow-sm"
+                      ? "bg-blue-500/20 text-blue-300 border-blue-500/50 shadow-sm"
                       : "bg-space-950 text-slate-400 border-space-800 hover:border-space-700 hover:text-slate-200"
                   }`}
                 >
-                  [{inv.acronym}] {inv.title}
+                  <span className="font-mono font-bold text-amber-400 mr-1.5">[{inv.acronym}]</span>
+                  <span>{inv.title}</span>
                 </button>
               );
             })}

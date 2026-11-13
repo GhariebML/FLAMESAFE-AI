@@ -1,4 +1,4 @@
-from typing import List, Optional, Dict, Any
+from typing import List, Optional
 from pydantic import BaseModel, Field
 
 
@@ -33,7 +33,7 @@ class EvidenceSnippet(BaseModel):
 class ConditionMatchReport(BaseModel):
     parameter: str
     scenario_input: str
-    experimental_data_status: str  # Direct Match, Analogous Range, Extrapolated, No Data
+    experimental_data_status: str  # Exact Match | Partial Match | Extrapolated Regime | Unsupported Condition
     notes: Optional[str] = None
 
 
@@ -46,6 +46,7 @@ class ScenarioAnalysisResponse(BaseModel):
     supporting_evidence: List[EvidenceSnippet]
     research_gaps: List[str]
     scientific_limitations: List[str]
+    recommended_research_directions: List[str] = Field(default_factory=list)
     safety_advisory: str = (
         "Microgravity (0g) combustion test data cannot be directly equated to Lunar (0.166g) or Martian (0.38g) "
         "partial-gravity surface conditions without accounting for residual buoyancy dynamics and ambient planetary atmospheric effects."

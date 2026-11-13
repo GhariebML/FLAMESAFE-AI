@@ -1,6 +1,18 @@
+"use client";
+
 import React from "react";
-import { Card } from "@/components/shared/Card";
-import { Badge } from "@/components/shared/Badge";
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+} from "recharts";
+import { ChartContainer } from "@/components/ui/ChartContainer";
+import { DESIGN_TOKENS } from "@/lib/design-system/tokens";
 
 interface DomainItem {
   domain: string;
@@ -9,33 +21,67 @@ interface DomainItem {
 }
 
 export const DomainDistribution: React.FC<{ items: DomainItem[] }> = ({ items }) => {
-  return (
-    <Card className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-slate-200">Combustion Research Domains</h3>
-        <Badge variant="plasma">NASA PSI Coverage</Badge>
-      </div>
+  const chartData = items.map((item) => ({
+    name:
+      item.domain.length > 22 ? `${item.domain.slice(0, 20)}...` : item.domain,
+    fullName: item.domain,
+    Programs: item.investigations_count,
+    Runs: item.runs_count,
+  }));
 
-      <div className="space-y-3">
-        {items.length === 0 ? (
-          <div className="text-xs text-slate-500 py-4">No domains indexed yet.</div>
-        ) : (
-          items.map((item) => (
-            <div
-              key={item.domain}
-              className="flex items-center justify-between p-3 rounded-lg bg-space-950/50 border border-space-800"
-            >
-              <div>
-                <div className="text-sm font-medium text-slate-200">{item.domain}</div>
-                <div className="text-[11px] text-slate-500">
-                  {item.runs_count} documented experimental runs
-                </div>
-              </div>
-              <Badge variant="outline">{item.investigations_count} programs</Badge>
-            </div>
-          ))
-        )}
-      </div>
-    </Card>
+  return (
+    <ChartContainer
+      title="Combustion Research Domain Coverage"
+      description="Empirical investigation programs and experimental test runs indexed per NASA microgravity research area."
+      unitLabel="Count"
+      badgeText="NASA PSI"
+      isEmpty={items.length === 0}
+      height={280}
+      footerNote="Source: Live aggregation from PostgreSQL/SQLite investigations & experimental_runs tables."
+    >
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart
+          data={chartData}
+          margin={{ top: 10, right: 16, left: -12, bottom: 24 }}
+        >
+          <CartesianGrid strokeDasharray="3 3" stroke="#152C47" />
+          <XAxis
+            dataKey="name"
+            tick={{ fill: "#94A3B8", fontSize: 10 }}
+            angle={-14}
+            textAnchor="end"
+            interval={0}
+            height={52}
+          />
+          <YAxis
+            allowDecimals={false}
+            tick={{ fill: "#94A3B8", fontSize: 11 }}
+          />
+          <Tooltip
+            contentStyle={{
+              backgroundColor: "#0D2035",
+              borderColor: "#1E3A5F",
+              borderRadius: "0.75rem",
+              fontSize: "12px",
+              color: "#F8FAFC",
+            }}
+            labelFormatter={(_, payload) =>
+              payload?.[0]?.payload?.fullName || ""
+            }
+          />
+          <Legend wrapperStyle={{ fontSize: "11px", paddingTop: "4px" }} />
+          <Bar
+            dataKey="Programs"
+            fill={DESIGN_TOKENS.colors.accent.electricBlue}
+            radius={[4, 4, 0, 0]}
+          />
+          <Bar
+            dataKey="Runs"
+            fill={DESIGN_TOKENS.colors.accent.scientificCyan}
+            radius={[4, 4, 0, 0]}
+          />
+        </BarChart>
+      </ResponsiveContainer>
+    </ChartContainer>
   );
 };

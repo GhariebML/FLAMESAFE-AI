@@ -10,6 +10,7 @@ export function useInvestigations(initialFilters: InvestigationFilterParams = {}
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isUsingFallback, setIsUsingFallback] = useState(false);
   const [filters, setFilters] = useState<InvestigationFilterParams>(initialFilters);
 
   const fetchInvestigations = useCallback(async (currentFilters: InvestigationFilterParams) => {
@@ -19,12 +20,13 @@ export function useInvestigations(initialFilters: InvestigationFilterParams = {}
       setInvestigations(res.items);
       setTotal(res.total);
       setError(null);
+      setIsUsingFallback(false);
     } catch (err: any) {
       console.warn("Using fallback local data due to API connectivity:", err.message);
-      // Graceful fallback to mock data if API is temporarily unavailable
       setInvestigations(FALLBACK_INVESTIGATIONS);
       setTotal(FALLBACK_INVESTIGATIONS.length);
-      setError(null);
+      setError(err.message || "Backend API unavailable");
+      setIsUsingFallback(true);
     } finally {
       setIsLoading(false);
     }
@@ -39,6 +41,7 @@ export function useInvestigations(initialFilters: InvestigationFilterParams = {}
     total,
     isLoading,
     error,
+    isUsingFallback,
     filters,
     setFilters,
     refetch: () => fetchInvestigations(filters),

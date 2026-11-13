@@ -25,6 +25,8 @@ export interface InvestigationComparisonProfile {
   typical_airflow_range?: string | null;
   measurement_capabilities: string[];
   identified_limitations: string[];
+  doi?: string | null;
+  numeric_metrics?: Record<string, number | null>;
 }
 
 export interface ComparisonResponse {

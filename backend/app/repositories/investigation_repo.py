@@ -6,7 +6,6 @@ from app.models.investigation import Investigation
 from app.models.experimental_run import ExperimentalRun
 from app.models.measurement import Measurement
 from app.models.research_document import ResearchDocument
-from app.models.data_source import DataSource
 from app.schemas.investigation import InvestigationFilterParams
 
 
@@ -17,10 +16,16 @@ class InvestigationRepository:
     async def get_by_id(self, investigation_id: str) -> Optional[Investigation]:
         query = (
             select(Investigation)
-            .where(or_(Investigation.id == investigation_id, Investigation.psi_id == investigation_id))
+            .where(
+                or_(
+                    Investigation.id == investigation_id,
+                    Investigation.psi_id == investigation_id,
+                    Investigation.acronym.ilike(investigation_id),
+                )
+            )
             .options(
                 selectinload(Investigation.experimental_runs).selectinload(ExperimentalRun.measurements),
-                selectinload(Investigation.research_documents),
+                selectinload(Investigation.research_documents).selectinload(ResearchDocument.evidence_chunks),
                 selectinload(Investigation.data_sources),
             )
         )
@@ -34,8 +39,9 @@ class InvestigationRepository:
         limit: int = 10,
     ) -> Tuple[List[Investigation], int]:
         query = select(Investigation).options(
-            selectinload(Investigation.experimental_runs),
+            selectinload(Investigation.experimental_runs).selectinload(ExperimentalRun.measurements),
             selectinload(Investigation.research_documents),
+            selectinload(Investigation.data_sources),
         )
 
         if filters:
@@ -45,14 +51,42 @@ class InvestigationRepository:
                     or_(
                         Investigation.title.ilike(search),
                         Investigation.acronym.ilike(search),
+                        Investigation.psi_id.ilike(search),
                         Investigation.description.ilike(search),
                         Investigation.objectives.ilike(search),
+                        Investigation.research_area.ilike(search),
                     )
                 )
             if filters.research_area:
                 query = query.where(Investigation.research_area.ilike(f"%{filters.research_area}%"))
             if filters.acronym:
                 query = query.where(Investigation.acronym.ilike(f"%{filters.acronym}%"))
+            if filters.fuel_type:
+                fuel_subq = (
+                    select(ExperimentalRun.investigation_id)
+                    .where(
+                        or_(
+                            ExperimentalRun.fuel_type.ilike(f"%{filters.fuel_type}%"),
+                            ExperimentalRun.fuel_name.ilike(f"%{filters.fuel_type}%"),
+                        )
+                    )
+                )
+                query = query.where(Investigation.id.in_(fuel_subq))
+            if filters.gravity_regime:
+                grav_subq = (
+                    select(ExperimentalRun.investigation_id)
+                    .where(ExperimentalRun.gravity_regime.ilike(f"%{filters.gravity_regime}%"))
+                )
+                query = query.where(Investigation.id.in_(grav_subq))
+
+            if filters.sort_by == "title":
+                query = query.order_by(Investigation.title.asc())
+            elif filters.sort_by == "acronym":
+                query = query.order_by(Investigation.acronym.asc())
+            else:
+                query = query.order_by(Investigation.acronym.asc())
+        else:
+            query = query.order_by(Investigation.acronym.asc())
 
         count_query = select(func.count()).select_from(query.subquery())
         total = (await self.session.execute(count_query)).scalar_one()
@@ -66,7 +100,13 @@ class InvestigationRepository:
     async def get_by_ids(self, ids: List[str]) -> List[Investigation]:
         query = (
             select(Investigation)
-            .where(or_(Investigation.id.in_(ids), Investigation.psi_id.in_(ids)))
+            .where(
+                or_(
+                    Investigation.id.in_(ids),
+                    Investigation.psi_id.in_(ids),
+                    Investigation.acronym.in_(ids),
+                )
+            )
             .options(
                 selectinload(Investigation.experimental_runs).selectinload(ExperimentalRun.measurements),
                 selectinload(Investigation.research_documents),

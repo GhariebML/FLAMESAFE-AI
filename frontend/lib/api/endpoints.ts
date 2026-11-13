@@ -7,5 +7,6 @@ export const API_ENDPOINTS = {
   RANK: "/rank",
   SCENARIOS_ANALYZE: "/scenarios/analyze",
   ASSISTANT_QUERY: "/assistant/query",
+  SOURCES: "/sources",
   SOURCE_DETAIL: (id: string) => `/sources/${id}`,
 } as const;

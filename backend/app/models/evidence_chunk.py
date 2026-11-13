@@ -14,7 +14,12 @@ class EvidenceChunk(Base):
     chunk_text: Mapped[str] = mapped_column(Text, nullable=False)
     page_number: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
     section_name: Mapped[Optional[str]] = mapped_column(String(128), nullable=True)
+    content_hash: Mapped[Optional[str]] = mapped_column(String(64), nullable=True, index=True)
     embedding: Mapped[Optional[List[float]]] = mapped_column(JSON, nullable=True)
+    embedding_provider: Mapped[Optional[str]] = mapped_column(String(32), nullable=True)
+    embedding_model: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
+    embedding_dimension: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    embedded_at: Mapped[Optional[DateTime]] = mapped_column(DateTime(timezone=True), nullable=True)
     metadata_payload: Mapped[Optional[Dict[str, Any]]] = mapped_column(JSON, nullable=True)
     created_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), default=utc_now)
 

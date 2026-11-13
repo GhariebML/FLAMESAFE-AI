@@ -108,5 +108,38 @@
         }
       }
     ]
+  },
+  {
+    "id": "doc-acme-001",
+    "investigation_id": "c4d5e6f7-a8b9-4d0e-1f2a-4b5c6d7e8f9a",
+    "title": "Structure and Extinction of Gaseous Diffusion Flames in Microgravity: ACME Results",
+    "document_type": "Peer-Reviewed Journal Article",
+    "doi": "10.1016/j.combustflame.2018.04.015",
+    "source_url": "https://doi.org/10.1016/j.combustflame.2018.04.015",
+    "file_path": "data/processed/acme_gaseous_flames_2018.pdf",
+    "chunks": [
+      {
+        "id": "chunk-acme-001-01",
+        "page_number": 3,
+        "section_name": "Laminar Diffusion Flame Structure & Radiative Quenching",
+        "chunk_text": "In the ACME Coflow Laminar Diffusion Flame (CFI) experiments aboard the ISS Combustion Integrated Rack, methane-nitrogen gaseous diffusion flames at 4.0 cm/s coflow velocity exhibited spherical and elongated tear-drop geometries with a visible flame tip height of 24.5 mm at 101.3 kPa and 21.0% O2. In microgravity, soot residence time within the high-temperature reaction zone increases relative to 1g flames, shifting extinction boundaries toward radiative heat loss limits rather than strain-induced blowoff.",
+        "metadata": {
+          "investigation_acronym": "ACME",
+          "fuel_name": "Methane / Nitrogen Mixture (CH4 / N2)",
+          "key_parameters": ["flame_height: 24.5 mm", "airflow: 4.0 cm/s", "soot_volume_fraction: 1.4e-6"]
+        }
+      },
+      {
+        "id": "chunk-acme-001-02",
+        "page_number": 6,
+        "section_name": "Soot Volume Fraction & Inert Gas Suppression",
+        "chunk_text": "Spectrometric measurements in ACME demonstrated peak soot volume fractions of 1.4e-6 under nitrogen dilution in 21% O2 at 101.3 kPa. Increasing inert nitrogen dilution progressively reduced soot inception and lowered peak flame temperature until radiative extinction occurred, providing empirical benchmarks for gaseous leak fire suppression in pressurized spacecraft modules.",
+        "metadata": {
+          "investigation_acronym": "ACME",
+          "fuel_name": "Methane / Nitrogen Mixture (CH4 / N2)",
+          "key_parameters": ["soot_volume_fraction: 1.4e-6", "suppressant: Inert Gas Dilution (N2)"]
+        }
+      }
+    ]
   }
 ]

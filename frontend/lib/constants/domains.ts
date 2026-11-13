@@ -2,7 +2,7 @@ export const RESEARCH_DOMAINS = [
   "Solid Fuel Flammability & Suppression",
   "Large-Scale Spacecraft Fire Safety",
   "Droplet Combustion & Cool Flame Kinetics",
-  "Smoke Aerosol Measurement & Detection",
+  "Smoke Detection & Particle Morphology",
   "Gaseous Flame Stabilization & Soot Dynamics",
 ] as const;
 
@@ -15,8 +15,7 @@ export const FUEL_CATEGORIES = [
 ] as const;
 
 export const GRAVITY_REGIMES = [
-  "Microgravity (~10^-6 g)",
-  "Lunar Gravity (0.166 g)",
-  "Martian Gravity (0.38 g)",
-  "Terrestrial 1g",
+  "Microgravity",
+  "10^-6 g",
+  "10^-5 g",
 ] as const;

@@ -1,7 +1,6 @@
-from typing import List, Optional, Tuple, Dict, Any
+from typing import List, Optional, Tuple, Dict
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.repositories.investigation_repo import InvestigationRepository
-from app.models.investigation import Investigation
 from app.schemas.investigation import (
     InvestigationSummarySchema,
     InvestigationDetailSchema,
@@ -25,7 +24,6 @@ class InvestigationService:
         total_inv, total_runs, total_meas, total_docs = await self.repo.get_counts()
         investigations, _ = await self.repo.list_investigations(limit=100)
 
-        # Aggregate domain counts
         domain_map: Dict[str, Dict[str, int]] = {}
         fuel_map: Dict[str, int] = {}
         groups: List[str] = []
@@ -91,21 +89,26 @@ class InvestigationService:
         offset = (page - 1) * page_size
         items, total = await self.repo.list_investigations(filters=filters, offset=offset, limit=page_size)
 
-        summaries = [
-            InvestigationSummarySchema(
-                id=str(inv.id),
-                psi_id=inv.psi_id,
-                acronym=inv.acronym,
-                title=inv.title,
-                research_area=inv.research_area,
-                description=inv.description,
-                doi=inv.doi,
-                source_url=inv.source_url,
-                experimental_runs_count=len(inv.experimental_runs),
-                documents_count=len(inv.research_documents),
+        summaries = []
+        for inv in items:
+            fuel_types = sorted(list({r.fuel_type for r in inv.experimental_runs if r.fuel_type}))
+            grav_regimes = sorted(list({r.gravity_regime for r in inv.experimental_runs if r.gravity_regime}))
+            summaries.append(
+                InvestigationSummarySchema(
+                    id=str(inv.id),
+                    psi_id=inv.psi_id,
+                    acronym=inv.acronym,
+                    title=inv.title,
+                    research_area=inv.research_area,
+                    description=inv.description,
+                    doi=inv.doi,
+                    source_url=inv.source_url,
+                    experimental_runs_count=len(inv.experimental_runs),
+                    documents_count=len(inv.research_documents),
+                    primary_fuel_types=fuel_types,
+                    gravity_regimes=grav_regimes,
+                )
             )
-            for inv in items
-        ]
         return summaries, total
 
     async def get_investigation_detail(self, investigation_id: str) -> InvestigationDetailSchema:

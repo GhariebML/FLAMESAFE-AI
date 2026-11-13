@@ -1,4 +1,4 @@
-from typing import List, Optional, Dict
+from typing import List, Optional
 from pydantic import BaseModel, Field
 
 
@@ -14,7 +14,7 @@ class RankingRequest(BaseModel):
     query: str = Field(..., min_length=3, description="User scientific research question or focus topic")
     target_environment: Optional[str] = Field(
         default=None,
-        description="Target space environment (e.g. Spacecraft, Lunar Habitat, Mars Habitat)"
+        description="Target space environment (e.g. Spacecraft, Space Station, Lunar Habitat, Lunar Rover, Mars Habitat, Mars Rover)"
     )
     fuel_category: Optional[str] = Field(
         default=None,
@@ -38,11 +38,13 @@ class RankedInvestigationItem(BaseModel):
     title: str
     research_area: str
     relevance_score: float = Field(..., ge=0, le=100)
+    measurement_completeness: float = Field(default=100.0, ge=0, le=100)
     factor_breakdown: FactorBreakdown
     matched_factors: List[str]
     missing_factors: List[str]
     explanation: str
     supporting_evidence_count: int
+    doi: Optional[str] = None
 
 
 class RankingResponse(BaseModel):

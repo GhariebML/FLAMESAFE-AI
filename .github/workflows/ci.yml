@@ -68,4 +68,9 @@ jobs:
       - name: Run Unit Tests
         working-directory: ./frontend
         run: |
-          npm test --if-present
+          npm test
+
+      - name: Build Production Bundle
+        working-directory: ./frontend
+        run: |
+          npm run build

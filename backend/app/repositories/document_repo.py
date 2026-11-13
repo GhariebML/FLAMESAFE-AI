@@ -5,6 +5,7 @@ from sqlalchemy.orm import selectinload
 from app.models.research_document import ResearchDocument
 from app.models.evidence_chunk import EvidenceChunk
 from app.models.data_source import DataSource
+from app.models.investigation import Investigation
 
 
 class DocumentRepository:
@@ -15,7 +16,10 @@ class DocumentRepository:
         query = (
             select(ResearchDocument)
             .where(ResearchDocument.id == document_id)
-            .options(selectinload(ResearchDocument.evidence_chunks))
+            .options(
+                selectinload(ResearchDocument.evidence_chunks),
+                selectinload(ResearchDocument.investigation),
+            )
         )
         result = await self.session.execute(query)
         return result.scalar_one_or_none()
@@ -26,8 +30,15 @@ class DocumentRepository:
         query = (
             select(EvidenceChunk)
             .join(ResearchDocument, EvidenceChunk.document_id == ResearchDocument.id)
-            .where(ResearchDocument.investigation_id == investigation_id)
-            .options(selectinload(EvidenceChunk.document))
+            .join(Investigation, ResearchDocument.investigation_id == Investigation.id)
+            .where(
+                (ResearchDocument.investigation_id == investigation_id)
+                | (Investigation.psi_id == investigation_id)
+                | (Investigation.acronym.ilike(investigation_id))
+            )
+            .options(
+                selectinload(EvidenceChunk.document).selectinload(ResearchDocument.investigation)
+            )
         )
         result = await self.session.execute(query)
         return list(result.scalars().all())
@@ -43,3 +54,16 @@ class DocumentRepository:
         query = select(DataSource).where(DataSource.id == source_id)
         result = await self.session.execute(query)
         return result.scalar_one_or_none()
+
+    async def list_all_sources(self) -> List[DataSource]:
+        query = select(DataSource).options(selectinload(DataSource.investigation))
+        result = await self.session.execute(query)
+        return list(result.scalars().all())
+
+    async def list_all_documents(self) -> List[ResearchDocument]:
+        query = select(ResearchDocument).options(
+            selectinload(ResearchDocument.investigation),
+            selectinload(ResearchDocument.evidence_chunks),
+        )
+        result = await self.session.execute(query)
+        return list(result.scalars().all())

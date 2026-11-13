@@ -1,3 +1,4 @@
+import importlib.util
 from typing import AsyncGenerator
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from app.core.config import settings
@@ -6,12 +7,9 @@ from app.models.base import Base
 
 # Determine initial database URL
 db_url = settings.DATABASE_URL
-if settings.USE_SQLITE_FALLBACK:
-    try:
-        import asyncpg  # check if driver is available
-    except ImportError:
-        logger.info("asyncpg not installed in current environment; switching to SQLite fallback.")
-        db_url = settings.SQLITE_DATABASE_URL
+if settings.USE_SQLITE_FALLBACK and importlib.util.find_spec("asyncpg") is None:
+    logger.info("asyncpg not installed in current environment; switching to SQLite fallback.")
+    db_url = settings.SQLITE_DATABASE_URL
 
 engine = create_async_engine(
     db_url,

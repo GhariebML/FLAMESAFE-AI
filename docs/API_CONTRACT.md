@@ -114,10 +114,12 @@ All error responses return standard HTTP error codes (`400`, `404`, `422`, `500`
 ### 3.3. List Investigations
 - **Route**: `GET /api/v1/investigations`
 - **Query Parameters**:
-  - `query` (string, optional): Search keyword.
+  - `query` (string, optional): Search keyword across title, acronym, PSI ID, objectives, or description.
   - `research_area` (string, optional): Filter by domain.
-  - `fuel_type` (string, optional): Filter by fuel category.
+  - `fuel_type` (string, optional): Filter by fuel category or name.
+  - `gravity_regime` (string, optional): Filter by gravity regime.
   - `acronym` (string, optional): Filter by acronym.
+  - `sort_by` (string, optional): Sort by `acronym` or `title`.
   - `page` (int, default `1`): Page number.
   - `page_size` (int, default `10`, max `100`): Items per page.
 - **Response**:
@@ -228,7 +230,14 @@ All error responses return standard HTTP error codes (`400`, `404`, `422`, `500`
 
 ---
 
-### 3.9. Get Source Provenance
+### 3.9. List Sources & Evidence Catalog
+- **Route**: `GET /api/v1/sources`
+- **Query Parameters**:
+  - `investigation` (string, optional): Filter by investigation acronym or UUID.
+  - `query` (string, optional): Search across evidence text, document title, section name, or DOI.
+- **Response**: Returns `total_sources`, `total_documents`, `total_evidence_chunks`, `sources[]`, and `evidence_items[]` with verification status and embedding provider provenance.
+
+### 3.10. Get Source Provenance
 - **Route**: `GET /api/v1/sources/{source_id}`
 - **Path Parameters**: `source_id` (UUID).
 - **Response**: Provenance archive name, DOI, version, and access timestamp.

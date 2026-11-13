@@ -26,7 +26,11 @@ export interface ExistingDataCoverage {
 
 export interface PSICatalogEntry {
   investigation_id: string;
+  internal_catalog_id?: string;
+  source_repository?: string;
+  source_record_id?: string | null;
   psi_id: string;
+  local_aliases?: string[];
   acronym: string;
   title: string;
   research_area: string;
@@ -34,9 +38,13 @@ export interface PSICatalogEntry {
   facility?: string | null;
   gravity_regime: string;
   fuel_types: string[];
+  dataset_doi?: string | null;
+  publication_dois?: string[];
   doi?: string | null;
   source_url: string;
   available_document_categories: string[];
+  record_origin?: string;
+  verification_status?: string;
   accessibility_status: string;
   relevance_score: number;
   last_verified_at: string;
@@ -65,6 +73,8 @@ export interface PSIFileManifestItem {
   content_coverage: string[];
   provenance_info: Record<string, any>;
   accessibility: string;
+  acquisition_outcome?: string;
+  governance_explanation?: string | null;
   requires_user_handoff: boolean;
   selected: boolean;
   score_breakdown?: FileSelectionBreakdown | null;

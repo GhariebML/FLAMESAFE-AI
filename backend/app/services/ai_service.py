@@ -36,6 +36,7 @@ class AIService:
                 ai_provider=generator.provider_name,
                 model_name=generator.model_name,
                 is_mock_provider=generator.is_mock,
+                execution_mode="MOCK_DEMO_MODE" if generator.is_mock else "LIVE_AI_MODE",
                 prompt_version=PROMPT_VERSION,
             )
 
@@ -61,6 +62,7 @@ class AIService:
                 ai_provider=generator.provider_name,
                 model_name=generator.model_name,
                 is_mock_provider=generator.is_mock,
+                execution_mode="MOCK_DEMO_MODE" if generator.is_mock else "LIVE_AI_MODE",
                 prompt_version=PROMPT_VERSION,
             )
 
@@ -108,5 +110,6 @@ class AIService:
             ai_provider=generator.provider_name,
             model_name=generator.model_name,
             is_mock_provider=generator.is_mock,
+            execution_mode="MOCK_DEMO_MODE" if generator.is_mock else "LIVE_AI_MODE",
             prompt_version=PROMPT_VERSION,
         )

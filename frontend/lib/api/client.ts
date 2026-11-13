@@ -252,6 +252,34 @@ export const apiClient = {
     });
   },
 
+  async getDatasetCoverage(id: string): Promise<Record<string, any>> {
+    return request<Record<string, any>>(API_ENDPOINTS.DATASET_COVERAGE(id));
+  },
+
+  async getDatasetLineage(id: string): Promise<Record<string, any>> {
+    return request<Record<string, any>>(API_ENDPOINTS.DATASET_LINEAGE(id));
+  },
+
+  async getDatasetDiff(id: string): Promise<Record<string, any>> {
+    return request<Record<string, any>>(API_ENDPOINTS.DATASET_DIFF(id));
+  },
+
+  async runDatasetAnalytics(
+    id: string,
+    payload?: {
+      filter_investigation?: string;
+      filter_parameter?: string;
+      filter_material?: string;
+      group_by_column?: string;
+      compare_parameter?: string;
+    },
+  ): Promise<Record<string, any>> {
+    return request<Record<string, any>>(API_ENDPOINTS.DATASET_ANALYTICS(id), {
+      method: "POST",
+      body: JSON.stringify(payload ?? {}),
+    });
+  },
+
   getDatasetExportUrl(id: string, format: "json" | "csv" | "parquet"): string {
     return `${BASE_URL}${API_ENDPOINTS.DATASET_EXPORT(id, format)}`;
   },

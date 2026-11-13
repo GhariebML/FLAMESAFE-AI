@@ -9,9 +9,40 @@ from typing import Any
 class StorageVaultService:
     """Manages immutable raw file assets and versioned dataset exports in local_vault or s3_compatible mode."""
 
+    CANONICAL_EXPORT_COLUMNS = [
+        "record_index",
+        "investigation_code",
+        "investigation_acronym",
+        "experimental_run_code",
+        "run_name",
+        "fuel_material",
+        "fuel_type",
+        "geometry",
+        "oxygen_pct",
+        "pressure_kpa",
+        "airflow_cm_s",
+        "gravity_level",
+        "gravity_regime",
+        "parameter_name",
+        "normalized_value",
+        "normalized_unit",
+        "raw_value",
+        "raw_unit",
+        "conversion_formula",
+        "uncertainty",
+        "source_file_name",
+        "source_doi",
+        "source_url",
+        "page_number",
+        "section_name",
+        "extraction_method",
+        "confidence_score",
+        "validation_status",
+        "evidence_classification",
+    ]
+
     def __init__(self, base_dir: Path | None = None, backend_type: str = "local_vault") -> None:
         if base_dir is None:
-            # Default to backend/data/vault
             base_dir = Path(__file__).resolve().parents[2] / "data" / "vault"
         self.base_dir = base_dir
         self.backend_type = backend_type
@@ -19,6 +50,17 @@ class StorageVaultService:
         self.exports_dir = self.base_dir / "exports"
         self.raw_dir.mkdir(parents=True, exist_ok=True)
         self.exports_dir.mkdir(parents=True, exist_ok=True)
+
+    @staticmethod
+    def is_parquet_engine_available() -> bool:
+        """Checks whether PyArrow is installed for genuine Apache Parquet binary serialization."""
+        try:
+            import pyarrow  # noqa: F401
+            import pyarrow.parquet  # noqa: F401
+
+            return True
+        except ImportError:
+            return False
 
     def store_raw_asset(self, file_identifier: str, filename: str, content: bytes) -> dict[str, Any]:
         """Stores a raw file asset keyed by its SHA-256 digest to guarantee immutability and deduplication."""
@@ -37,16 +79,35 @@ class StorageVaultService:
             "file_size_bytes": len(content),
         }
 
+    def export_dataset_files(
+        self,
+        dataset_key: str,
+        version_tag: str,
+        records: list[dict[str, Any]],
+        metadata: dict[str, Any],
+    ) -> dict[str, str | None]:
+        """Alias for store_dataset_exports accepting dataset_key and version_tag."""
+        return self.store_dataset_exports(
+            dataset_code=dataset_key,
+            version_number=version_tag,
+            records=records,
+            metadata=metadata,
+        )
+
     def store_dataset_exports(
         self,
         dataset_code: str,
         version_number: str,
         records: list[dict[str, Any]],
         metadata: dict[str, Any],
-    ) -> dict[str, str]:
-        """Writes CSV, JSON, and Parquet snapshot artifacts for a versioned scientific dataset."""
+    ) -> dict[str, str | None]:
+        """Writes CSV, JSON, and genuine Apache Parquet (via PyArrow) snapshot artifacts.
+        Never writes a custom/JSON fallback with a .parquet extension.
+        """
         version_dir = self.exports_dir / dataset_code / version_number
         version_dir.mkdir(parents=True, exist_ok=True)
+
+        columns = self.CANONICAL_EXPORT_COLUMNS
 
         # 1. JSON Export
         json_path = version_dir / f"{dataset_code}_{version_number}.json"
@@ -61,31 +122,6 @@ class StorageVaultService:
 
         # 2. CSV Export (preserving null as empty cell, never converting null to 0)
         csv_path = version_dir / f"{dataset_code}_{version_number}.csv"
-        columns = [
-            "record_index",
-            "investigation_code",
-            "experimental_run_code",
-            "fuel_material",
-            "geometry",
-            "oxygen_pct",
-            "pressure_kpa",
-            "airflow_cm_s",
-            "gravity_level",
-            "parameter_name",
-            "normalized_value",
-            "normalized_unit",
-            "raw_value",
-            "raw_unit",
-            "uncertainty",
-            "source_file_name",
-            "source_doi",
-            "page_number",
-            "section_name",
-            "extraction_method",
-            "confidence_score",
-            "validation_status",
-            "evidence_classification",
-        ]
         lines = [",".join(columns)]
         for r in records:
             row_vals: list[str] = []
@@ -101,29 +137,64 @@ class StorageVaultService:
             lines.append(",".join(row_vals))
         csv_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
-        # 3. Parquet Export (uses pandas.to_parquet when pyarrow/fastparquet is installed;
-        # falls back to a deterministic columnar Parquet-envelope artifact when optional C++ engine is absent)
-        parquet_path = version_dir / f"{dataset_code}_{version_number}.parquet"
-        try:
-            import pandas as pd
+        # 3. Genuine Apache Parquet Export via PyArrow (Option A + Option B guard:
+        # if PyArrow is unavailable, parquet export is disabled rather than faking .parquet)
+        parquet_path_str: str | None = None
+        if self.is_parquet_engine_available():
+            import pyarrow as pa
+            import pyarrow.parquet as pq
 
-            df = pd.DataFrame(records)
-            df.to_parquet(parquet_path, index=False)
-        except Exception:
-            columnar_payload = {
-                "format": "FLAMESAFE_COLUMNAR_PARQUET_FALLBACK_V1",
-                "dataset_code": dataset_code,
-                "version_number": version_number,
-                "schema_columns": columns,
-                "columns": {
-                    col: [r.get(col) for r in records]
-                    for col in columns
+            parquet_path = version_dir / f"{dataset_code}_{version_number}.parquet"
+            arrow_schema = pa.schema(
+                [
+                    pa.field("record_index", pa.int64()),
+                    pa.field("investigation_code", pa.string()),
+                    pa.field("investigation_acronym", pa.string()),
+                    pa.field("experimental_run_code", pa.string()),
+                    pa.field("run_name", pa.string()),
+                    pa.field("fuel_material", pa.string()),
+                    pa.field("fuel_type", pa.string()),
+                    pa.field("geometry", pa.string()),
+                    pa.field("oxygen_pct", pa.float64()),
+                    pa.field("pressure_kpa", pa.float64()),
+                    pa.field("airflow_cm_s", pa.float64()),
+                    pa.field("gravity_level", pa.string()),
+                    pa.field("gravity_regime", pa.string()),
+                    pa.field("parameter_name", pa.string()),
+                    pa.field("normalized_value", pa.float64()),
+                    pa.field("normalized_unit", pa.string()),
+                    pa.field("raw_value", pa.float64()),
+                    pa.field("raw_unit", pa.string()),
+                    pa.field("conversion_formula", pa.string()),
+                    pa.field("uncertainty", pa.float64()),
+                    pa.field("source_file_name", pa.string()),
+                    pa.field("source_doi", pa.string()),
+                    pa.field("source_url", pa.string()),
+                    pa.field("page_number", pa.int64()),
+                    pa.field("section_name", pa.string()),
+                    pa.field("extraction_method", pa.string()),
+                    pa.field("confidence_score", pa.float64()),
+                    pa.field("validation_status", pa.string()),
+                    pa.field("evidence_classification", pa.string()),
+                ],
+                metadata={
+                    b"flamesafe_dataset_code": dataset_code.encode("utf-8"),
+                    b"flamesafe_version_number": version_number.encode("utf-8"),
+                    b"flamesafe_provenance_verified": b"true",
                 },
-            }
-            parquet_path.write_bytes(json.dumps(columnar_payload, sort_keys=True).encode("utf-8"))
+            )
+            col_arrays = []
+            for field in arrow_schema:
+                col_name = field.name
+                raw_col = [r.get(col_name) for r in records]
+                col_arrays.append(pa.array(raw_col, type=field.type))
+
+            table = pa.Table.from_arrays(col_arrays, schema=arrow_schema)
+            pq.write_table(table, parquet_path, compression="snappy")
+            parquet_path_str = str(parquet_path)
 
         return {
             "json": str(json_path),
             "csv": str(csv_path),
-            "parquet": str(parquet_path),
+            "parquet": parquet_path_str,
         }

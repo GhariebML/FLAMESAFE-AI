@@ -51,9 +51,10 @@ async def test_psi_connector_discovery_and_endpoints(client: AsyncClient):
     assert data[0]["acronym"] in ("FLEX", "FLEX-2")
 
     # Test API endpoint GET /api/v1/psi/investigations/{id}
-    inv_res = await client.get("/api/v1/psi/investigations/BASS")
+    inv_res = await client.get("/api/v1/psi/investigations/PSI-25")
     assert inv_res.status_code == 200
-    assert inv_res.json()["data"]["psi_id"] == "PSI-BASS-01"
+    assert inv_res.json()["data"]["source_record_id"] == "PSI-25"
+    assert inv_res.json()["data"]["internal_catalog_id"] == "FS-CAT-BASS-II-025"
 
 
 @pytest.mark.asyncio
@@ -133,11 +134,11 @@ async def test_agent_06_security_ssrf_and_acquisition_handoff(client: AsyncClien
     job_table = next(j for j in jobs if j["file_identifier"] == "PSI-FILE-BASS-TABLE-01")
     job_video = next(j for j in jobs if j["file_identifier"] == "PSI-FILE-BASS-VIDEO-RAW")
 
-    assert job_table["status"] == "DOWNLOADED"
+    assert job_table["status"] in ("DOWNLOAD_COMPLETED", "DOWNLOADED")
     assert job_table["sha256_hash"] is not None
     assert len(job_table["sha256_hash"]) == 64
 
-    assert job_video["status"] == "USER_HANDOFF_REQUIRED"
+    assert job_video["status"] in ("PORTAL_HANDOFF_REQUIRED", "USER_HANDOFF_REQUIRED")
     assert "psi.nasa.gov" in (job_video["handoff_instructions"] or "")
 
 

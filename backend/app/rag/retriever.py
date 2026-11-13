@@ -58,12 +58,19 @@ class EvidenceRetriever:
                     if not inv or (inv.psi_id.lower() != f_val and inv.acronym.lower() != f_val):
                         continue
 
-            # Enforce vector dimension & model compatibility — never mix incompatible embedding models
+            # Priority 5 & 6: Enforce strict vector dimension, model, and provider compatibility.
+            # Never compare mock SHA-256 vectors against live semantic embeddings.
+            chunk_model = str(chunk.embedding_model or "")
+            chunk_is_mock = (
+                "mock" in chunk_model.lower()
+                or "sha256" in chunk_model.lower()
+            )
             has_compatible_vector = (
                 chunk.embedding is not None
                 and len(chunk.embedding) == len(query_vec)
-                and (chunk.embedding_dimension in (None, embedder.dimension))
-                and (chunk.embedding_model in (None, embedder.model_name))
+                and chunk.embedding_dimension == embedder.dimension
+                and chunk.embedding_model == embedder.model_name
+                and (chunk_is_mock == embedder.is_mock)
             )
 
             if has_compatible_vector and chunk.embedding:

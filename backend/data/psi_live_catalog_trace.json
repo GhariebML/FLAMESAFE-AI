@@ -1,0 +1,243 @@
+{
+  "audit_timestamp": "2026-11-13T19:14:51.668753+00:00",
+  "connector_mode": "LIVE_SMOKE_VALIDATION",
+  "psi_portal_probe": {
+    "landing_requested_url": "https://psi.nasa.gov",
+    "landing_resolved_url": "https://science.nasa.gov/biological-physical/data/",
+    "landing_http_status": 200,
+    "landing_content_length": 343657,
+    "landing_sha256": "39df3b8d80684edc23f0015cc43636d14e44cbf68e42cca610dc6afc1baea452",
+    "repo_url": "https://psi.nasa.gov/physci/repo/",
+    "repo_http_status": 200,
+    "repo_body_length": 0,
+    "requires_interactive_browser_portal": true,
+    "explanation": "https://psi.nasa.gov resolves to NASA Biological & Physical Sciences Data page (HTTP 200), while https://psi.nasa.gov/physci/repo/ requires an interactive browser portal session for raw archive file browsing (PORTAL_HANDOFF_REQUIRED)."
+  },
+  "verified_investigations_count": 6,
+  "trace_records": [
+    {
+      "internal_catalog_id": "FS-CAT-BASS-II-025",
+      "source_repository": "NASA_PSI",
+      "source_record_id": "PSI-25",
+      "acronym": "BASS-II",
+      "record_origin": "LIVE_DISCOVERED_RECORD",
+      "verified_at": "2026-11-13T19:14:51.668753+00:00",
+      "psi_portal_status": "PORTAL_HANDOFF_REQUIRED",
+      "dataset_doi": null,
+      "publication_doi": "10.1007/s12217-024-10106-y",
+      "publication_doi_live_verified": true,
+      "publication_doi_http_status": 200,
+      "publication_resolved_title": "Effects of Confinement on Opposed-Flow Flame Spread over Cellulose and Polymeric Solids in Microgravity",
+      "ntrs_search_http_status": 200,
+      "ntrs_live_matches": [
+        {
+          "ntrs_id": 20210011385,
+          "title": "Burning and Suppression of Solids\u2013II  (BASS-II) Summary Report",
+          "sti_type": "TECHNICAL_MEMORANDUM",
+          "public_download_available": true,
+          "acquisition_outcome": "DIRECT_DOWNLOAD_AVAILABLE"
+        },
+        {
+          "ntrs_id": 20160000593,
+          "title": "Combustion of Solids in Microgravity: Results from the BASS-II Experiment",
+          "sti_type": "PRESENTATION",
+          "public_download_available": true,
+          "acquisition_outcome": "DIRECT_DOWNLOAD_AVAILABLE"
+        },
+        {
+          "ntrs_id": 20170006615,
+          "title": "Mixed Convection Blowoff Limits as a Function of Oxygen Concentration and Upward Forced Stretch Rate for Burning Pmma Rods of Various Sizes",
+          "sti_type": "CONFERENCE_PAPER",
+          "public_download_available": true,
+          "acquisition_outcome": "DIRECT_DOWNLOAD_AVAILABLE"
+        }
+      ],
+      "manifest_file_count": 3,
+      "direct_seed_files_count": 2,
+      "portal_handoff_files_count": 1
+    },
+    {
+      "internal_catalog_id": "FS-CAT-FLEX-069",
+      "source_repository": "NASA_PSI",
+      "source_record_id": "PSI-69",
+      "acronym": "FLEX",
+      "record_origin": "LIVE_DISCOVERED_RECORD",
+      "verified_at": "2026-11-13T19:14:51.668753+00:00",
+      "psi_portal_status": "PORTAL_HANDOFF_REQUIRED",
+      "dataset_doi": null,
+      "publication_doi": "10.1016/j.combustflame.2015.01.012",
+      "publication_doi_live_verified": true,
+      "publication_doi_http_status": 200,
+      "publication_resolved_title": "Cool-flame extinction during n-alkane droplet combustion in microgravity",
+      "ntrs_search_http_status": 200,
+      "ntrs_live_matches": [
+        {
+          "ntrs_id": 20090014812,
+          "title": "Multi-User Droplet Combustion Apparatus - Flame Extinguishment Experiment",
+          "sti_type": "OTHER",
+          "public_download_available": true,
+          "acquisition_outcome": "DIRECT_DOWNLOAD_AVAILABLE"
+        },
+        {
+          "ntrs_id": 20150023456,
+          "title": "Detailed Results from the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011",
+          "sti_type": "TECHNICAL_PUBLICATION",
+          "public_download_available": true,
+          "acquisition_outcome": "DIRECT_DOWNLOAD_AVAILABLE"
+        },
+        {
+          "ntrs_id": 20130014061,
+          "title": "Methanol Droplet Combustion in Oxygen-Inert Environments in Microgravity",
+          "sti_type": "CONFERENCE_PAPER",
+          "public_download_available": true,
+          "acquisition_outcome": "DIRECT_DOWNLOAD_AVAILABLE"
+        }
+      ],
+      "manifest_file_count": 1,
+      "direct_seed_files_count": 1,
+      "portal_handoff_files_count": 0
+    },
+    {
+      "internal_catalog_id": "FS-CAT-SAFFIRE-I-098",
+      "source_repository": "NASA_PSI",
+      "source_record_id": "PSI-98",
+      "acronym": "SAFFIRE",
+      "record_origin": "LIVE_DISCOVERED_RECORD",
+      "verified_at": "2026-11-13T19:14:51.668753+00:00",
+      "psi_portal_status": "PORTAL_HANDOFF_REQUIRED",
+      "dataset_doi": null,
+      "publication_doi": "10.32865/2346/108820",
+      "publication_doi_live_verified": true,
+      "publication_doi_http_status": 200,
+      "publication_resolved_title": "Spacecraft Fire Safety Predictions using Validated Saffire Model",
+      "ntrs_search_http_status": 200,
+      "ntrs_live_matches": [
+        {
+          "ntrs_id": 20170000230,
+          "title": "Operation and Development Status of the Spacecraft Fire Experiments (Saffire)",
+          "sti_type": "CONFERENCE_PAPER",
+          "public_download_available": true,
+          "acquisition_outcome": "DIRECT_DOWNLOAD_AVAILABLE"
+        },
+        {
+          "ntrs_id": 20170001636,
+          "title": "The Spacecraft Fire Experiment (Saffire) - Objectives, Development and Status",
+          "sti_type": "CONFERENCE_PAPER",
+          "public_download_available": true,
+          "acquisition_outcome": "DIRECT_DOWNLOAD_AVAILABLE"
+        },
+        {
+          "ntrs_id": 20220002714,
+          "title": "Model Development of Large-Scale Spacecraft Fires During the Saffire-IV Experiments",
+          "sti_type": "CONFERENCE_PAPER",
+          "public_download_available": true,
+          "acquisition_outcome": "DIRECT_DOWNLOAD_AVAILABLE"
+        }
+      ],
+      "manifest_file_count": 2,
+      "direct_seed_files_count": 2,
+      "portal_handoff_files_count": 0
+    },
+    {
+      "internal_catalog_id": "FS-CAT-SAME-R-101",
+      "source_repository": "NASA_PSI",
+      "source_record_id": "PSI-101",
+      "acronym": "SAME-R",
+      "record_origin": "LIVE_DISCOVERED_RECORD",
+      "verified_at": "2026-11-13T19:14:51.668753+00:00",
+      "psi_portal_status": "PORTAL_HANDOFF_REQUIRED",
+      "dataset_doi": null,
+      "publication_doi": "10.2514/6.2012-3536",
+      "publication_doi_live_verified": true,
+      "publication_doi_http_status": 200,
+      "publication_resolved_title": "Particle Morphology and Size Results from the Smoke Aerosol Measurement Experiment-2",
+      "ntrs_search_http_status": 200,
+      "ntrs_live_matches": [
+        {
+          "ntrs_id": 20130000422,
+          "title": "Particle Morphology and Size Results from the Smoke Aerosol Measurement Experiment-2",
+          "sti_type": "CONFERENCE_PAPER",
+          "public_download_available": true,
+          "acquisition_outcome": "DIRECT_DOWNLOAD_AVAILABLE"
+        },
+        {
+          "ntrs_id": 20170007283,
+          "title": "Spacecraft Fire Safety Research at NASA Glenn Research Center",
+          "sti_type": "CONFERENCE_PAPER",
+          "public_download_available": true,
+          "acquisition_outcome": "DIRECT_DOWNLOAD_AVAILABLE"
+        },
+        {
+          "ntrs_id": 20070031686,
+          "title": "Particle and Smoke Detection on ISS for Next Generation Smoke Detectors",
+          "sti_type": "PRESENTATION",
+          "public_download_available": true,
+          "acquisition_outcome": "DIRECT_DOWNLOAD_AVAILABLE"
+        }
+      ],
+      "manifest_file_count": 0,
+      "direct_seed_files_count": 0,
+      "portal_handoff_files_count": 0
+    },
+    {
+      "internal_catalog_id": "FS-CAT-SAME-102",
+      "source_repository": "NASA_PSI",
+      "source_record_id": "PSI-102",
+      "acronym": "SAME",
+      "record_origin": "LIVE_DISCOVERED_RECORD",
+      "verified_at": "2026-11-13T19:14:51.668753+00:00",
+      "psi_portal_status": "PORTAL_HANDOFF_REQUIRED",
+      "dataset_doi": null,
+      "publication_doi": "10.2514/6.2013-3433",
+      "publication_doi_live_verified": true,
+      "publication_doi_http_status": 200,
+      "publication_resolved_title": "Smoke Aerosol Measurement Experiment-2: Comparison of Flight Experiment Results with Ground Test Results",
+      "ntrs_search_http_status": 200,
+      "ntrs_live_matches": [
+        {
+          "ntrs_id": 20130000422,
+          "title": "Particle Morphology and Size Results from the Smoke Aerosol Measurement Experiment-2",
+          "sti_type": "CONFERENCE_PAPER",
+          "public_download_available": true,
+          "acquisition_outcome": "DIRECT_DOWNLOAD_AVAILABLE"
+        },
+        {
+          "ntrs_id": 20170007283,
+          "title": "Spacecraft Fire Safety Research at NASA Glenn Research Center",
+          "sti_type": "CONFERENCE_PAPER",
+          "public_download_available": true,
+          "acquisition_outcome": "DIRECT_DOWNLOAD_AVAILABLE"
+        },
+        {
+          "ntrs_id": 20070031686,
+          "title": "Particle and Smoke Detection on ISS for Next Generation Smoke Detectors",
+          "sti_type": "PRESENTATION",
+          "public_download_available": true,
+          "acquisition_outcome": "DIRECT_DOWNLOAD_AVAILABLE"
+        }
+      ],
+      "manifest_file_count": 1,
+      "direct_seed_files_count": 1,
+      "portal_handoff_files_count": 0
+    },
+    {
+      "internal_catalog_id": "FS-CAT-ACME-CFIG-159",
+      "source_repository": "NASA_PSI",
+      "source_record_id": "PSI-159",
+      "acronym": "ACME CFI-G",
+      "record_origin": "LIVE_DISCOVERED_RECORD",
+      "verified_at": "2026-11-13T19:14:51.668753+00:00",
+      "psi_portal_status": "PORTAL_HANDOFF_REQUIRED",
+      "dataset_doi": null,
+      "publication_doi": "10.1016/j.combustflame.2016.02.012",
+      "publication_doi_live_verified": true,
+      "publication_doi_http_status": 200,
+      "publication_resolved_title": "Analysis of CH* concentration and flame heat release rate in laminar coflow diffusion flames under microgravity and normal gravity",
+      "ntrs_search_http_status": 200,
+      "ntrs_live_matches": [],
+      "manifest_file_count": 1,
+      "direct_seed_files_count": 1,
+      "portal_handoff_files_count": 0
+    }
+  ]
+}

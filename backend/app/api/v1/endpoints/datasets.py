@@ -9,6 +9,8 @@ from sqlalchemy import desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
+from app.datasets.analytics import DatasetAnalyticalEngine
+from app.datasets.quality_and_lineage import DatasetQualityAndLineageService
 from app.models.multi_agent import Dataset, DatasetItem, DatasetValidationReport, DatasetVersion
 from app.schemas.common import APIResponseEnvelope
 from app.schemas.multi_agent import (
@@ -303,11 +305,20 @@ async def export_dataset(
     uris = latest_ver.export_uris or {}
     file_path_str = uris.get(fmt)
 
+    if fmt == "parquet" and (not file_path_str or not Path(file_path_str).exists()):
+        raise HTTPException(
+            status_code=501,
+            detail=(
+                "Genuine Apache Parquet binary export is unavailable because the PyArrow engine was not active "
+                "when this dataset version was built. FlameSafe never serves non-Parquet fallback formats as .parquet."
+            ),
+        )
+
     if file_path_str and Path(file_path_str).exists():
         media_map = {
             "json": "application/json",
             "csv": "text/csv",
-            "parquet": "application/octet-stream",
+            "parquet": "application/vnd.apache.parquet",
         }
         p = Path(file_path_str)
         return FileResponse(
@@ -325,3 +336,109 @@ async def export_dataset(
             "format": fmt,
         }
     )
+
+
+@router.get(
+    "/{dataset_id}/coverage",
+    response_model=APIResponseEnvelope[dict[str, Any]],
+    status_code=status.HTTP_200_OK,
+)
+async def get_dataset_coverage_analysis(
+    dataset_id: str,
+    db: AsyncSession = Depends(get_db),
+):
+    """Priority 8: Returns deterministic Dataset Coverage & Quality Analysis breakdown."""
+    res = await db.execute(
+        select(Dataset).where((Dataset.id == dataset_id) | (Dataset.dataset_key == dataset_id))
+    )
+    d = res.scalars().first()
+    if not d or not d.versions:
+        raise HTTPException(status_code=404, detail=f"Dataset '{dataset_id}' not found.")
+    latest_ver = sorted(d.versions, key=lambda v: v.version_number, reverse=True)[0]
+    coverage = DatasetQualityAndLineageService.compute_coverage_analysis(latest_ver)
+    return APIResponseEnvelope(data=coverage)
+
+
+@router.get(
+    "/{dataset_id}/lineage",
+    response_model=APIResponseEnvelope[dict[str, Any]],
+    status_code=status.HTTP_200_OK,
+)
+async def get_dataset_lineage(
+    dataset_id: str,
+    db: AsyncSession = Depends(get_db),
+):
+    """Priority 8: Traces every DatasetItem through ExperimentalRun -> Investigation -> Document -> Page/Section -> Source."""
+    res = await db.execute(
+        select(Dataset).where((Dataset.id == dataset_id) | (Dataset.dataset_key == dataset_id))
+    )
+    d = res.scalars().first()
+    if not d or not d.versions:
+        raise HTTPException(status_code=404, detail=f"Dataset '{dataset_id}' not found.")
+    latest_ver = sorted(d.versions, key=lambda v: v.version_number, reverse=True)[0]
+    lineage = DatasetQualityAndLineageService.trace_lineage(latest_ver)
+    return APIResponseEnvelope(data=lineage)
+
+
+@router.get(
+    "/{dataset_id}/diff",
+    response_model=APIResponseEnvelope[dict[str, Any]],
+    status_code=status.HTTP_200_OK,
+)
+async def get_dataset_version_diff(
+    dataset_id: str,
+    base_version: int | None = Query(None, description="Base version number (defaults to earliest version)"),
+    target_version: int | None = Query(None, description="Target version number (defaults to latest version)"),
+    db: AsyncSession = Depends(get_db),
+):
+    """Priority 8: Computes deterministic record-by-record diff between two versions of a dataset."""
+    res = await db.execute(
+        select(Dataset).where((Dataset.id == dataset_id) | (Dataset.dataset_key == dataset_id))
+    )
+    d = res.scalars().first()
+    if not d or not d.versions:
+        raise HTTPException(status_code=404, detail=f"Dataset '{dataset_id}' not found.")
+    versions = sorted(d.versions, key=lambda v: v.version_number)
+    ver_a = versions[0]
+    ver_b = versions[-1]
+    if base_version is not None:
+        matched_a = [v for v in versions if v.version_number == base_version]
+        if matched_a:
+            ver_a = matched_a[0]
+    if target_version is not None:
+        matched_b = [v for v in versions if v.version_number == target_version]
+        if matched_b:
+            ver_b = matched_b[0]
+    diff = DatasetQualityAndLineageService.compute_version_diff(ver_a, ver_b)
+    return APIResponseEnvelope(data=diff)
+
+
+@router.post(
+    "/{dataset_id}/analytics",
+    response_model=APIResponseEnvelope[dict[str, Any]],
+    status_code=status.HTTP_200_OK,
+)
+async def run_dataset_pandas_analytics(
+    dataset_id: str,
+    payload: dict[str, Any] | None = None,
+    db: AsyncSession = Depends(get_db),
+):
+    """Priority 9: Executes Pandas & NumPy descriptive statistics, group-by, distributions, and unit-compatibility checks."""
+    res = await db.execute(
+        select(Dataset).where((Dataset.id == dataset_id) | (Dataset.dataset_key == dataset_id))
+    )
+    d = res.scalars().first()
+    if not d or not d.versions:
+        raise HTTPException(status_code=404, detail=f"Dataset '{dataset_id}' not found.")
+    latest_ver = sorted(d.versions, key=lambda v: v.version_number, reverse=True)[0]
+    body = payload or {}
+    result = DatasetAnalyticalEngine.run_analytics(
+        version=latest_ver,
+        filter_investigation=body.get("filter_investigation"),
+        filter_parameter=body.get("filter_parameter"),
+        filter_material=body.get("filter_material"),
+        group_by_column=body.get("group_by_column", "investigation_acronym"),
+        compare_parameter=body.get("compare_parameter"),
+    )
+    return APIResponseEnvelope(data=result)
+

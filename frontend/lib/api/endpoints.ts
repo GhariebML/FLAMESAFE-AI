@@ -25,6 +25,10 @@ export const API_ENDPOINTS = {
   DATASET_DETAIL: (id: string) => `/datasets/${id}`,
   DATASET_VERSIONS: (id: string) => `/datasets/${id}/versions`,
   DATASET_QUALITY_REPORT: (id: string) => `/datasets/${id}/quality-report`,
+  DATASET_COVERAGE: (id: string) => `/datasets/${id}/coverage`,
+  DATASET_LINEAGE: (id: string) => `/datasets/${id}/lineage`,
+  DATASET_DIFF: (id: string) => `/datasets/${id}/diff`,
+  DATASET_ANALYTICS: (id: string) => `/datasets/${id}/analytics`,
   DATASET_ANALYZE: (id: string) => `/datasets/${id}/analyze`,
   DATASET_EXPORT: (id: string, format: string) => `/datasets/${id}/export?format=${format}`,
 } as const;

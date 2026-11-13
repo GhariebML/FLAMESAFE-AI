@@ -70,16 +70,14 @@ class ChiefIntelligenceOrchestrator:
         )
         self.db.add(event_row)
 
-        compact_state = {
-            k: v
-            for k, v in full_state.items()
-            if k not in ("extracted_records", "mapped_records", "validated_records")
-        }
+        # Priority 7: Persist full workflow state in AgentCheckpoint (including extracted_records)
+        # so backend restarts can resume from the last completed checkpoint without repeating downloads or extraction.
+        serializable_state = dict(full_state)
         ckpt_row = AgentCheckpoint(
             request_id=request_id,
             thread_id=thread_id,
             step_name=f"{step_index:02d}_{agent_id}",
-            workflow_state=compact_state,
+            workflow_state=serializable_state,
             checkpoint_version=step_index,
         )
         self.db.add(ckpt_row)
@@ -562,19 +560,32 @@ class ChiefIntelligenceOrchestrator:
         self.db.add(event_row)
         await self.db.commit()
 
+        # Priority 7: Load latest persisted AgentCheckpoint from DB to restore full checkpointed state across restarts
+        ckpt_res = await self.db.execute(
+            select(AgentCheckpoint)
+            .where(AgentCheckpoint.request_id == request_id)
+            .order_by(AgentCheckpoint.checkpoint_version.desc())
+        )
+        latest_ckpt = ckpt_res.scalars().first()
+        restored_ckpt_state: dict[str, Any] = dict(latest_ckpt.workflow_state) if latest_ckpt and latest_ckpt.workflow_state else {}
+
         resume_state: ResearchWorkflowState = {
             "request_id": req_row.id,
             "user_query": req_row.user_question,
-            "research_intent": req_row.research_intent or {},
-            "coverage_status": (req_row.existing_data_coverage or {}).get("classification", "PARTIALLY_AVAILABLE"),
-            "psi_candidates": req_row.discovered_investigations or [],
+            "research_intent": req_row.research_intent or restored_ckpt_state.get("research_intent") or {},
+            "coverage_status": (req_row.existing_data_coverage or {}).get(
+                "classification",
+                restored_ckpt_state.get("coverage_status", "PARTIALLY_AVAILABLE"),
+            ),
+            "psi_candidates": req_row.discovered_investigations or restored_ckpt_state.get("psi_candidates") or [],
             "selected_files": current_selected,
+            "extracted_records": restored_ckpt_state.get("extracted_records") or [],
             "require_approval": req_row.require_approval,
             "approval_status": "APPROVED",
             "approval_notes": reason,
             "workflow_status": "ACQUIRING_FILES",
-            "errors": [],
-            "warnings": [],
+            "errors": list(restored_ckpt_state.get("errors") or []),
+            "warnings": list(restored_ckpt_state.get("warnings") or []),
         }
 
         compiled = self.build_graph(thread_id=req_row.thread_id, start_from_acquisition=True)

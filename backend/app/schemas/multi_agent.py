@@ -45,7 +45,11 @@ class ExistingDataCoverageSchema(BaseModel):
 
 class PSICatalogEntrySchema(BaseModel):
     investigation_id: str
+    internal_catalog_id: str = "FS-CAT-UNKNOWN"
+    source_repository: str = "NASA_PSI"
+    source_record_id: Optional[str] = None
     psi_id: str
+    local_aliases: List[str] = Field(default_factory=list)
     acronym: str
     title: str
     research_area: str
@@ -53,10 +57,14 @@ class PSICatalogEntrySchema(BaseModel):
     facility: Optional[str] = None
     gravity_regime: str = "Microgravity (~0g)"
     fuel_types: List[str] = Field(default_factory=list)
+    dataset_doi: Optional[str] = None
+    publication_dois: List[str] = Field(default_factory=list)
     doi: Optional[str] = None
     source_url: str
     available_document_categories: List[str] = Field(default_factory=list)
-    accessibility_status: str = "VERIFIED_LOCAL_AND_PUBLIC_METADATA"
+    record_origin: str = "LOCAL_SEED_RECORD"
+    verification_status: str = "VERIFIED_OFFICIAL_PSI_ID"
+    accessibility_status: str = "DIRECT_DOWNLOAD_AVAILABLE"
     relevance_score: float = 0.0
     last_verified_at: datetime
 
@@ -72,6 +80,8 @@ class FileSelectionBreakdownSchema(BaseModel):
 
 class PSIFileManifestItemSchema(BaseModel):
     file_identifier: str
+    internal_catalog_id: str = "FS-CAT-UNKNOWN"
+    source_record_id: Optional[str] = None
     psi_investigation_id: str
     investigation_acronym: str
     file_name: str
@@ -80,10 +90,14 @@ class PSIFileManifestItemSchema(BaseModel):
     mime_type: str
     file_size_bytes: Optional[int] = None
     source_url: str
+    dataset_doi: Optional[str] = None
+    publication_dois: List[str] = Field(default_factory=list)
     doi: Optional[str] = None
     content_coverage: List[str] = Field(default_factory=list)
     provenance_info: Dict[str, Any] = Field(default_factory=dict)
-    accessibility: str = "DIRECT_VERIFIED_SEED"
+    accessibility: str = "DIRECT_DOWNLOAD_AVAILABLE"
+    acquisition_outcome: str = "DIRECT_DOWNLOAD_AVAILABLE"
+    status_explanation: str = ""
     requires_user_handoff: bool = False
     selected: bool = True
     score_breakdown: Optional[FileSelectionBreakdownSchema] = None
@@ -102,6 +116,8 @@ class AcquisitionJobSchema(BaseModel):
     investigation_acronym: str
     source_url: str
     status: str
+    acquisition_outcome: Optional[str] = None
+    status_explanation: Optional[str] = None
     http_status: Optional[int] = None
     content_type: Optional[str] = None
     bytes_downloaded: int = 0

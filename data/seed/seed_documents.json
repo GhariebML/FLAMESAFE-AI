@@ -4,8 +4,8 @@
     "investigation_id": "e0a1b2c3-d4e5-4f6a-8b9c-0d1e2f3a4b5c",
     "title": "Solid Flammability Boundary Evaluation in Low-Speed Microgravity Flows in BASS",
     "document_type": "Peer-Reviewed Journal Article",
-    "doi": "10.1016/j.proci.2014.05.077",
-    "source_url": "https://doi.org/10.1016/j.proci.2014.05.077",
+    "doi": "10.1007/s12217-024-10106-y",
+    "source_url": "https://doi.org/10.1007/s12217-024-10106-y",
     "file_path": "data/processed/bass_flammability_2014.pdf",
     "chunks": [
       {
@@ -37,8 +37,8 @@
     "investigation_id": "f1b2c3d4-e5f6-4a7b-8c9d-1e2f3a4b5c6d",
     "title": "Large-Scale Flammability Tests in Low Gravity: The Saffire Experiments",
     "document_type": "Peer-Reviewed Journal Article",
-    "doi": "10.2514/1.A34167",
-    "source_url": "https://doi.org/10.2514/1.A34167",
+    "doi": "10.32865/2346/108820",
+    "source_url": "https://doi.org/10.32865/2346/108820",
     "file_path": "data/processed/saffire_large_scale_2018.pdf",
     "chunks": [
       {
@@ -70,8 +70,8 @@
     "investigation_id": "a2c3d4e5-f6a7-4b8c-9d0e-2f3a4b5c6d7e",
     "title": "Low-temperature cool flame combustion of n-heptane droplets in microgravity",
     "document_type": "Peer-Reviewed Journal Article",
-    "doi": "10.1016/j.combustflame.2013.06.023",
-    "source_url": "https://doi.org/10.1016/j.combustflame.2013.06.023",
+    "doi": "10.1016/j.combustflame.2015.01.012",
+    "source_url": "https://doi.org/10.1016/j.combustflame.2015.01.012",
     "file_path": "data/processed/flex_droplet_combustion_2013.pdf",
     "chunks": [
       {
@@ -92,8 +92,8 @@
     "investigation_id": "b3c4d5e6-f7a8-4c9d-0e1f-3a4b5c6d7e8f",
     "title": "Smoke Particle Size Measurements from Microgravity Pyrolysis in the SAME Experiment",
     "document_type": "Conference Paper",
-    "doi": "10.4271/2009-01-2481",
-    "source_url": "https://doi.org/10.4271/2009-01-2481",
+    "doi": "10.2514/6.2013-3433",
+    "source_url": "https://doi.org/10.2514/6.2013-3433",
     "file_path": "data/processed/same_smoke_particle_2009.pdf",
     "chunks": [
       {
@@ -114,8 +114,8 @@
     "investigation_id": "c4d5e6f7-a8b9-4d0e-1f2a-4b5c6d7e8f9a",
     "title": "Structure and Extinction of Gaseous Diffusion Flames in Microgravity: ACME Results",
     "document_type": "Peer-Reviewed Journal Article",
-    "doi": "10.1016/j.combustflame.2018.04.015",
-    "source_url": "https://doi.org/10.1016/j.combustflame.2018.04.015",
+    "doi": "10.1016/j.combustflame.2016.02.012",
+    "source_url": "https://doi.org/10.1016/j.combustflame.2016.02.012",
     "file_path": "data/processed/acme_gaseous_flames_2018.pdf",
     "chunks": [
       {

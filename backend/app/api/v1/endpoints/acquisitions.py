@@ -36,7 +36,8 @@ async def create_acquisition_jobs(
         acronym = meta_entry["investigation_acronym"] if meta_entry else "PSI"
         source_url = meta_entry["source_url"] if meta_entry else "https://psi.nasa.gov/physci/repo"
 
-        acq_status, meta, content_bytes = await PSIDownloadStrategy.acquire_file(file_id)
+        acq_status, meta, content_bytes = await PSIDownloadStrategy.acquire_file(file_id, user_approved=True)
+        is_downloaded = acq_status in ("DOWNLOAD_COMPLETED", "DOWNLOADED")
 
         job_row = AcquisitionJob(
             request_id=payload.request_id,
@@ -44,17 +45,17 @@ async def create_acquisition_jobs(
             investigation_acronym=acronym,
             source_url=source_url,
             status=acq_status,
-            http_status=meta.get("http_status", 200 if acq_status == "DOWNLOADED" else None),
+            http_status=meta.get("http_status", 200 if is_downloaded else None),
             content_type=meta.get("mime_type", "application/json"),
             bytes_downloaded=meta.get("bytes_downloaded", 0),
             sha256_hash=meta.get("sha256_hash"),
             storage_uri=None,
-            handoff_instructions=meta.get("handoff_instructions"),
+            handoff_instructions=meta.get("handoff_instructions") or meta.get("status_explanation"),
             error_message=meta.get("error_message"),
-            completed_at=datetime.now(timezone.utc) if acq_status == "DOWNLOADED" else None,
+            completed_at=datetime.now(timezone.utc) if is_downloaded else None,
         )
 
-        if acq_status == "DOWNLOADED" and content_bytes is not None:
+        if is_downloaded and content_bytes is not None:
             fname = meta_entry["file_name"] if meta_entry else f"{file_id}.json"
             vault_meta = vault.store_raw_asset(
                 file_identifier=file_id,
@@ -104,6 +105,7 @@ async def create_acquisition_jobs(
                 storage_uri=j.storage_uri,
                 retry_count=j.retry_count,
                 handoff_instructions=j.handoff_instructions,
+                status_explanation=j.handoff_instructions or f"Acquisition status: {j.status}",
                 error_message=j.error_message,
                 created_at=j.created_at,
                 completed_at=j.completed_at,

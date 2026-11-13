@@ -112,7 +112,7 @@ class DynamicDatasetEngine:
         extracted_raw: list[dict[str, Any]] = []
         for inv in investigations:
             doc = docs_by_inv.get(inv.id)
-            default_doi = inv.doi or (doc.doi if doc and doc.doi else "10.1016/j.proci.2014.05.077")
+            default_doi = inv.doi or (doc.doi if doc and doc.doi else "10.1007/s12217-024-10106-y")
             default_doc_id = doc.id if doc else None
             source_file = f"{inv.acronym}_Experimental_Runs_and_Measurements.json"
 
@@ -209,7 +209,7 @@ class DynamicDatasetEngine:
                                     "uncertainty": None,
                                     "source_document_id": None,
                                     "source_file_name": asset.get("file_name", p.name),
-                                    "source_doi": inv_entry.get("doi", "10.1016/j.proci.2014.05.077"),
+                                    "source_doi": inv_entry.get("doi", "10.1007/s12217-024-10106-y"),
                                     "source_url": inv_entry.get("source_url", "https://psi.nasa.gov/physci/repo"),
                                     "page_number": 1,
                                     "section_name": "Acquired PSI Seed Table",
@@ -613,7 +613,7 @@ class DynamicDatasetEngine:
                 "provenance_coverage_pct": validation_report["provenance_coverage_pct"],
                 "overall_quality_score": validation_report["overall_quality_score"],
             },
-            export_uris=export_paths,
+            export_uris={k: v for k, v in export_paths.items() if v is not None},
         )
         db.add(dataset_version)
         await db.flush()

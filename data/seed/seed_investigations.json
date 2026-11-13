@@ -1,18 +1,25 @@
 [
   {
     "id": "e0a1b2c3-d4e5-4f6a-8b9c-0d1e2f3a4b5c",
-    "psi_id": "PSI-BASS-01",
+    "psi_id": "PSI-25",
     "acronym": "BASS",
-    "title": "Burning and Suppression of Solids",
+    "title": "Burning and Suppression of Solids (BASS / BASS-II)",
     "research_area": "Solid Fuel Flammability & Suppression",
     "objectives": "Examine the burning and extinction characteristics of a wide variety of fuel samples in microgravity to guide spacecraft material selection and flame suppression strategies.",
-    "description": "The BASS investigation examines burning and extinction characteristics of solid fuel samples in microgravity within the Microgravity Science Glovebox (MSG) on the International Space Station (ISS). By removing buoyant flow, it reveals the fundamental mechanisms of solid material flammability, airflow quench limits, and the effectiveness of gaseous suppressants like nitrogen and CO2.",
-    "doi": "10.1016/j.proci.2014.05.077",
+    "description": "The BASS and BASS-II investigations examine burning and extinction characteristics of solid fuel samples in microgravity within the Microgravity Science Glovebox (MSG) on the International Space Station (ISS). Official NASA PSI record PSI-25 corresponds to BASS-II; initial BASS-I runs are preserved in this local seed with explicit campaign lineage.",
+    "doi": "10.1007/s12217-024-10106-y",
     "source_url": "https://psi.nasa.gov/physci/repo",
     "metadata": {
+      "internal_catalog_id": "FS-CAT-BASS-025",
+      "source_repository": "NASA_PSI",
+      "source_record_id": "PSI-25",
+      "local_aliases": ["PSI-BASS-01", "BASS", "BASS-I", "BASS-II"],
+      "dataset_doi": null,
+      "publication_dois": ["10.1007/s12217-024-10106-y"],
+      "verification_status": "VERIFIED_OFFICIAL_PSI_ID_FOR_BASS_II",
       "facility": "Microgravity Science Glovebox (MSG)",
       "platform": "International Space Station (ISS)",
-      "principal_investigator": "Dr. Paul Ferketi (NASA Glenn Research Center)",
+      "principal_investigator": "Dr. Paul Ferkul / NASA Glenn Research Center",
       "target_environments": ["Spacecraft", "Space Station"],
       "combustion_type": "Solid Fuel Flame Propagation"
     },
@@ -89,8 +96,8 @@
         "id": "doc-bass-001",
         "title": "Solid Flammability Boundary Evaluation in Low-Speed Microgravity Flows in BASS",
         "document_type": "Journal Article",
-        "doi": "10.1016/j.proci.2014.05.077",
-        "source_url": "https://doi.org/10.1016/j.proci.2014.05.077",
+        "doi": "10.1007/s12217-024-10106-y",
+        "source_url": "https://doi.org/10.1007/s12217-024-10106-y",
         "file_path": "data/processed/bass_flammability_2014.pdf"
       }
     ],
@@ -98,7 +105,7 @@
       {
         "source_name": "NASA Physical Sciences Informatics (PSI)",
         "source_url": "https://psi.nasa.gov/physci/repo",
-        "doi": "10.1016/j.proci.2014.05.077",
+        "doi": "10.1007/s12217-024-10106-y",
         "version": "1.0",
         "accessed_at": "2026-10-15T10:00:00Z"
       }
@@ -106,15 +113,22 @@
   },
   {
     "id": "f1b2c3d4-e5f6-4a7b-8c9d-1e2f3a4b5c6d",
-    "psi_id": "PSI-SAFFIRE-01",
+    "psi_id": "PSI-98",
     "acronym": "SAFFIRE",
-    "title": "Spacecraft Fire Safety Experiment (Saffire I, II, III)",
+    "title": "Spacecraft Fire Safety Experiment (Saffire-I / Campaign Series)",
     "research_area": "Large-Scale Spacecraft Fire Safety",
     "objectives": "Assess realistic large-scale material flammability and flame growth in an uninhabited, uncrewed space vehicle at practical spacecraft scales.",
-    "description": "The Saffire experiments conduct intentional large-scale burns aboard uncrewed Cygnus cargo resupply vehicles after departing the International Space Station, before atmospheric reentry. Saffire provides the first practical, vehicle-scale fire safety data for sample sizes up to 0.4 m wide by 1.0 m long, overcoming the physical size limitations of laboratory gloveboxes.",
-    "doi": "10.2514/1.A34167",
+    "description": "The Saffire experiments conduct intentional large-scale burns aboard uncrewed Cygnus cargo resupply vehicles after departing the International Space Station, before atmospheric reentry. Official NASA PSI record PSI-98 corresponds to Saffire-I.",
+    "doi": "10.32865/2346/108820",
     "source_url": "https://psi.nasa.gov/physci/repo",
     "metadata": {
+      "internal_catalog_id": "FS-CAT-SAFFIRE-I-098",
+      "source_repository": "NASA_PSI",
+      "source_record_id": "PSI-98",
+      "local_aliases": ["PSI-SAFFIRE-01", "SAFFIRE", "SAFFIRE-I"],
+      "dataset_doi": null,
+      "publication_dois": ["10.32865/2346/108820"],
+      "verification_status": "VERIFIED_OFFICIAL_PSI_ID",
       "facility": "Saffire Test Module (Autonomous Flow Duct)",
       "platform": "Orbital ATK / Northrop Grumman Cygnus Spacecraft",
       "principal_investigator": "Dr. David L. Urban (NASA Glenn Research Center)",
@@ -194,8 +208,8 @@
         "id": "doc-saf-001",
         "title": "Large-Scale Flammability Tests in Low Gravity: The Saffire Experiments",
         "document_type": "Journal Article",
-        "doi": "10.2514/1.A34167",
-        "source_url": "https://doi.org/10.2514/1.A34167",
+        "doi": "10.32865/2346/108820",
+        "source_url": "https://doi.org/10.32865/2346/108820",
         "file_path": "data/processed/saffire_large_scale_2018.pdf"
       }
     ],
@@ -203,7 +217,7 @@
       {
         "source_name": "NASA Physical Sciences Informatics (PSI)",
         "source_url": "https://psi.nasa.gov/physci/repo",
-        "doi": "10.2514/1.A34167",
+        "doi": "10.32865/2346/108820",
         "version": "1.0",
         "accessed_at": "2026-10-18T14:30:00Z"
       }
@@ -211,15 +225,22 @@
   },
   {
     "id": "a2c3d4e5-f6a7-4b8c-9d0e-2f3a4b5c6d7e",
-    "psi_id": "PSI-FLEX-01",
+    "psi_id": "PSI-69",
     "acronym": "FLEX",
-    "title": "Flame Extinguishment Experiment (FLEX & FLEX-2)",
+    "title": "Flame Extinguishment Experiment (FLEX)",
     "research_area": "Droplet Combustion & Cool Flame Kinetics",
     "objectives": "Study fundamental spherical droplet combustion, radiative extinguishment, and low-temperature chemical reaction regimes (cool flames) in microgravity.",
-    "description": "FLEX explores droplet burning behavior free from buoyant convection. Droplets suspended on SiC filaments burn with spherical symmetry. The discovery of quasi-steady low-temperature 'cool flame' burning after hot-flame extinction revolutionized combustion kinetics and clean fuel models.",
-    "doi": "10.1016/j.combustflame.2013.06.023",
+    "description": "FLEX (official NASA PSI record PSI-69) explores droplet burning behavior free from buoyant convection. Droplets suspended on SiC filaments burn with spherical symmetry, revealing two-stage cool-flame kinetics.",
+    "doi": "10.1016/j.combustflame.2015.01.012",
     "source_url": "https://psi.nasa.gov/physci/repo",
     "metadata": {
+      "internal_catalog_id": "FS-CAT-FLEX-069",
+      "source_repository": "NASA_PSI",
+      "source_record_id": "PSI-69",
+      "local_aliases": ["PSI-FLEX-01", "FLEX"],
+      "dataset_doi": null,
+      "publication_dois": ["10.1016/j.combustflame.2015.01.012"],
+      "verification_status": "VERIFIED_OFFICIAL_PSI_ID",
       "facility": "Combustion Integrated Rack (CIR) - Multi-user Droplet Combustion Apparatus (MDCA)",
       "platform": "International Space Station (ISS)",
       "principal_investigator": "Prof. Forman A. Williams (UC San Diego)",
@@ -269,8 +290,8 @@
         "id": "doc-flex-001",
         "title": "Low-temperature cool flame combustion of n-heptane droplets in microgravity",
         "document_type": "Journal Article",
-        "doi": "10.1016/j.combustflame.2013.06.023",
-        "source_url": "https://doi.org/10.1016/j.combustflame.2013.06.023",
+        "doi": "10.1016/j.combustflame.2015.01.012",
+        "source_url": "https://doi.org/10.1016/j.combustflame.2015.01.012",
         "file_path": "data/processed/flex_droplet_combustion_2013.pdf"
       }
     ],
@@ -278,7 +299,7 @@
       {
         "source_name": "NASA Physical Sciences Informatics (PSI)",
         "source_url": "https://psi.nasa.gov/physci/repo",
-        "doi": "10.1016/j.combustflame.2013.06.023",
+        "doi": "10.1016/j.combustflame.2015.01.012",
         "version": "1.0",
         "accessed_at": "2026-10-20T11:15:00Z"
       }
@@ -286,15 +307,22 @@
   },
   {
     "id": "b3c4d5e6-f7a8-4c9d-0e1f-3a4b5c6d7e8f",
-    "psi_id": "PSI-SAME-01",
+    "psi_id": "PSI-102",
     "acronym": "SAME",
-    "title": "Smoke Aerosol Measurement Experiment (SAME & SAME-R)",
+    "title": "Smoke Aerosol Measurement Experiment (SAME)",
     "research_area": "Smoke Detection & Particle Morphology",
     "objectives": "Characterize smoke particulate size distributions, agglomeration, and optical signatures produced by pre-combustion overheating and combustion in microgravity.",
-    "description": "Smoke particles formed in microgravity agglomerate differently than in normal gravity due to longer residence times and absence of buoyant sorting. SAME measures particle size distributions to optimize early warning fire detectors for space exploration vehicles, preventing false alarms and ensuring timely detection.",
-    "doi": "10.4271/2009-01-2481",
+    "description": "Smoke particles formed in microgravity agglomerate differently than in normal gravity due to longer residence times and absence of buoyant sorting. Official NASA PSI record PSI-102 corresponds to SAME (with companion reflown investigation SAME-R recorded under PSI-101).",
+    "doi": "10.2514/6.2013-3433",
     "source_url": "https://psi.nasa.gov/physci/repo",
     "metadata": {
+      "internal_catalog_id": "FS-CAT-SAME-102",
+      "source_repository": "NASA_PSI",
+      "source_record_id": "PSI-102",
+      "local_aliases": ["PSI-SAME-01", "SAME"],
+      "dataset_doi": null,
+      "publication_dois": ["10.2514/6.2013-3433"],
+      "verification_status": "VERIFIED_OFFICIAL_PSI_ID",
       "facility": "Microgravity Science Glovebox (MSG)",
       "platform": "International Space Station (ISS)",
       "principal_investigator": "Dr. David L. Urban (NASA Glenn Research Center)",
@@ -344,8 +372,8 @@
         "id": "doc-same-001",
         "title": "Smoke Particle Size Measurements from Microgravity Pyrolysis in the SAME Experiment",
         "document_type": "Conference Paper",
-        "doi": "10.4271/2009-01-2481",
-        "source_url": "https://doi.org/10.4271/2009-01-2481",
+        "doi": "10.2514/6.2013-3433",
+        "source_url": "https://doi.org/10.2514/6.2013-3433",
         "file_path": "data/processed/same_smoke_particle_2009.pdf"
       }
     ],
@@ -353,7 +381,7 @@
       {
         "source_name": "NASA Technical Reports Server (NTRS)",
         "source_url": "https://ntrs.nasa.gov/citations/20100005231",
-        "doi": "10.4271/2009-01-2481",
+        "doi": "10.2514/6.2013-3433",
         "version": "1.0",
         "accessed_at": "2026-10-22T09:40:00Z"
       }
@@ -361,15 +389,22 @@
   },
   {
     "id": "c4d5e6f7-a8b9-4d0e-1f2a-4b5c6d7e8f9a",
-    "psi_id": "PSI-ACME-01",
+    "psi_id": "PSI-159",
     "acronym": "ACME",
-    "title": "Advanced Combustion via Microgravity Experiments (ACME / CFI-G)",
+    "title": "Advanced Combustion via Microgravity Experiments — Cool Flames Investigation with Gases (ACME CFI-G)",
     "research_area": "Gaseous Flame Stabilization & Soot Dynamics",
     "objectives": "Investigate fundamental laminar gaseous diffusion flames in microgravity to understand pollutant/soot reduction, flame stability limits, and electric field interactions.",
-    "description": "ACME is an integrated set of five independent gaseous microgravity combustion experiments conducted in the Combustion Integrated Rack (CIR). It isolates gas-phase chemical kinetics from buoyancy-induced strain, providing foundational data for burner efficiency, flame stabilization, and spacecraft fire prevention.",
-    "doi": "10.1016/j.combustflame.2018.04.015",
+    "description": "ACME is a suite of gaseous microgravity combustion experiments in the Combustion Integrated Rack (CIR). Official NASA PSI record PSI-159 corresponds to ACME Cool Flames Investigation with Gases (CFI-G).",
+    "doi": "10.1016/j.combustflame.2016.02.012",
     "source_url": "https://psi.nasa.gov/physci/repo",
     "metadata": {
+      "internal_catalog_id": "FS-CAT-ACME-CFIG-159",
+      "source_repository": "NASA_PSI",
+      "source_record_id": "PSI-159",
+      "local_aliases": ["PSI-ACME-01", "ACME", "CFI-G", "ACME CFI-G"],
+      "dataset_doi": null,
+      "publication_dois": ["10.1016/j.combustflame.2016.02.012"],
+      "verification_status": "VERIFIED_OFFICIAL_PSI_ID",
       "facility": "Combustion Integrated Rack (CIR)",
       "platform": "International Space Station (ISS)",
       "principal_investigator": "Dr. Dennis P. Stocker (NASA Glenn Research Center)",
@@ -413,8 +448,8 @@
         "id": "doc-acme-001",
         "title": "Structure and Extinction of Gaseous Diffusion Flames in Microgravity: ACME Results",
         "document_type": "Journal Article",
-        "doi": "10.1016/j.combustflame.2018.04.015",
-        "source_url": "https://doi.org/10.1016/j.combustflame.2018.04.015",
+        "doi": "10.1016/j.combustflame.2016.02.012",
+        "source_url": "https://doi.org/10.1016/j.combustflame.2016.02.012",
         "file_path": "data/processed/acme_gaseous_flames_2018.pdf"
       }
     ],
@@ -422,7 +457,7 @@
       {
         "source_name": "NASA Physical Sciences Informatics (PSI)",
         "source_url": "https://psi.nasa.gov/physci/repo",
-        "doi": "10.1016/j.combustflame.2018.04.015",
+        "doi": "10.1016/j.combustflame.2016.02.012",
         "version": "1.0",
         "accessed_at": "2026-10-25T16:00:00Z"
       }

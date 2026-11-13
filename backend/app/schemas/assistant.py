@@ -32,4 +32,5 @@ class AssistantQueryResponse(BaseModel):
     ai_provider: str
     model_name: str
     is_mock_provider: bool = False
+    execution_mode: str = "MOCK_DEMO_MODE"
     prompt_version: str = "1.1.0"

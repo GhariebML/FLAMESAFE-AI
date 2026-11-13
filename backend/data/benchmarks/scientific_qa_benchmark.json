@@ -1,0 +1,60 @@
+{
+  "benchmark_version": "2.0.0",
+  "description": "Manually reviewed scientific benchmark for FlameSafe AI RAG retrieval precision, citation accuracy, and out-of-domain abstention.",
+  "cases": [
+    {
+      "case_id": "BENCH-01-BASS-PMMA",
+      "question": "How does forced airflow velocity affect opposed-flow and concurrent flame spread rates and oxygen extinction limits over PMMA in the BASS experiment?",
+      "expected_sufficient_evidence": true,
+      "expected_investigations": ["BASS"],
+      "expected_psi_record_ids": ["PSI-25"],
+      "expected_dois": ["10.1007/s12217-024-10106-y"],
+      "expected_keywords_in_answer": ["BASS", "PMMA"]
+    },
+    {
+      "case_id": "BENCH-02-SAFFIRE-FABRIC",
+      "question": "What did the large-scale Saffire-I orbital vehicle experiment show regarding flame spread rate and cabin pressure response for SIBAL cotton-fiberglass fabric?",
+      "expected_sufficient_evidence": true,
+      "expected_investigations": ["SAFFIRE"],
+      "expected_psi_record_ids": ["PSI-98"],
+      "expected_dois": ["10.32865/2346/108820"],
+      "expected_keywords_in_answer": ["SAFFIRE"]
+    },
+    {
+      "case_id": "BENCH-03-FLEX-COOLFLAME",
+      "question": "Describe radiative extinction and two-stage cool-flame droplet burning rate behavior for n-heptane and methanol in FLEX.",
+      "expected_sufficient_evidence": true,
+      "expected_investigations": ["FLEX"],
+      "expected_psi_record_ids": ["PSI-69"],
+      "expected_dois": ["10.1016/j.combustflame.2015.01.012"],
+      "expected_keywords_in_answer": ["FLEX"]
+    },
+    {
+      "case_id": "BENCH-04-SAME-SMOKE",
+      "question": "How do smoke aerosol particle size distributions from overheated Kapton wire insulation in the SAME microgravity experiment impact photoelectric and ionization smoke detectors?",
+      "expected_sufficient_evidence": true,
+      "expected_investigations": ["SAME"],
+      "expected_psi_record_ids": ["PSI-102"],
+      "expected_dois": ["10.2514/6.2013-3433"],
+      "expected_keywords_in_answer": ["SAME"]
+    },
+    {
+      "case_id": "BENCH-05-ACME-SOOT",
+      "question": "What soot volume fraction and flame height trends were measured in ACME gaseous methane diffusion flames under inert nitrogen dilution?",
+      "expected_sufficient_evidence": true,
+      "expected_investigations": ["ACME"],
+      "expected_psi_record_ids": ["PSI-159"],
+      "expected_dois": ["10.1016/j.combustflame.2016.02.012"],
+      "expected_keywords_in_answer": ["ACME"]
+    },
+    {
+      "case_id": "BENCH-06-OUT-OF-DOMAIN-ABSTENTION",
+      "question": "What is the cryptocurrency staking yield of Ethereum validators on the Solana blockchain?",
+      "expected_sufficient_evidence": false,
+      "expected_investigations": [],
+      "expected_psi_record_ids": [],
+      "expected_dois": [],
+      "expected_keywords_in_answer": ["Insufficient", "abstain"]
+    }
+  ]
+}

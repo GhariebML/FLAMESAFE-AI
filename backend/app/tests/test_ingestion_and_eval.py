@@ -114,7 +114,7 @@ async def test_rag_scientific_evaluation_suite(client):
     bass_data = bass_q.json()["data"]
     assert bass_data["has_sufficient_evidence"] is True
     assert bass_data["is_mock_provider"] is True
-    assert any(c.get("doi") == "10.1016/j.proci.2014.05.077" for c in bass_data["citations"])
+    assert any(c.get("doi") == "10.1007/s12217-024-10106-y" for c in bass_data["citations"])
 
     # 2. SAME smoke particulate detection
     same_q = await client.post(
@@ -124,7 +124,7 @@ async def test_rag_scientific_evaluation_suite(client):
     assert same_q.status_code == 200
     same_data = same_q.json()["data"]
     assert same_data["has_sufficient_evidence"] is True
-    assert any(c.get("doi") == "10.4271/2009-01-2481" for c in same_data["citations"])
+    assert any(c.get("doi") == "10.2514/6.2013-3433" for c in same_data["citations"])
 
     # 3. ACME methane soot and radiative extinction
     acme_q = await client.post(
@@ -134,7 +134,7 @@ async def test_rag_scientific_evaluation_suite(client):
     assert acme_q.status_code == 200
     acme_data = acme_q.json()["data"]
     assert acme_data["has_sufficient_evidence"] is True
-    assert any(c.get("doi") == "10.1016/j.combustflame.2018.04.015" for c in acme_data["citations"])
+    assert any(c.get("doi") == "10.1016/j.combustflame.2016.02.012" for c in acme_data["citations"])
 
     # 4. Out-of-domain abstention
     ood_q = await client.post(

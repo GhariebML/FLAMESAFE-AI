@@ -60,6 +60,13 @@ export default function ResearchIntelligenceWorkspacePage() {
   const [recentRequests, setRecentRequests] = useState<ResearchRequestDetail[]>([]);
   const [datasetDetail, setDatasetDetail] = useState<DatasetDetail | null>(null);
   const [datasetAnalysis, setDatasetAnalysis] = useState<Record<string, any> | null>(null);
+  const [datasetCoverage, setDatasetCoverage] = useState<Record<string, any> | null>(null);
+  const [datasetLineage, setDatasetLineage] = useState<Record<string, any> | null>(null);
+  const [datasetDiff, setDatasetDiff] = useState<Record<string, any> | null>(null);
+  const [pandasAnalytics, setPandasAnalytics] = useState<Record<string, any> | null>(null);
+  const [analyticsGroupBy, setAnalyticsGroupBy] = useState<string>("investigation_acronym");
+  const [analyticsFilterParam, setAnalyticsFilterParam] = useState<string>("");
+  const [activeDatasetTab, setActiveDatasetTab] = useState<"records" | "coverage" | "lineage" | "analytics" | "diff">("records");
 
   // Editable intent fields for Panel B
   const [editFuel, setEditFuel] = useState<string>("Solid Polymer (PMMA)");
@@ -71,12 +78,20 @@ export default function ResearchIntelligenceWorkspacePage() {
 
   const loadDatasetForRequest = useCallback(async (datasetId: string) => {
     try {
-      const [detail, analysis] = await Promise.all([
+      const [detail, analysis, coverage, lineage, diff, pandasRes] = await Promise.all([
         apiClient.getDatasetDetail(datasetId),
         apiClient.analyzeDataset(datasetId),
+        apiClient.getDatasetCoverage(datasetId).catch(() => null),
+        apiClient.getDatasetLineage(datasetId).catch(() => null),
+        apiClient.getDatasetDiff(datasetId).catch(() => null),
+        apiClient.runDatasetAnalytics(datasetId, { group_by_column: "investigation_acronym" }).catch(() => null),
       ]);
       setDatasetDetail(detail);
       setDatasetAnalysis(analysis);
+      setDatasetCoverage(coverage);
+      setDatasetLineage(lineage);
+      setDatasetDiff(diff);
+      setPandasAnalytics(pandasRes);
     } catch {
       // Non-fatal if dataset not yet constructed (e.g., AWAITING_APPROVAL)
     }
@@ -588,17 +603,28 @@ export default function ResearchIntelligenceWorkspacePage() {
           <div className="space-y-3 max-h-[420px] overflow-y-auto pr-1">
             {(activeRequest?.discovered_investigations || []).map((inv) => (
               <div
-                key={inv.psi_id}
+                key={inv.internal_catalog_id || inv.psi_id}
                 className="p-3.5 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/50 space-y-2 text-xs"
               >
-                <div className="flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-2">
+                <div className="flex items-center justify-between gap-2 flex-wrap">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-mono font-bold text-sm text-orange-600 dark:text-orange-400">
                       {inv.acronym}
                     </span>
-                    <span className="text-[11px] font-mono text-slate-500">
-                      ({inv.psi_id})
-                    </span>
+                    {inv.source_record_id ? (
+                      <span className="px-2 py-0.5 rounded text-[10px] font-mono font-semibold bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30">
+                        Official NASA PSI: {inv.source_record_id}
+                      </span>
+                    ) : (
+                      <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-amber-500/15 text-amber-700 dark:text-amber-400 border border-amber-500/30">
+                        Unverified Standalone PSI ID
+                      </span>
+                    )}
+                    {inv.internal_catalog_id && (
+                      <span className="text-[10px] font-mono text-slate-500">
+                        Catalog: {inv.internal_catalog_id}
+                      </span>
+                    )}
                   </div>
                   <span className="px-2 py-0.5 rounded-md font-mono font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
                     Score: {inv.relevance_score}%
@@ -611,10 +637,12 @@ export default function ResearchIntelligenceWorkspacePage() {
                   {inv.description}
                 </p>
                 <div className="flex flex-wrap items-center justify-between gap-2 pt-1 text-[11px] text-slate-500">
-                  <span>Facility: {inv.facility || "ISS"}</span>
+                  <span>
+                    Facility: {inv.facility || "ISS"} | Origin: {inv.record_origin || "LOCAL_SEED_RECORD"}
+                  </span>
                   {inv.doi ? (
                     <span className="font-mono text-sky-600 dark:text-sky-400">
-                      DOI: {inv.doi}
+                      Paper DOI: {inv.doi}
                     </span>
                   ) : (
                     <span className="text-amber-600 dark:text-amber-400">
@@ -716,6 +744,16 @@ export default function ResearchIntelligenceWorkspacePage() {
                   <p className="text-[11px] text-slate-600 dark:text-slate-300">
                     {file.selection_rationale}
                   </p>
+                  <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-slate-200/50 dark:border-slate-800/60 text-[10px]">
+                    <span className="font-mono font-semibold text-sky-600 dark:text-sky-400">
+                      Governance: {file.acquisition_outcome || file.accessibility}
+                    </span>
+                    {file.governance_explanation && (
+                      <span className="text-slate-500 dark:text-slate-400 truncate max-w-md" title={file.governance_explanation}>
+                        {file.governance_explanation}
+                      </span>
+                    )}
+                  </div>
                 </div>
               );
             })}
@@ -806,61 +844,306 @@ export default function ResearchIntelligenceWorkspacePage() {
             </div>
           )}
 
-          {/* CANONICAL MEASUREMENT ITEMS TABLE */}
-          <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800">
-            <table className="w-full text-left border-collapse text-xs">
-              <thead>
-                <tr className="bg-slate-100/80 dark:bg-slate-950 text-slate-600 dark:text-slate-400 border-b border-slate-200 dark:border-slate-800">
-                  <th className="py-2.5 px-3 font-semibold">Campaign</th>
-                  <th className="py-2.5 px-3 font-semibold">Run Code</th>
-                  <th className="py-2.5 px-3 font-semibold">Fuel / Material</th>
-                  <th className="py-2.5 px-3 font-semibold">Parameter</th>
-                  <th className="py-2.5 px-3 font-semibold">Normalized Value</th>
-                  <th className="py-2.5 px-3 font-semibold">O2 / Pressure / Flow</th>
-                  <th className="py-2.5 px-3 font-semibold">Provenance DOI</th>
-                  <th className="py-2.5 px-3 font-semibold">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-200/60 dark:divide-slate-800/60">
-                {(datasetDetail.items || []).map((item) => (
-                  <tr
-                    key={item.id}
-                    className="hover:bg-slate-50/80 dark:hover:bg-slate-900/50 transition"
-                  >
-                    <td className="py-2.5 px-3 font-mono font-bold text-orange-600 dark:text-orange-400">
-                      {item.investigation_acronym}
-                    </td>
-                    <td className="py-2.5 px-3 font-mono text-slate-800 dark:text-slate-200">
-                      {item.run_name}
-                    </td>
-                    <td className="py-2.5 px-3 text-slate-700 dark:text-slate-300">
-                      {item.fuel_type}
-                    </td>
-                    <td className="py-2.5 px-3 font-mono text-slate-900 dark:text-white">
-                      {item.parameter_name}
-                    </td>
-                    <td className="py-2.5 px-3 font-mono font-semibold text-emerald-600 dark:text-emerald-400">
-                      {item.normalized_value !== null && item.normalized_value !== undefined
-                        ? `${item.normalized_value} ${item.normalized_unit}`
-                        : "NULL"}
-                    </td>
-                    <td className="py-2.5 px-3 font-mono text-[11px] text-slate-600 dark:text-slate-400">
-                      {item.oxygen_pct ?? "—"}% O2 | {item.pressure_kpa ?? "—"} kPa |{" "}
-                      {item.airflow_cm_s ?? "—"} cm/s
-                    </td>
-                    <td className="py-2.5 px-3 font-mono text-[11px] text-sky-600 dark:text-sky-400">
-                      {item.source_doi || "NASA-PSI"}
-                    </td>
-                    <td className="py-2.5 px-3">
-                      <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
-                        {item.validation_status}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          {/* WORKSPACE TABS: RECORDS | COVERAGE | LINEAGE | PANDAS ANALYTICS | VERSION DIFF */}
+          <div className="flex flex-wrap items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-3">
+            {(
+              [
+                { key: "records", label: "Canonical Records Table" },
+                { key: "coverage", label: "Quality & Coverage Analysis" },
+                { key: "lineage", label: "6-Hop Provenance Lineage Explorer" },
+                { key: "analytics", label: "Pandas / NumPy Analytical Workspace" },
+                { key: "diff", label: "Dataset Version Diff" },
+              ] as const
+            ).map((tab) => (
+              <button
+                key={tab.key}
+                type="button"
+                onClick={() => setActiveDatasetTab(tab.key)}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer ${
+                  activeDatasetTab === tab.key
+                    ? "bg-orange-500 text-white shadow-sm"
+                    : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
           </div>
+
+          {/* TAB 1: CANONICAL MEASUREMENT ITEMS TABLE */}
+          {activeDatasetTab === "records" && (
+            <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800">
+              <table className="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr className="bg-slate-100/80 dark:bg-slate-950 text-slate-600 dark:text-slate-400 border-b border-slate-200 dark:border-slate-800">
+                    <th className="py-2.5 px-3 font-semibold">Campaign</th>
+                    <th className="py-2.5 px-3 font-semibold">Run Code</th>
+                    <th className="py-2.5 px-3 font-semibold">Fuel / Material</th>
+                    <th className="py-2.5 px-3 font-semibold">Parameter</th>
+                    <th className="py-2.5 px-3 font-semibold">Normalized Value</th>
+                    <th className="py-2.5 px-3 font-semibold">O2 / Pressure / Flow</th>
+                    <th className="py-2.5 px-3 font-semibold">Provenance DOI</th>
+                    <th className="py-2.5 px-3 font-semibold">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-200/60 dark:divide-slate-800/60">
+                  {(datasetDetail.items || []).map((item) => (
+                    <tr
+                      key={item.id}
+                      className="hover:bg-slate-50/80 dark:hover:bg-slate-900/50 transition"
+                    >
+                      <td className="py-2.5 px-3 font-mono font-bold text-orange-600 dark:text-orange-400">
+                        {item.investigation_acronym}
+                      </td>
+                      <td className="py-2.5 px-3 font-mono text-slate-800 dark:text-slate-200">
+                        {item.run_name}
+                      </td>
+                      <td className="py-2.5 px-3 text-slate-700 dark:text-slate-300">
+                        {item.fuel_type}
+                      </td>
+                      <td className="py-2.5 px-3 font-mono text-slate-900 dark:text-white">
+                        {item.parameter_name}
+                      </td>
+                      <td className="py-2.5 px-3 font-mono font-semibold text-emerald-600 dark:text-emerald-400">
+                        {item.normalized_value !== null && item.normalized_value !== undefined
+                          ? `${item.normalized_value} ${item.normalized_unit}`
+                          : "NULL"}
+                      </td>
+                      <td className="py-2.5 px-3 font-mono text-[11px] text-slate-600 dark:text-slate-400">
+                        {item.oxygen_pct ?? "—"}% O2 | {item.pressure_kpa ?? "—"} kPa |{" "}
+                        {item.airflow_cm_s ?? "—"} cm/s
+                      </td>
+                      <td className="py-2.5 px-3 font-mono text-[11px] text-sky-600 dark:text-sky-400">
+                        {item.source_doi || "NASA-PSI"}
+                      </td>
+                      <td className="py-2.5 px-3">
+                        <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                          {item.validation_status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {/* TAB 2: COVERAGE & QUALITY ANALYSIS (PRIORITY 8) */}
+          {activeDatasetTab === "coverage" && datasetCoverage && (
+            <div className="space-y-4 text-xs">
+              <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 font-mono text-[11px] text-slate-600 dark:text-slate-300">
+                Formula: {datasetCoverage.quality_formula}
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                {[
+                  { label: "Composite Quality Score", val: `${datasetCoverage.overall_quality_score}%` },
+                  { label: "Field Completeness", val: `${datasetCoverage.field_completeness}%` },
+                  { label: "Measurement Coverage", val: `${datasetCoverage.measurement_coverage}%` },
+                  { label: "Source Provenance Coverage", val: `${datasetCoverage.source_provenance_coverage}%` },
+                  { label: "Verified DOI Availability", val: `${datasetCoverage.doi_availability}%` },
+                  { label: "Page / Section Ref Coverage", val: `${datasetCoverage.page_reference_coverage}%` },
+                  { label: "SI Unit Consistency", val: `${datasetCoverage.unit_consistency}%` },
+                  { label: "Duplicate / Missing Rate", val: `${datasetCoverage.duplicate_rate}% / ${datasetCoverage.missing_measurement_rate}%` },
+                ].map((m) => (
+                  <div
+                    key={m.label}
+                    className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40"
+                  >
+                    <div className="text-slate-500">{m.label}</div>
+                    <div className="font-mono font-bold text-sm text-slate-900 dark:text-white mt-1">
+                      {m.val}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* TAB 3: 6-HOP LINEAGE EXPLORER (PRIORITY 8) */}
+          {activeDatasetTab === "lineage" && datasetLineage && (
+            <div className="space-y-3 max-h-[420px] overflow-y-auto pr-1 text-xs">
+              {(datasetLineage.lineage_items || []).map((node: any) => {
+                const c = node.provenance_chain || {};
+                return (
+                  <div
+                    key={node.item_id}
+                    className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/50 space-y-2"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-mono font-bold text-orange-600 dark:text-orange-400">
+                        Row #{node.row_index}: {node.parameter_name} = {node.normalized_value} {node.normalized_unit}
+                      </span>
+                      <span className="font-mono text-[11px] text-emerald-600 dark:text-emerald-400">
+                        {c.step_3_investigation?.verification_status}
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-2 text-[11px] font-mono">
+                      <div className="p-2 rounded bg-white dark:bg-slate-900 border border-slate-200/70 dark:border-slate-800">
+                        <div className="text-slate-400">1. Dataset Item</div>
+                        <div className="truncate">{c.step_1_dataset_item?.version_tag} ({c.step_1_dataset_item?.conversion_formula})</div>
+                      </div>
+                      <div className="p-2 rounded bg-white dark:bg-slate-900 border border-slate-200/70 dark:border-slate-800">
+                        <div className="text-slate-400">2. Exp. Run</div>
+                        <div className="truncate">{c.step_2_experimental_run?.run_name} ({c.step_2_experimental_run?.fuel_type})</div>
+                      </div>
+                      <div className="p-2 rounded bg-white dark:bg-slate-900 border border-slate-200/70 dark:border-slate-800">
+                        <div className="text-slate-400">3. Investigation</div>
+                        <div className="truncate">
+                          {c.step_3_investigation?.acronym} | Official: {c.step_3_investigation?.source_record_id || "Unverified"}
+                        </div>
+                      </div>
+                      <div className="p-2 rounded bg-white dark:bg-slate-900 border border-slate-200/70 dark:border-slate-800">
+                        <div className="text-slate-400">4. Publication DOI</div>
+                        <div className="truncate text-sky-600 dark:text-sky-400">{c.step_4_source_document?.source_doi || "N/A"}</div>
+                      </div>
+                      <div className="p-2 rounded bg-white dark:bg-slate-900 border border-slate-200/70 dark:border-slate-800">
+                        <div className="text-slate-400">5. Page / Section</div>
+                        <div className="truncate">p.{c.step_5_location_reference?.page_number ?? "—"} {c.step_5_location_reference?.section_name}</div>
+                      </div>
+                      <div className="p-2 rounded bg-white dark:bg-slate-900 border border-slate-200/70 dark:border-slate-800">
+                        <div className="text-slate-400">6. Original Source</div>
+                        <div className="truncate">{c.step_6_original_source?.repository}</div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* TAB 4: PANDAS / NUMPY ANALYTICAL DATA WORKSPACE (PRIORITY 9) */}
+          {activeDatasetTab === "analytics" && pandasAnalytics && (
+            <div className="space-y-4 text-xs">
+              <div className="p-3.5 rounded-xl border border-amber-500/30 bg-amber-500/5 text-amber-700 dark:text-amber-300 font-medium">
+                {pandasAnalytics.causality_disclaimer}
+              </div>
+
+              <div className="flex flex-wrap items-center gap-3">
+                <label className="flex items-center gap-2">
+                  <span className="text-slate-500">Group By:</span>
+                  <select
+                    value={analyticsGroupBy}
+                    onChange={async (e) => {
+                      const col = e.target.value;
+                      setAnalyticsGroupBy(col);
+                      if (datasetDetail) {
+                        const res = await apiClient.runDatasetAnalytics(datasetDetail.id, {
+                          group_by_column: col,
+                          filter_parameter: analyticsFilterParam || undefined,
+                        });
+                        setPandasAnalytics(res);
+                      }
+                    }}
+                    className="rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-2.5 py-1"
+                  >
+                    <option value="investigation_acronym">Investigation Campaign</option>
+                    <option value="fuel_type">Fuel / Material Type</option>
+                    <option value="validation_status">Validation Status</option>
+                  </select>
+                </label>
+
+                <label className="flex items-center gap-2">
+                  <span className="text-slate-500">Filter Parameter:</span>
+                  <input
+                    type="text"
+                    placeholder="e.g. flame_spread_rate"
+                    value={analyticsFilterParam}
+                    onChange={(e) => setAnalyticsFilterParam(e.target.value)}
+                    onBlur={async () => {
+                      if (datasetDetail) {
+                        const res = await apiClient.runDatasetAnalytics(datasetDetail.id, {
+                          group_by_column: analyticsGroupBy,
+                          filter_parameter: analyticsFilterParam || undefined,
+                        });
+                        setPandasAnalytics(res);
+                      }
+                    }}
+                    className="rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-2.5 py-1 font-mono"
+                  />
+                </label>
+
+                <span className="px-2.5 py-1 rounded bg-sky-500/10 text-sky-600 dark:text-sky-400 font-mono">
+                  Unit Check: {pandasAnalytics.unit_comparison_check?.status}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <div className="font-bold text-slate-900 dark:text-white">
+                    Unit-Partitioned Descriptive Statistics ({pandasAnalytics.metric_classification})
+                  </div>
+                  {(pandasAnalytics.descriptive_statistics || []).map((st: any, idx: number) => (
+                    <div
+                      key={idx}
+                      className="p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/50 space-y-1 font-mono"
+                    >
+                      <div className="font-bold text-orange-600 dark:text-orange-400">
+                        {st.parameter_name} [{st.normalized_unit}] (n={st.sample_count})
+                      </div>
+                      <div>
+                        Mean={st.mean} | Std={st.std} | Min={st.min} | Median={st.median} | IQR={st.iqr} | Max={st.max}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="space-y-2">
+                  <div className="font-bold text-slate-900 dark:text-white">
+                    Group-By Summary ({pandasAnalytics.inference_classification})
+                  </div>
+                  {(pandasAnalytics.group_by_summary || []).map((g: any, idx: number) => (
+                    <div
+                      key={idx}
+                      className="p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/50 font-mono flex items-center justify-between"
+                    >
+                      <span>
+                        <strong>{g.group_value}</strong> — {g.parameter_name} ({g.normalized_unit})
+                      </span>
+                      <span className="text-emerald-600 dark:text-emerald-400">
+                        mean={g.mean} (n={g.count})
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 5: DATASET VERSION DIFF (PRIORITY 8) */}
+          {activeDatasetTab === "diff" && datasetDiff && (
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 text-xs font-mono">
+              <div className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/50">
+                <div className="text-slate-500">Compared Versions</div>
+                <div className="font-bold text-slate-900 dark:text-white mt-1">
+                  {datasetDiff.base_version} → {datasetDiff.target_version}
+                </div>
+              </div>
+              <div className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/50">
+                <div className="text-slate-500">Added Records</div>
+                <div className="font-bold text-emerald-600 dark:text-emerald-400 mt-1">
+                  +{datasetDiff.added_count}
+                </div>
+              </div>
+              <div className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/50">
+                <div className="text-slate-500">Removed Records</div>
+                <div className="font-bold text-red-600 dark:text-red-400 mt-1">
+                  -{datasetDiff.removed_count}
+                </div>
+              </div>
+              <div className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/50">
+                <div className="text-slate-500">Modified Values</div>
+                <div className="font-bold text-amber-600 dark:text-amber-400 mt-1">
+                  ~{datasetDiff.modified_count}
+                </div>
+              </div>
+              <div className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/50">
+                <div className="text-slate-500">Unchanged / Quality Δ</div>
+                <div className="font-bold text-sky-600 dark:text-sky-400 mt-1">
+                  {datasetDiff.unchanged_count} ({datasetDiff.quality_score_delta >= 0 ? "+" : ""}{datasetDiff.quality_score_delta}%)
+                </div>
+              </div>
+            </div>
+          )}
         </section>
       )}
 

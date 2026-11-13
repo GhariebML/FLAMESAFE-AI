@@ -307,9 +307,15 @@ class MultiAgentNodes:
     # AGENT 06 — Scientific Acquisition Agent
     # ------------------------------------------------------------------
     async def agent_06_file_acquisition(self, state: ResearchWorkflowState) -> dict[str, Any]:
-        """Acquires approved scientific files with allowlist validation, SSRF protection, and SHA-256 deduplication."""
+        """Acquires approved scientific files with allowlist validation, SSRF protection, and SHA-256 deduplication.
+        Priority 4 & Priority 7:
+        - Enforces explicit Download Governance outcomes (DOWNLOAD_COMPLETED, PORTAL_HANDOFF_REQUIRED,
+          USER_APPROVAL_REQUIRED, ACCESS_RESTRICTED, INVALID_SOURCE, DOWNLOAD_FAILED).
+        - Idempotent across checkpoint restarts: never repeats already-completed downloads for the request.
+        """
         selected_files = state.get("selected_files", [])
         request_id = state.get("request_id")
+        user_approved = state.get("approval_status") == "APPROVED" or not state.get("require_approval", False)
         acquisition_jobs: list[dict[str, Any]] = []
         acquired_assets: list[dict[str, Any]] = []
         warnings = list(state.get("warnings", []))
@@ -319,7 +325,55 @@ class MultiAgentNodes:
             acronym = f.get("investigation_acronym", "PSI")
             source_url = f.get("source_url", "https://psi.nasa.gov/physci/repo")
 
-            status, meta, content_bytes = await PSIDownloadStrategy.acquire_file(file_id)
+            # Priority 7: Check if this file_identifier was already downloaded for this request_id
+            if request_id:
+                existing_job_res = await self.db.execute(
+                    select(AcquisitionJob).where(
+                        AcquisitionJob.request_id == request_id,
+                        AcquisitionJob.file_identifier == file_id,
+                        AcquisitionJob.status.in_(["DOWNLOAD_COMPLETED", "DOWNLOADED"]),
+                    )
+                )
+                existing_job = existing_job_res.scalars().first()
+                if existing_job and existing_job.sha256_hash:
+                    asset_res = await self.db.execute(
+                        select(FileAsset).where(FileAsset.sha256_hash == existing_job.sha256_hash)
+                    )
+                    existing_asset = asset_res.scalars().first()
+                    if existing_asset:
+                        acquired_assets.append(
+                            {
+                                "asset_id": existing_asset.id,
+                                "file_identifier": file_id,
+                                "investigation_acronym": acronym,
+                                "file_name": existing_asset.file_name,
+                                "storage_uri": existing_asset.storage_uri,
+                                "sha256_hash": existing_asset.sha256_hash,
+                                "file_size_bytes": existing_asset.file_size_bytes,
+                                "reused_from_checkpoint": True,
+                            }
+                        )
+                        acquisition_jobs.append(
+                            {
+                                "id": existing_job.id,
+                                "file_identifier": file_id,
+                                "investigation_acronym": acronym,
+                                "status": existing_job.status,
+                                "bytes_downloaded": existing_job.bytes_downloaded,
+                                "sha256_hash": existing_job.sha256_hash,
+                                "storage_uri": existing_job.storage_uri,
+                                "handoff_instructions": existing_job.handoff_instructions,
+                                "status_explanation": "Reused completed download from durable checkpoint without re-downloading.",
+                                "reused_from_checkpoint": True,
+                            }
+                        )
+                        continue
+
+            status, meta, content_bytes = await PSIDownloadStrategy.acquire_file(
+                file_id,
+                user_approved=user_approved,
+            )
+            is_downloaded = status in ("DOWNLOAD_COMPLETED", "DOWNLOADED")
 
             job_row = AcquisitionJob(
                 request_id=request_id,
@@ -327,17 +381,17 @@ class MultiAgentNodes:
                 investigation_acronym=acronym,
                 source_url=source_url,
                 status=status,
-                http_status=meta.get("http_status", 200 if status == "DOWNLOADED" else None),
+                http_status=meta.get("http_status", 200 if is_downloaded else None),
                 content_type=meta.get("mime_type", f.get("mime_type", "application/json")),
                 bytes_downloaded=meta.get("bytes_downloaded", 0),
                 sha256_hash=meta.get("sha256_hash"),
                 storage_uri=None,
-                handoff_instructions=meta.get("handoff_instructions"),
+                handoff_instructions=meta.get("handoff_instructions") or meta.get("status_explanation"),
                 error_message=meta.get("error_message"),
-                completed_at=datetime.now(timezone.utc) if status == "DOWNLOADED" else None,
+                completed_at=datetime.now(timezone.utc) if is_downloaded else None,
             )
 
-            if status == "DOWNLOADED" and content_bytes is not None:
+            if is_downloaded and content_bytes is not None:
                 vault_meta = self.vault.store_raw_asset(
                     file_identifier=file_id,
                     filename=PSISourceValidator.sanitize_filename(f.get("file_name", f"{file_id}.json")),
@@ -365,6 +419,8 @@ class MultiAgentNodes:
                         file_version="1.0.0",
                         metadata_payload={
                             "psi_investigation_id": f.get("psi_investigation_id"),
+                            "source_record_id": f.get("source_record_id"),
+                            "internal_catalog_id": f.get("internal_catalog_id"),
                             "score_breakdown": f.get("score_breakdown"),
                         },
                     )
@@ -380,10 +436,15 @@ class MultiAgentNodes:
                         "storage_uri": asset_row.storage_uri,
                         "sha256_hash": asset_row.sha256_hash,
                         "file_size_bytes": asset_row.file_size_bytes,
+                        "reused_from_checkpoint": False,
                     }
                 )
-            elif status == "USER_HANDOFF_REQUIRED":
-                warnings.append(meta.get("handoff_instructions", f"User portal handoff required for {file_id}."))
+            elif status in ("PORTAL_HANDOFF_REQUIRED", "USER_HANDOFF_REQUIRED", "ACCESS_RESTRICTED", "USER_APPROVAL_REQUIRED"):
+                warnings.append(
+                    meta.get("handoff_instructions")
+                    or meta.get("status_explanation")
+                    or f"Governance status {status} for {file_id}."
+                )
 
             self.db.add(job_row)
             await self.db.flush()
@@ -397,6 +458,8 @@ class MultiAgentNodes:
                     "sha256_hash": job_row.sha256_hash,
                     "storage_uri": job_row.storage_uri,
                     "handoff_instructions": job_row.handoff_instructions,
+                    "status_explanation": meta.get("status_explanation") or job_row.handoff_instructions,
+                    "reused_from_checkpoint": False,
                 }
             )
 
@@ -412,7 +475,16 @@ class MultiAgentNodes:
     # AGENT 07 — Scientific Extraction Agent
     # ------------------------------------------------------------------
     async def agent_07_scientific_extraction(self, state: ResearchWorkflowState) -> dict[str, Any]:
-        """Extracts experimental runs, measurements, and metadata from verified DB records and acquired files."""
+        """Extracts experimental runs, measurements, and metadata from verified DB records and acquired files.
+        Priority 7: If extracted_records already exist in restored checkpoint state, does not repeat extraction.
+        """
+        existing_extracted = state.get("extracted_records")
+        if existing_extracted and len(existing_extracted) > 0:
+            return {
+                "extracted_records": existing_extracted,
+                "workflow_status": "MAPPING_SCHEMA",
+            }
+
         intent = state.get("research_intent", {})
         target_campaigns = intent.get("target_investigations", [])
         acquired_assets = state.get("acquired_assets", [])
@@ -586,6 +658,7 @@ class MultiAgentNodes:
             "ai_provider": rag_resp.ai_provider,
             "model_name": rag_resp.model_name,
             "is_mock_provider": rag_resp.is_mock_provider,
+            "execution_mode": rag_resp.execution_mode,
             "dataset_id": ds_summary.get("dataset_id"),
             "dataset_code": ds_summary.get("dataset_code"),
             "dataset_version": ds_summary.get("version_tag"),

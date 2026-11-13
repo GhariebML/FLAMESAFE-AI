@@ -1,4 +1,4 @@
-from typing import List, Dict, Any
+from typing import Any
 
 
 class ScientificTextChunker:
@@ -16,13 +16,13 @@ class ScientificTextChunker:
         document_id: str,
         section_name: str = "General",
         page_number: int = 1,
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         if not text:
             return []
 
         paragraphs = [p.strip() for p in text.split("\n\n") if p.strip()]
         chunks = []
-        current_chunk: List[str] = []
+        current_chunk: list[str] = []
         current_len = 0
 
         for p in paragraphs:

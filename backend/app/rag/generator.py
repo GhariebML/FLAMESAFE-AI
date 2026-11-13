@@ -1,21 +1,42 @@
 from abc import ABC, abstractmethod
-from typing import List, Dict, Any
+from typing import Any
+
 import httpx
+
 from app.core.config import settings
 from app.core.logging import logger
-from app.rag.prompts import build_rag_user_prompt
+
+
+class LLMProviderError(Exception):
+    """Base exception for LLM provider failures."""
+
+
+class GeminiAuthenticationError(LLMProviderError):
+    """Raised when Gemini API authentication or authorization fails (HTTP 401/403)."""
+
+
+class GeminiRateLimitError(LLMProviderError):
+    """Raised when Gemini API rate limits are exceeded (HTTP 429)."""
+
+
+class GeminiAPIError(LLMProviderError):
+    """Raised when Gemini API returns a server or protocol error (HTTP 5xx, safety blocks, bad payload)."""
+
+
+class GeminiTimeoutError(LLMProviderError):
+    """Raised when Gemini API request times out."""
+
+
+class GeminiNetworkError(LLMProviderError):
+    """Raised when Gemini API network connection fails."""
 
 
 class BaseLLMProvider(ABC):
-    provider_name: str = "base"
-    model_name: str = "unknown"
-    is_mock: bool = False
-
     @abstractmethod
     async def generate_response(
         self,
         prompt: str,
-        context_chunks: List[Dict[str, Any]],
+        context_chunks: list[dict[str, Any]],
         system_instructions: str,
     ) -> str:
         pass
@@ -23,20 +44,17 @@ class BaseLLMProvider(ABC):
 
 class MockLLMProvider(BaseLLMProvider):
     """
-    Offline evidence-grounded response synthesizer for development and automated testing.
-    Synthesizes structured scientific responses strictly from retrieved NASA context chunks.
-    Always sets is_mock = True so API consumers can visibly identify demo/mock mode.
+    Offline evidence-grounded response generator.
+    Synthesizes scientific responses strictly from the provided context chunks.
     """
-
-    def __init__(self):
-        self.provider_name = "mock"
-        self.model_name = "deterministic-grounded-synthesizer-v1"
-        self.is_mock = True
+    provider_name: str = "mock"
+    model_name: str = "mock-llm-v1"
+    is_mock: bool = True
 
     async def generate_response(
         self,
         prompt: str,
-        context_chunks: List[Dict[str, Any]],
+        context_chunks: list[dict[str, Any]],
         system_instructions: str,
     ) -> str:
         if not context_chunks:
@@ -45,83 +63,202 @@ class MockLLMProvider(BaseLLMProvider):
                 "The FlameSafe AI system abstains from generating unsupported conclusions."
             )
 
-        evidence_points = []
-        investigations_referenced = []
+        citations_text = []
         for i, c in enumerate(context_chunks, start=1):
             acronym = c.get("acronym", "NASA-PSI")
-            if acronym not in investigations_referenced:
-                investigations_referenced.append(acronym)
-            sec = c.get("section_name", "Technical Section")
-            page = c.get("page_number")
-            page_str = f", p. {page}" if page else ""
-            excerpt = c.get("chunk_text", "").strip()
-            evidence_points.append(f"[{i}] {acronym} ({sec}{page_str}): {excerpt}")
+            sec = c.get("section_name", "Report")
+            citations_text.append(f"[{i}] {acronym} ({sec}): {c.get('chunk_text', '')[:160]}...")
 
-        inv_list_str = ", ".join(investigations_referenced)
-        synthesis_lines = [
-            f"Based on retrieved NASA microgravity combustion evidence from {inv_list_str}:",
-            "",
-            *evidence_points,
-            "",
-            (
-                "Scientific Interpretation & Boundaries: The retrieved empirical observations demonstrate "
-                "that in orbital microgravity (~10^-6 g), buoyant natural convection is eliminated, making forced "
-                "ventilation velocity, oxygen mole fraction, and radiative heat loss the primary controlling parameters "
-                "for ignition, flame spread, and extinction."
-            ),
-        ]
-        return "\n".join(synthesis_lines)
+        context_summary = " ".join([c.get("chunk_text", "") for c in context_chunks])
+        # Formulate grounded synthesis
+        answer = (
+            f"Based on NASA microgravity research findings:\n\n"
+            f"{context_summary[:350]}...\n\n"
+            f"Key observations indicate that forced convective ventilation and oxygen fraction are critical "
+            f"controlling parameters in microgravity combustion, where natural buoyancy is suppressed. "
+            f"These insights are directly derived from the documented investigations cited below."
+        )
+        return answer
 
 
 class GeminiLLMProvider(BaseLLMProvider):
     """
-    Google Gemini LLM provider via official Generative Language REST API.
-    If the external API call fails, explicitly marks is_mock = True when falling back.
+    Google Gemini REST API LLM provider.
+    Executes grounded generation strictly constrained by NASA evidence chunks.
     """
 
-    def __init__(self, api_key: str, model_name: str = "gemini-2.0-flash"):
+    API_BASE_URL: str = "https://generativelanguage.googleapis.com/v1beta"
+    provider_name: str = "gemini"
+    is_mock: bool = False
+
+    def __init__(
+        self,
+        api_key: str,
+        model_name: str = "gemini-1.5-pro",
+        timeout_seconds: float = 30.0,
+        client: httpx.AsyncClient | None = None,
+    ):
         self.api_key = api_key
-        self.provider_name = "gemini"
         self.model_name = model_name
+        self.provider_name = "gemini"
         self.is_mock = False
+        self.timeout_seconds = timeout_seconds
+        self._client = client
+
+    def _normalize_model_name(self) -> str:
+        name = self.model_name.strip()
+        if name.startswith("models/"):
+            return name.removeprefix("models/")
+        return name
+
+    def _build_system_instructions(self, base_instructions: str) -> str:
+        return (
+            f"{base_instructions}\n\n"
+            "CRITICAL SCIENTIFIC INTEGRITY INSTRUCTIONS:\n"
+            "1. You are answering a scientific spacecraft fire safety research query.\n"
+            "2. Base your response EXCLUSIVELY on the provided NASA experimental evidence passages.\n"
+            "3. NEVER fabricate experimental measurements, physical variables, DOIs, PSI IDs, or author names.\n"
+            "4. If the provided evidence passages do not contain sufficient verified empirical data to answer the inquiry, "
+            "explicitly state that empirical evidence is insufficient.\n"
+            "5. Note that orbital microgravity (0g) results do not directly translate to lunar (0.166g) or Martian (0.38g) "
+            "surface conditions without analytical partial-gravity scaling.\n"
+            "6. Preserve physical units (e.g., cm/s, kPa, % O2) exactly as reported in the context."
+        )
+
+    def _format_context_passages(self, context_chunks: list[dict[str, Any]]) -> str:
+        passages = []
+        for idx, chunk in enumerate(context_chunks, start=1):
+            acronym = chunk.get("acronym", "NASA-PSI")
+            title = chunk.get("document_title", "NASA Publication")
+            sec = chunk.get("section_name", "General")
+            text = chunk.get("chunk_text", "").strip()
+            passages.append(
+                f"[Evidence Passage {idx}]\n"
+                f"Investigation: {acronym}\n"
+                f"Document: {title}\n"
+                f"Section: {sec}\n"
+                f"Excerpt: {text}"
+            )
+        return "\n\n".join(passages)
 
     async def generate_response(
         self,
         prompt: str,
-        context_chunks: List[Dict[str, Any]],
+        context_chunks: list[dict[str, Any]],
         system_instructions: str,
     ) -> str:
         if not context_chunks:
-            return await MockLLMProvider().generate_response(prompt, context_chunks, system_instructions)
+            return (
+                "Insufficient verified NASA experimental evidence was retrieved to answer this query. "
+                "The FlameSafe AI system abstains from generating unsupported conclusions."
+            )
 
-        model_path = self.model_name if self.model_name.startswith("models/") else f"models/{self.model_name}"
-        url = f"https://generativelanguage.googleapis.com/v1beta/{model_path}:generateContent"
-        user_prompt = build_rag_user_prompt(prompt, context_chunks)
+        model = self._normalize_model_name()
+        endpoint_url = f"{self.API_BASE_URL}/models/{model}:generateContent"
+
+        full_system_instructions = self._build_system_instructions(system_instructions)
+        formatted_context = self._format_context_passages(context_chunks)
+
+        user_content = (
+            f"Scientific Research Query:\n{prompt}\n\n"
+            f"Verified NASA Microgravity Context Passages:\n{formatted_context}\n\n"
+            "Provide a grounded, scientifically rigorous synthesis answering the query "
+            "strictly using the evidence passages above. If the evidence is incomplete, "
+            "explicitly declare the uncertainty."
+        )
+
         payload = {
-            "systemInstruction": {"parts": [{"text": system_instructions}]},
-            "contents": [{"role": "user", "parts": [{"text": user_prompt}]}],
+            "contents": [
+                {
+                    "role": "user",
+                    "parts": [{"text": user_content}],
+                }
+            ],
+            "systemInstruction": {
+                "parts": [{"text": full_system_instructions}],
+            },
             "generationConfig": {
-                "temperature": 0.1,
-                "maxOutputTokens": 900,
+                "temperature": 0.2,
+                "maxOutputTokens": 1024,
             },
         }
+
+        headers = {
+            "Content-Type": "application/json",
+            "x-goog-api-key": self.api_key,
+        }
+
+        logger.info(f"Submitting grounded generation request to Gemini API ({model})")
+
+        timeout = httpx.Timeout(self.timeout_seconds)
+
         try:
-            async with httpx.AsyncClient(timeout=25.0) as client:
-                resp = await client.post(url, params={"key": self.api_key}, json=payload)
-                resp.raise_for_status()
-                data = resp.json()
-                candidates = data.get("candidates", [])
-                if candidates:
-                    parts = candidates[0].get("content", {}).get("parts", [])
-                    text = "".join(p.get("text", "") for p in parts).strip()
-                    if text:
-                        return text
-                raise ValueError("Gemini API returned empty candidate response")
+            if self._client is not None:
+                response = await self._client.post(endpoint_url, json=payload, headers=headers)
+            else:
+                async with httpx.AsyncClient(timeout=timeout) as client:
+                    response = await client.post(endpoint_url, json=payload, headers=headers)
+        except httpx.TimeoutException as e:
+            logger.error(f"Gemini API request timed out after {self.timeout_seconds}s")
+            raise GeminiTimeoutError(
+                f"Google Gemini API request timed out after {self.timeout_seconds} seconds."
+            ) from e
+        except httpx.RequestError as e:
+            logger.error(f"Network error communicating with Gemini API: {e}")
+            raise GeminiNetworkError(
+                f"Network error connecting to Google Gemini API: {e}"
+            ) from e
+
+        # Handle specific HTTP status codes
+        if response.status_code in (401, 403):
+            logger.error(f"Gemini API authentication failed (HTTP {response.status_code})")
+            raise GeminiAuthenticationError(
+                f"Google Gemini API authentication failed (HTTP {response.status_code}). "
+                "Please verify that GEMINI_API_KEY is correctly set in your environment."
+            )
+        if response.status_code == 429:
+            logger.error("Gemini API rate limit exceeded (HTTP 429)")
+            raise GeminiRateLimitError(
+                "Google Gemini API rate limit exceeded (HTTP 429). Please retry later."
+            )
+        if response.status_code >= 500:
+            logger.error(f"Gemini API server error (HTTP {response.status_code})")
+            raise GeminiAPIError(
+                f"Google Gemini API server error (HTTP {response.status_code}): {response.text[:200]}"
+            )
+        if response.status_code != 200:
+            logger.error(f"Gemini API unexpected response (HTTP {response.status_code})")
+            raise GeminiAPIError(
+                f"Google Gemini API unexpected error (HTTP {response.status_code}): {response.text[:200]}"
+            )
+
+        try:
+            data = response.json()
         except Exception as e:
-            logger.warning(f"Gemini generation request failed ({e}); falling back to deterministic grounded synthesis.")
-            self.is_mock = True
-            self.provider_name = "mock (gemini-fallback)"
-            return await MockLLMProvider().generate_response(prompt, context_chunks, system_instructions)
+            raise GeminiAPIError("Failed to parse JSON response from Google Gemini API.") from e
+
+        candidates = data.get("candidates", [])
+        if not candidates:
+            prompt_feedback = data.get("promptFeedback", {})
+            block_reason = prompt_feedback.get("blockReason")
+            if block_reason:
+                raise GeminiAPIError(f"Google Gemini blocked query due to safety filters: {block_reason}")
+            raise GeminiAPIError("Google Gemini API returned no response candidates.")
+
+        candidate = candidates[0]
+        content = candidate.get("content", {})
+        parts = content.get("parts", [])
+        if not parts or "text" not in parts[0]:
+            finish_reason = candidate.get("finishReason", "UNKNOWN")
+            raise GeminiAPIError(
+                f"Google Gemini API candidate contains no text parts (finishReason: {finish_reason})."
+            )
+
+        generated_text = parts[0]["text"].strip()
+        if not generated_text:
+            raise GeminiAPIError("Google Gemini API returned an empty text response.")
+
+        return generated_text
 
 
 def get_llm_provider() -> BaseLLMProvider:

@@ -2,7 +2,7 @@
 Versioned scientific prompt templates for FlameSafe AI RAG synthesis.
 Ensures strict evidence grounding, citation traceability, and explicit abstention.
 """
-from typing import List, Dict, Any
+from typing import Any
 
 PROMPT_VERSION = "1.1.0"
 
@@ -18,7 +18,7 @@ STRICT SCIENTIFIC INTEGRITY RULES:
 """
 
 
-def build_rag_user_prompt(query: str, context_chunks: List[Dict[str, Any]]) -> str:
+def build_rag_user_prompt(query: str, context_chunks: list[dict[str, Any]]) -> str:
     """Assemble structured context and user question for LLM synthesis."""
     formatted_chunks = []
     for idx, c in enumerate(context_chunks, start=1):

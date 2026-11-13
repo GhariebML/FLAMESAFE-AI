@@ -45,6 +45,16 @@ export const DomainDistribution: React.FC<{ items: DomainItem[] }> = ({ items })
           data={chartData}
           margin={{ top: 10, right: 16, left: -12, bottom: 24 }}
         >
+          <defs>
+            <linearGradient id="domainProgramsGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#3B82F6" stopOpacity={1} />
+              <stop offset="100%" stopColor="#1D4ED8" stopOpacity={0.85} />
+            </linearGradient>
+            <linearGradient id="domainRunsGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#22D3EE" stopOpacity={1} />
+              <stop offset="100%" stopColor="#0891B2" stopOpacity={0.85} />
+            </linearGradient>
+          </defs>
           <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.gridStroke} />
           <XAxis
             dataKey="name"
@@ -66,6 +76,7 @@ export const DomainDistribution: React.FC<{ items: DomainItem[] }> = ({ items })
               borderRadius: "0.75rem",
               fontSize: "12px",
               color: chartTheme.tooltipText,
+              boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.25)",
             }}
             labelFormatter={(_, payload) =>
               payload?.[0]?.payload?.fullName || ""
@@ -74,13 +85,13 @@ export const DomainDistribution: React.FC<{ items: DomainItem[] }> = ({ items })
           <Legend wrapperStyle={{ fontSize: "11px", paddingTop: "4px", color: chartTheme.axisTickColor }} />
           <Bar
             dataKey="Programs"
-            fill={chartTheme.palette[0]}
-            radius={[4, 4, 0, 0]}
+            fill="url(#domainProgramsGrad)"
+            radius={[6, 6, 0, 0]}
           />
           <Bar
             dataKey="Runs"
-            fill={chartTheme.palette[1]}
-            radius={[4, 4, 0, 0]}
+            fill="url(#domainRunsGrad)"
+            radius={[6, 6, 0, 0]}
           />
         </BarChart>
       </ResponsiveContainer>

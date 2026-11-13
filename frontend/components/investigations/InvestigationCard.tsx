@@ -9,33 +9,38 @@ export const InvestigationCard: React.FC<{ investigation: InvestigationSummary }
   investigation,
 }) => {
   return (
-    <Card className="flex flex-col justify-between border-space-800 bg-space-900/80 hover:border-blue-500/50 transition-all group">
+    <Card className="relative flex flex-col justify-between border-space-800 bg-space-900/95 hover:border-blue-500/55 hover:-translate-y-1 hover:shadow-xl transition-all duration-200 group">
+      {/* Top Gradient Accent Bar */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-flame-500 via-amber-500 to-blue-500 opacity-85 group-hover:opacity-100 transition-opacity" />
+
       <div>
-        <div className="flex items-start justify-between gap-2">
+        <div className="flex items-start justify-between gap-2 pt-1">
           <Badge variant="flame">{investigation.acronym}</Badge>
-          <span className="text-[11px] font-mono text-slate-400">{investigation.psi_id}</span>
+          <span className="text-[11px] font-mono font-semibold text-fg-muted px-2 py-0.5 rounded bg-space-950 border border-space-800">
+            {investigation.psi_id}
+          </span>
         </div>
 
-        <h3 className="mt-3 text-base font-bold text-slate-50 group-hover:text-blue-300 transition-colors">
+        <h3 className="mt-3 text-base font-bold text-fg-primary group-hover:text-blue-600 dark:group-hover:text-blue-300 transition-colors">
           {investigation.title}
         </h3>
 
-        <div className="mt-1 text-xs text-plasma-400 font-medium">
+        <div className="mt-1 text-xs text-plasma-600 dark:text-plasma-400 font-semibold">
           {investigation.research_area}
         </div>
 
-        <p className="mt-2 text-xs text-slate-400 line-clamp-3 leading-relaxed">
+        <p className="mt-2 text-xs text-fg-muted line-clamp-3 leading-relaxed">
           {investigation.description ||
             "Microgravity combustion research program recorded in NASA PSI."}
         </p>
 
         {/* Fuel & Gravity Chips */}
         {(investigation.primary_fuel_types?.length || investigation.gravity_regimes?.length) ? (
-          <div className="mt-3 flex flex-wrap gap-1.5">
+          <div className="mt-3.5 flex flex-wrap gap-1.5">
             {investigation.primary_fuel_types?.map((fuel) => (
               <span
                 key={fuel}
-                className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-space-950 border border-space-800 text-[10px] text-amber-300"
+                className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-amber-500/10 border border-amber-500/30 text-[10px] font-medium text-amber-800 dark:text-amber-300"
               >
                 <Flame className="h-2.5 w-2.5" /> {fuel}
               </span>
@@ -43,7 +48,7 @@ export const InvestigationCard: React.FC<{ investigation: InvestigationSummary }
             {investigation.gravity_regimes?.slice(0, 1).map((grav) => (
               <span
                 key={grav}
-                className="px-2 py-0.5 rounded bg-space-950 border border-space-800 text-[10px] font-mono text-slate-300"
+                className="px-2.5 py-0.5 rounded-md bg-space-950 border border-space-800 text-[10px] font-mono text-fg-secondary"
               >
                 {grav}
               </span>
@@ -53,13 +58,13 @@ export const InvestigationCard: React.FC<{ investigation: InvestigationSummary }
       </div>
 
       <div className="mt-5 pt-3.5 border-t border-space-800 flex items-center justify-between gap-2">
-        <div className="flex items-center gap-3 text-xs text-slate-400 font-mono">
+        <div className="flex items-center gap-3 text-xs text-fg-muted font-mono">
           <span className="flex items-center gap-1">
-            <Layers className="h-3.5 w-3.5 text-slate-500" />
+            <Layers className="h-3.5 w-3.5 text-blue-500" />
             {investigation.experimental_runs_count} runs
           </span>
           <span className="flex items-center gap-1">
-            <FileText className="h-3.5 w-3.5 text-slate-500" />
+            <FileText className="h-3.5 w-3.5 text-plasma-500" />
             {investigation.documents_count} docs
           </span>
         </div>
@@ -71,14 +76,14 @@ export const InvestigationCard: React.FC<{ investigation: InvestigationSummary }
               target="_blank"
               rel="noopener noreferrer"
               title={`Open DOI ${investigation.doi}`}
-              className="text-[11px] font-mono text-plasma-400 hover:text-plasma-300 inline-flex items-center gap-0.5"
+              className="text-[11px] font-mono font-medium text-plasma-600 dark:text-plasma-400 hover:underline inline-flex items-center gap-0.5"
             >
               DOI <ExternalLink className="h-3 w-3" />
             </a>
           )}
           <Link
             href={`/investigations/${investigation.id}`}
-            className="inline-flex items-center gap-1 text-xs font-semibold text-blue-400 hover:text-blue-300 group-hover:translate-x-0.5 transition-all"
+            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-500/10 border border-blue-500/30 text-xs font-semibold text-blue-700 dark:text-blue-300 group-hover:bg-blue-600 group-hover:text-white transition-all"
           >
             Inspect <ArrowRight className="h-3.5 w-3.5" />
           </Link>

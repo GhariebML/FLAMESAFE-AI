@@ -132,13 +132,12 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenMobileMenu }) => {
             title="Backend API Health"
           >
             <span
-              className={`h-2 w-2 rounded-full ${
-                backendStatus === "online"
-                  ? "bg-emerald-500 dark:bg-emerald-400 animate-pulse"
-                  : backendStatus === "checking"
+              className={`h-2 w-2 rounded-full ${backendStatus === "online"
+                ? "bg-emerald-500 dark:bg-emerald-400 animate-pulse"
+                : backendStatus === "checking"
                   ? "bg-amber-500 dark:bg-amber-400"
                   : "bg-red-500 dark:bg-red-400"
-              }`}
+                }`}
             />
             <span className="hidden sm:inline">API:</span>
             <span className="capitalize">{backendStatus}</span>

@@ -9,8 +9,8 @@ export const Card: React.FC<CardProps> = ({ className, glow = false, children, .
   return (
     <div
       className={cn(
-        "rounded-xl border border-space-800 bg-space-900/95 backdrop-blur-md p-5 text-fg-secondary shadow-panel transition-all",
-        glow && "border-flame-500/35 shadow-lg shadow-flame-500/10",
+        "relative overflow-hidden rounded-2xl border border-space-800/90 bg-space-900/90 backdrop-blur-xl p-5 text-fg-secondary shadow-panel transition-all duration-200 before:pointer-events-none before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-blue-400/40 before:to-transparent",
+        glow && "border-flame-500/40 shadow-lg shadow-flame-500/10",
         className
       )}
       {...props}

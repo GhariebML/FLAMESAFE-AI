@@ -20,7 +20,7 @@ export const ThemeToggle: React.FC = () => {
       <div
         role="group"
         aria-label="Interface theme mode selector (Alt+T)"
-        className="hidden sm:inline-flex items-center gap-0.5 p-0.5 rounded-full border border-space-700 bg-space-900/90 shadow-sm"
+        className="hidden sm:inline-flex items-center gap-0.5 p-1 rounded-full border border-space-700/90 bg-space-950/90 shadow-inner"
       >
         {OPTIONS.map(({ mode, label, shortLabel, Icon }) => {
           const isActive = theme === mode;
@@ -32,9 +32,9 @@ export const ThemeToggle: React.FC = () => {
               title={`${label} (Alt+T)`}
               aria-pressed={isActive}
               className={cn(
-                "flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-medium transition-all",
+                "flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold transition-all duration-150",
                 isActive
-                  ? "bg-electric-600 text-white shadow-sm"
+                  ? "bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 text-white shadow-md shadow-blue-500/25"
                   : "text-fg-muted hover:text-fg-primary hover:bg-space-800/70"
               )}
             >
@@ -55,7 +55,7 @@ export const ThemeToggle: React.FC = () => {
             : "Switch to Black (Mission Control) Mode"
         }
         title="Toggle White / Black Mode (Alt+T)"
-        className="sm:hidden inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-space-700 bg-space-900 text-xs font-medium text-fg-primary hover:bg-space-800 transition-colors"
+        className="sm:hidden inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-space-700 bg-space-900 text-xs font-semibold text-fg-primary hover:bg-space-800 transition-colors"
       >
         {resolvedTheme === "dark" ? (
           <>
@@ -64,7 +64,7 @@ export const ThemeToggle: React.FC = () => {
           </>
         ) : (
           <>
-            <Moon className="h-3.5 w-3.5 text-electric-600" />
+            <Moon className="h-3.5 w-3.5 text-blue-600" />
             <span>Black</span>
           </>
         )}

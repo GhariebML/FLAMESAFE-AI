@@ -11,11 +11,16 @@ html.light,
   color-scheme: light;
 
   /* RGB Triplets for Tailwind Opacity Support */
-  --space-950: 248 250 252; /* #F8FAFC — Cleanroom Alabaster Canvas */
-  --space-900: 255 255 255; /* #FFFFFF — Pure Lab White Panel */
-  --space-800: 226 232 240; /* #E2E8F0 — Instrument Hairline Border / Subtle Surface */
-  --space-700: 203 213 225; /* #CBD5E1 — Interactive / Active Steel Border */
-  --space-600: 148 163 184; /* #94A3B8 — Calibrated Muted Accent */
+  --space-950: 248 250 252;
+  /* #F8FAFC — Cleanroom Alabaster Canvas */
+  --space-900: 255 255 255;
+  /* #FFFFFF — Pure Lab White Panel */
+  --space-800: 226 232 240;
+  /* #E2E8F0 — Instrument Hairline Border / Subtle Surface */
+  --space-700: 203 213 225;
+  /* #CBD5E1 — Interactive / Active Steel Border */
+  --space-600: 148 163 184;
+  /* #94A3B8 — Calibrated Muted Accent */
 
   /* Semantic Hex Tokens */
   --bg-deep-space: #F8FAFC;
@@ -48,11 +53,16 @@ html.dark,
   color-scheme: dark;
 
   /* RGB Triplets for Tailwind Opacity Support */
-  --space-950: 7 21 37;   /* #071525 — Deep Space Navy */
-  --space-900: 13 32 53;  /* #0D2035 — Midnight Blue */
-  --space-800: 21 44 71;  /* #152C47 — Orbital Slate */
-  --space-700: 30 58 95;  /* #1E3A5F — Active Telemetry Slate */
-  --space-600: 43 82 130; /* #2B5282 — Muted Orbital Blue */
+  --space-950: 7 21 37;
+  /* #071525 — Deep Space Navy */
+  --space-900: 13 32 53;
+  /* #0D2035 — Midnight Blue */
+  --space-800: 21 44 71;
+  /* #152C47 — Orbital Slate */
+  --space-700: 30 58 95;
+  /* #1E3A5F — Active Telemetry Slate */
+  --space-600: 43 82 130;
+  /* #2B5282 — Muted Orbital Blue */
 
   /* Semantic Hex Tokens */
   --bg-deep-space: #071525;
@@ -88,6 +98,7 @@ html.dark,
 
 /* Respect reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {

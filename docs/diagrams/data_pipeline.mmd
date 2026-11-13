@@ -1,0 +1,34 @@
+flowchart LR
+    subgraph Sourcing["1. Discovery & Ingestion"]
+        PSI["NASA PSI Repository"]
+        NTRS["NASA Technical Reports Server"]
+        Seed["Curated Seed Datasets"]
+    end
+
+    subgraph Extraction["2. Extraction & Parsing"]
+        Adapter["PSISourceAdapter"]
+        PyMuPDF["PyMuPDF / fitz Extractor"]
+        MetaParser["MetadataParser"]
+    end
+
+    subgraph Processing["3. Normalization & Verification"]
+        Normalizer["UnitNormalizer (kPa, cm/s, % O2)"]
+        Validator["ScientificValidator (Bounds, Nulls, DOI)"]
+    end
+
+    subgraph Indexing["4. Storage & Vector Indexing"]
+        DB[(PostgreSQL 16 Relational Schema)]
+        Chunker["ScientificTextChunker"]
+        Embedder["Embedding Model (text-embedding-004)"]
+        VectorStore[(pgvector Index)]
+    end
+
+    PSI & NTRS & Seed --> Adapter
+    Adapter --> PyMuPDF
+    PyMuPDF --> MetaParser
+    MetaParser --> Normalizer
+    Normalizer --> Validator
+    Validator --> DB
+    Validator --> Chunker
+    Chunker --> Embedder
+    Embedder --> VectorStore

@@ -1,0 +1,13 @@
+{
+  "investigation_sample": {
+    "acronym": "FLEX",
+    "psi_id": "PSI-FLEX-01",
+    "title": "Flame Extinguishment Experiment",
+    "fuel_tested": "n-Heptane & Decane Droplets",
+    "droplet_initial_diameter_mm": 2.8,
+    "hot_flame_extinction_diameter_mm": 1.92,
+    "cool_flame_burn_duration_s": 8.4,
+    "quench_mechanism": "Radiative heat loss & low-temperature peroxy chemistry",
+    "apparatus": "Combustion Integrated Rack (CIR) / MDCA"
+  }
+}

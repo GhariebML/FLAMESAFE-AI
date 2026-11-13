@@ -1,0 +1,29 @@
+sequenceDiagram
+    autonumber
+    actor User as Researcher
+    participant UI as ChatInterface (Frontend)
+    participant API as AssistantEndpoint (/assistant/query)
+    participant Ret as EvidenceRetriever
+    participant Rerank as ScientificReranker
+    participant LLM as LLM Provider (Gemini / Mock)
+    participant Cit as CitationValidator
+    participant DB as Vector & Document Store
+
+    User->>UI: Submit research inquiry
+    UI->>API: POST /assistant/query (query, filter, top_k)
+    API->>Ret: Retrieve candidate chunks
+    Ret->>DB: Cosine similarity search against query vector
+    DB-->>Ret: Top K candidate chunks
+    Ret->>Rerank: Candidate chunks with similarity scores
+    Rerank->>Rerank: Boost for measurement units & section terms
+    Rerank-->>API: Top reranked scientific chunks
+    alt Insufficient Evidence (threshold not met)
+        API-->>UI: Return abstention response (no ungrounded assertions)
+    else Sufficient Verified Evidence
+        API->>LLM: Generate response grounded in context chunks
+        LLM-->>API: Synthesized scientific answer
+        API->>Cit: Build and verify citations (DOI, page, excerpt)
+        Cit-->>API: Validated citations list
+        API-->>UI: Return answer + verified citations + uncertainty note
+        UI-->>User: Display answer with interactive citation cards
+    end

@@ -1,0 +1,65 @@
+flowchart TD
+    subgraph Client["Frontend Client (Next.js 15 / React / Tailwind)"]
+        UI_Dash["Dashboard (Module 1)"]
+        UI_Exp["Investigation Explorer (Module 2)"]
+        UI_Comp["Comparison Matrix (Module 3)"]
+        UI_Rank["Relevance Ranking (Module 4)"]
+        UI_Scen["Scenario Analyzer (Module 5)"]
+        UI_Asst["SI Assistant (Module 6)"]
+        API_Client["Typed API Client (lib/api/client.ts)"]
+    end
+
+    subgraph Gateway["API Gateway & Reverse Proxy"]
+        Nginx["Docker / Local Port 8000"]
+    end
+
+    subgraph Backend["FastAPI Modular Monolith"]
+        Router["API v1 Router (/api/v1)"]
+        subgraph Endpoints["API Endpoints"]
+            EP_Health["/health"]
+            EP_Overview["/overview"]
+            EP_Inv["/investigations"]
+            EP_Comp["/compare"]
+            EP_Rank["/rank"]
+            EP_Scen["/scenarios/analyze"]
+            EP_Asst["/assistant/query"]
+            EP_Src["/sources"]
+        end
+
+        subgraph Services["Core Application Services"]
+            Svc_Inv["Investigation Service"]
+            Svc_Comp["Comparison Service"]
+            Svc_Rank["Ranking Engine (Scoring & Explainability)"]
+            Svc_Scen["Scenario Service"]
+            Svc_AI["AI & RAG Service"]
+        end
+
+        subgraph Ingestion["Scientific Data Ingestion"]
+            PSI_Adapter["NASA PSI Source Adapter"]
+            PDF_Ext["PyMuPDF Document Extractor"]
+            Unit_Norm["Unit Normalization Service"]
+            Sci_Val["Scientific Integrity Validator"]
+        end
+    end
+
+    subgraph Storage["Data & Vector Layer"]
+        PG["PostgreSQL 16"]
+        PG_Vector["pgvector Extension"]
+        Seed["NASA PSI Seed Repository"]
+    end
+
+    subgraph AI_Layer["Extensible AI Layer"]
+        Embed_Prov["Embedding Provider (Mock / Gemini / OpenAI)"]
+        LLM_Prov["LLM Generation Provider (Mock / Gemini / OpenAI)"]
+        Cit_Val["Citation Verification Engine"]
+    end
+
+    UI_Dash & UI_Exp & UI_Comp & UI_Rank & UI_Scen & UI_Asst --> API_Client
+    API_Client --> Gateway
+    Gateway --> Router
+    Router --> Endpoints
+    Endpoints --> Services
+    Services --> Storage
+    Svc_AI --> AI_Layer
+    Svc_Rank --> Storage
+    Ingestion --> Storage

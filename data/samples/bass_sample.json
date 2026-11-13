@@ -1,0 +1,13 @@
+{
+  "investigation_sample": {
+    "acronym": "BASS",
+    "psi_id": "PSI-BASS-01",
+    "title": "Burning and Suppression of Solids",
+    "fuel_tested": "Polymethyl Methacrylate (PMMA) & Cotton-Fiberglass",
+    "flow_velocities_tested_cm_s": [0.5, 1.0, 2.0, 5.0, 10.0],
+    "limiting_airflow_quench_cm_s": 0.8,
+    "extinction_oxygen_limit_percent": 16.2,
+    "chamber_pressure_kPa": 101.3,
+    "apparatus": "Microgravity Science Glovebox (MSG)"
+  }
+}

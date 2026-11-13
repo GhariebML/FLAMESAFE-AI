@@ -1,0 +1,14 @@
+{
+  "investigation_sample": {
+    "acronym": "SAFFIRE",
+    "psi_id": "PSI-SAFFIRE-01",
+    "title": "Spacecraft Fire Safety Experiment",
+    "fuel_tested": "Cotton-Fiberglass Fabric (Sibal) & Structured PMMA Slabs",
+    "sample_dimensions_m": "0.4 x 1.0",
+    "airflow_velocity_cm_s": 20.0,
+    "flame_spread_rate_cm_s": 0.18,
+    "peak_heat_flux_kW_m2": 3.4,
+    "platform": "Cygnus Uncrewed Cargo Vehicle",
+    "operational_phase": "Post-ISS departure, pre-reentry"
+  }
+}

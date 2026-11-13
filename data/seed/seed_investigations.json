@@ -1,0 +1,431 @@
+[
+  {
+    "id": "e0a1b2c3-d4e5-4f6a-8b9c-0d1e2f3a4b5c",
+    "psi_id": "PSI-BASS-01",
+    "acronym": "BASS",
+    "title": "Burning and Suppression of Solids",
+    "research_area": "Solid Fuel Flammability & Suppression",
+    "objectives": "Examine the burning and extinction characteristics of a wide variety of fuel samples in microgravity to guide spacecraft material selection and flame suppression strategies.",
+    "description": "The BASS investigation examines burning and extinction characteristics of solid fuel samples in microgravity within the Microgravity Science Glovebox (MSG) on the International Space Station (ISS). By removing buoyant flow, it reveals the fundamental mechanisms of solid material flammability, airflow quench limits, and the effectiveness of gaseous suppressants like nitrogen and CO2.",
+    "doi": "10.1016/j.proci.2014.05.077",
+    "source_url": "https://psi.nasa.gov/physci/repo",
+    "metadata": {
+      "facility": "Microgravity Science Glovebox (MSG)",
+      "platform": "International Space Station (ISS)",
+      "principal_investigator": "Dr. Paul Ferketi (NASA Glenn Research Center)",
+      "target_environments": ["Spacecraft", "Space Station"],
+      "combustion_type": "Solid Fuel Flame Propagation"
+    },
+    "experimental_runs": [
+      {
+        "id": "run-bass-001",
+        "run_code": "BASS-PMMA-FLAT-01",
+        "fuel_type": "Solid Polymer",
+        "fuel_name": "Polymethyl Methacrylate (PMMA / Cast Acrylic)",
+        "fuel_geometry": "Flat slab (10 mm x 20 mm x 1.5 mm)",
+        "gravity_regime": "Microgravity (~10^-6 g)",
+        "oxygen_concentration": 21.0,
+        "pressure_value": 101.3,
+        "pressure_unit": "kPa",
+        "airflow_velocity": 2.5,
+        "airflow_unit": "cm/s",
+        "suppressant": "None (Air Flow)",
+        "sensor_types": ["Radiometer", "Thermocouple Array", "High-speed Color Video"],
+        "experimental_notes": "Concurrent flow flame spread observed. Flame stabilizes downstream with rounded hemispherical leading edge due to lack of buoyancy.",
+        "measurements": [
+          {
+            "metric_name": "Flame Spread Rate",
+            "metric_value": 0.045,
+            "unit": "cm/s",
+            "measurement_time": 42.0
+          },
+          {
+            "metric_name": "Flame Length",
+            "metric_value": 18.2,
+            "unit": "mm",
+            "measurement_time": 45.0
+          },
+          {
+            "metric_name": "Quench Airflow Velocity",
+            "metric_value": 0.8,
+            "unit": "cm/s",
+            "measurement_time": 110.0
+          }
+        ]
+      },
+      {
+        "id": "run-bass-002",
+        "run_code": "BASS-COTTON-FAB-02",
+        "fuel_type": "Solid Fabric Blend",
+        "fuel_name": "Cotton-Fiberglass Fabric Blend (Sibal Cloth)",
+        "fuel_geometry": "Thin fabric sheet (22 mm x 100 mm x 0.2 mm)",
+        "gravity_regime": "Microgravity (~10^-6 g)",
+        "oxygen_concentration": 18.5,
+        "pressure_value": 98.0,
+        "pressure_unit": "kPa",
+        "airflow_velocity": 1.2,
+        "airflow_unit": "cm/s",
+        "suppressant": "Nitrogen Dilution",
+        "sensor_types": ["Optical Pyrometer", "High-Definition Video Camera"],
+        "experimental_notes": "Tested near extinction limit in low-oxygen hypoxic atmosphere typical of exploration spacecraft exploration atmospheres.",
+        "measurements": [
+          {
+            "metric_name": "Flame Spread Rate",
+            "metric_value": 0.018,
+            "unit": "cm/s",
+            "measurement_time": 30.0
+          },
+          {
+            "metric_name": "Extinction Oxygen Limit (LOC)",
+            "metric_value": 16.2,
+            "unit": "% O2",
+            "measurement_time": 85.0
+          }
+        ]
+      }
+    ],
+    "research_documents": [
+      {
+        "id": "doc-bass-001",
+        "title": "Solid Flammability Boundary Evaluation in Low-Speed Microgravity Flows in BASS",
+        "document_type": "Journal Article",
+        "doi": "10.1016/j.proci.2014.05.077",
+        "source_url": "https://doi.org/10.1016/j.proci.2014.05.077",
+        "file_path": "data/processed/bass_flammability_2014.pdf"
+      }
+    ],
+    "data_sources": [
+      {
+        "source_name": "NASA Physical Sciences Informatics (PSI)",
+        "source_url": "https://psi.nasa.gov/physci/repo",
+        "doi": "10.1016/j.proci.2014.05.077",
+        "version": "1.0",
+        "accessed_at": "2026-10-15T10:00:00Z"
+      }
+    ]
+  },
+  {
+    "id": "f1b2c3d4-e5f6-4a7b-8c9d-1e2f3a4b5c6d",
+    "psi_id": "PSI-SAFFIRE-01",
+    "acronym": "SAFFIRE",
+    "title": "Spacecraft Fire Safety Experiment (Saffire I, II, III)",
+    "research_area": "Large-Scale Spacecraft Fire Safety",
+    "objectives": "Assess realistic large-scale material flammability and flame growth in an uninhabited, uncrewed space vehicle at practical spacecraft scales.",
+    "description": "The Saffire experiments conduct intentional large-scale burns aboard uncrewed Cygnus cargo resupply vehicles after departing the International Space Station, before atmospheric reentry. Saffire provides the first practical, vehicle-scale fire safety data for sample sizes up to 0.4 m wide by 1.0 m long, overcoming the physical size limitations of laboratory gloveboxes.",
+    "doi": "10.2514/1.A34167",
+    "source_url": "https://psi.nasa.gov/physci/repo",
+    "metadata": {
+      "facility": "Saffire Test Module (Autonomous Flow Duct)",
+      "platform": "Orbital ATK / Northrop Grumman Cygnus Spacecraft",
+      "principal_investigator": "Dr. David L. Urban (NASA Glenn Research Center)",
+      "target_environments": ["Spacecraft", "Lunar Habitat", "Mars Habitat"],
+      "combustion_type": "Large-Scale Concurrent and Opposed Flame Spread"
+    },
+    "experimental_runs": [
+      {
+        "id": "run-saf-001",
+        "run_code": "SAFFIRE-I-COTTON-01",
+        "fuel_type": "Solid Fabric Blend",
+        "fuel_name": "Cotton-Fiberglass Fabric (Sibal)",
+        "fuel_geometry": "Large fabric sheet (400 mm x 1000 mm x 0.25 mm)",
+        "gravity_regime": "Microgravity (~10^-5 g)",
+        "oxygen_concentration": 21.0,
+        "pressure_value": 100.5,
+        "pressure_unit": "kPa",
+        "airflow_velocity": 20.0,
+        "airflow_unit": "cm/s",
+        "suppressant": "None (Forced Vehicle Flow)",
+        "sensor_types": ["Calibrated Radiometer Array", "Thermocouple Grid", "Dual HD Video Cameras"],
+        "experimental_notes": "First large-scale fire conducted in an orbital vehicle. Concurrent airflow produced steady upward spread with notable downstream preheating and soot formation.",
+        "measurements": [
+          {
+            "metric_name": "Flame Spread Rate",
+            "metric_value": 0.18,
+            "unit": "cm/s",
+            "measurement_time": 120.0
+          },
+          {
+            "metric_name": "Peak Radiative Heat Flux",
+            "metric_value": 3.4,
+            "unit": "kW/m2",
+            "measurement_time": 240.0
+          },
+          {
+            "metric_name": "Total Burn Duration",
+            "metric_value": 480.0,
+            "unit": "s",
+            "measurement_time": 480.0
+          }
+        ]
+      },
+      {
+        "id": "run-saf-002",
+        "run_code": "SAFFIRE-II-PMMA-SLABS",
+        "fuel_type": "Solid Polymer",
+        "fuel_name": "Structured PMMA Strips",
+        "fuel_geometry": "Multi-strip array (50 mm x 300 mm x 10 mm)",
+        "gravity_regime": "Microgravity (~10^-5 g)",
+        "oxygen_concentration": 21.0,
+        "pressure_value": 99.2,
+        "pressure_unit": "kPa",
+        "airflow_velocity": 15.0,
+        "airflow_unit": "cm/s",
+        "suppressant": "Post-burn Venting",
+        "sensor_types": ["Pressure Transducers", "Infrared Pyrometer", "CO/CO2 Gas Sensors"],
+        "experimental_notes": "Evaluated flame spread across thick materials and adjacent structures to determine fire propagation across internal spacecraft equipment racks.",
+        "measurements": [
+          {
+            "metric_name": "Flame Spread Rate",
+            "metric_value": 0.022,
+            "unit": "cm/s",
+            "measurement_time": 300.0
+          },
+          {
+            "metric_name": "Max Surface Temperature",
+            "metric_value": 620.0,
+            "unit": "deg C",
+            "measurement_time": 320.0
+          }
+        ]
+      }
+    ],
+    "research_documents": [
+      {
+        "id": "doc-saf-001",
+        "title": "Large-Scale Flammability Tests in Low Gravity: The Saffire Experiments",
+        "document_type": "Journal Article",
+        "doi": "10.2514/1.A34167",
+        "source_url": "https://doi.org/10.2514/1.A34167",
+        "file_path": "data/processed/saffire_large_scale_2018.pdf"
+      }
+    ],
+    "data_sources": [
+      {
+        "source_name": "NASA Physical Sciences Informatics (PSI)",
+        "source_url": "https://psi.nasa.gov/physci/repo",
+        "doi": "10.2514/1.A34167",
+        "version": "1.0",
+        "accessed_at": "2026-10-18T14:30:00Z"
+      }
+    ]
+  },
+  {
+    "id": "a2c3d4e5-f6a7-4b8c-9d0e-2f3a4b5c6d7e",
+    "psi_id": "PSI-FLEX-01",
+    "acronym": "FLEX",
+    "title": "Flame Extinguishment Experiment (FLEX & FLEX-2)",
+    "research_area": "Droplet Combustion & Cool Flame Kinetics",
+    "objectives": "Study fundamental spherical droplet combustion, radiative extinguishment, and low-temperature chemical reaction regimes (cool flames) in microgravity.",
+    "description": "FLEX explores droplet burning behavior free from buoyant convection. Droplets suspended on SiC filaments burn with spherical symmetry. The discovery of quasi-steady low-temperature 'cool flame' burning after hot-flame extinction revolutionized combustion kinetics and clean fuel models.",
+    "doi": "10.1016/j.combustflame.2013.06.023",
+    "source_url": "https://psi.nasa.gov/physci/repo",
+    "metadata": {
+      "facility": "Combustion Integrated Rack (CIR) - Multi-user Droplet Combustion Apparatus (MDCA)",
+      "platform": "International Space Station (ISS)",
+      "principal_investigator": "Prof. Forman A. Williams (UC San Diego)",
+      "target_environments": ["Spacecraft", "Propulsion", "Space Station"],
+      "combustion_type": "Isolated Droplet Combustion / Cool Flame"
+    },
+    "experimental_runs": [
+      {
+        "id": "run-flex-001",
+        "run_code": "FLEX-HEP-01",
+        "fuel_type": "Liquid Hydrocarbon",
+        "fuel_name": "n-Heptane Droplet",
+        "fuel_geometry": "Spherical droplet (diameter 2.8 mm)",
+        "gravity_regime": "Microgravity (~10^-6 g)",
+        "oxygen_concentration": 21.0,
+        "pressure_value": 101.3,
+        "pressure_unit": "kPa",
+        "airflow_velocity": 0.0,
+        "airflow_unit": "cm/s",
+        "suppressant": "Quenching via Radiative Heat Loss",
+        "sensor_types": ["UV Chemiluminescence Camera", "Color Camera", "Fiber Optic Spectrometer"],
+        "experimental_notes": "Hot flame extinguished at d = 1.9 mm, followed immediately by sustained secondary cool flame burning with low CH* emission invisible to the naked eye.",
+        "measurements": [
+          {
+            "metric_name": "Burning Rate Constant (K)",
+            "metric_value": 0.48,
+            "unit": "mm2/s",
+            "measurement_time": 3.2
+          },
+          {
+            "metric_name": "Hot Flame Extinction Diameter",
+            "metric_value": 1.92,
+            "unit": "mm",
+            "measurement_time": 6.8
+          },
+          {
+            "metric_name": "Cool Flame Lifetime",
+            "metric_value": 8.4,
+            "unit": "s",
+            "measurement_time": 15.2
+          }
+        ]
+      }
+    ],
+    "research_documents": [
+      {
+        "id": "doc-flex-001",
+        "title": "Low-temperature cool flame combustion of n-heptane droplets in microgravity",
+        "document_type": "Journal Article",
+        "doi": "10.1016/j.combustflame.2013.06.023",
+        "source_url": "https://doi.org/10.1016/j.combustflame.2013.06.023",
+        "file_path": "data/processed/flex_droplet_combustion_2013.pdf"
+      }
+    ],
+    "data_sources": [
+      {
+        "source_name": "NASA Physical Sciences Informatics (PSI)",
+        "source_url": "https://psi.nasa.gov/physci/repo",
+        "doi": "10.1016/j.combustflame.2013.06.023",
+        "version": "1.0",
+        "accessed_at": "2026-10-20T11:15:00Z"
+      }
+    ]
+  },
+  {
+    "id": "b3c4d5e6-f7a8-4c9d-0e1f-3a4b5c6d7e8f",
+    "psi_id": "PSI-SAME-01",
+    "acronym": "SAME",
+    "title": "Smoke Aerosol Measurement Experiment (SAME & SAME-R)",
+    "research_area": "Smoke Detection & Particle Morphology",
+    "objectives": "Characterize smoke particulate size distributions, agglomeration, and optical signatures produced by pre-combustion overheating and combustion in microgravity.",
+    "description": "Smoke particles formed in microgravity agglomerate differently than in normal gravity due to longer residence times and absence of buoyant sorting. SAME measures particle size distributions to optimize early warning fire detectors for space exploration vehicles, preventing false alarms and ensuring timely detection.",
+    "doi": "10.4271/2009-01-2481",
+    "source_url": "https://psi.nasa.gov/physci/repo",
+    "metadata": {
+      "facility": "Microgravity Science Glovebox (MSG)",
+      "platform": "International Space Station (ISS)",
+      "principal_investigator": "Dr. David L. Urban (NASA Glenn Research Center)",
+      "target_environments": ["Spacecraft", "Space Station", "Lunar Habitat", "Mars Habitat"],
+      "combustion_type": "Overheated Pyrolysis and Smoldering Particulates"
+    },
+    "experimental_runs": [
+      {
+        "id": "run-same-001",
+        "run_code": "SAME-KAPTON-OVERHEAT",
+        "fuel_type": "Wire Insulation Polymer",
+        "fuel_name": "Kapton Polyimide Wire Insulation",
+        "fuel_geometry": "Insulated wiring bundle (30 mm length)",
+        "gravity_regime": "Microgravity (~10^-6 g)",
+        "oxygen_concentration": 21.0,
+        "pressure_value": 101.3,
+        "pressure_unit": "kPa",
+        "airflow_velocity": 5.0,
+        "airflow_unit": "cm/s",
+        "suppressant": "Electrical Power Cutoff",
+        "sensor_types": ["Differential Mobility Spectrometer", "Condensation Particle Counter", "Ionization Chamber Smoke Detector"],
+        "experimental_notes": "Electrical overheating test to simulate wiring harness fault. Microgravity yielded larger average particle diameters due to enhanced Brownian agglomeration.",
+        "measurements": [
+          {
+            "metric_name": "Mean Particle Diameter",
+            "metric_value": 0.38,
+            "unit": "microns",
+            "measurement_time": 60.0
+          },
+          {
+            "metric_name": "Peak Particle Number Concentration",
+            "metric_value": 1.2e6,
+            "unit": "particles/cm3",
+            "measurement_time": 95.0
+          },
+          {
+            "metric_name": "Obscuration Rate",
+            "metric_value": 4.2,
+            "unit": "%/m",
+            "measurement_time": 120.0
+          }
+        ]
+      }
+    ],
+    "research_documents": [
+      {
+        "id": "doc-same-001",
+        "title": "Smoke Particle Size Measurements from Microgravity Pyrolysis in the SAME Experiment",
+        "document_type": "Conference Paper",
+        "doi": "10.4271/2009-01-2481",
+        "source_url": "https://doi.org/10.4271/2009-01-2481",
+        "file_path": "data/processed/same_smoke_particle_2009.pdf"
+      }
+    ],
+    "data_sources": [
+      {
+        "source_name": "NASA Technical Reports Server (NTRS)",
+        "source_url": "https://ntrs.nasa.gov/citations/20100005231",
+        "doi": "10.4271/2009-01-2481",
+        "version": "1.0",
+        "accessed_at": "2026-10-22T09:40:00Z"
+      }
+    ]
+  },
+  {
+    "id": "c4d5e6f7-a8b9-4d0e-1f2a-4b5c6d7e8f9a",
+    "psi_id": "PSI-ACME-01",
+    "acronym": "ACME",
+    "title": "Advanced Combustion via Microgravity Experiments (ACME / CFI-G)",
+    "research_area": "Gaseous Flame Stabilization & Soot Dynamics",
+    "objectives": "Investigate fundamental laminar gaseous diffusion flames in microgravity to understand pollutant/soot reduction, flame stability limits, and electric field interactions.",
+    "description": "ACME is an integrated set of five independent gaseous microgravity combustion experiments conducted in the Combustion Integrated Rack (CIR). It isolates gas-phase chemical kinetics from buoyancy-induced strain, providing foundational data for burner efficiency, flame stabilization, and spacecraft fire prevention.",
+    "doi": "10.1016/j.combustflame.2018.04.015",
+    "source_url": "https://psi.nasa.gov/physci/repo",
+    "metadata": {
+      "facility": "Combustion Integrated Rack (CIR)",
+      "platform": "International Space Station (ISS)",
+      "principal_investigator": "Dr. Dennis P. Stocker (NASA Glenn Research Center)",
+      "target_environments": ["Spacecraft", "Planetary Habitats", "Propulsion"],
+      "combustion_type": "Gaseous Laminar Diffusion Flame"
+    },
+    "experimental_runs": [
+      {
+        "id": "run-acme-001",
+        "run_code": "ACME-CFI-CH4-01",
+        "fuel_type": "Gaseous Hydrocarbon",
+        "fuel_name": "Methane / Nitrogen Mixture (CH4 / N2)",
+        "fuel_geometry": "Coflow burner nozzle (diameter 4.0 mm)",
+        "gravity_regime": "Microgravity (~10^-6 g)",
+        "oxygen_concentration": 21.0,
+        "pressure_value": 101.3,
+        "pressure_unit": "kPa",
+        "airflow_velocity": 4.0,
+        "airflow_unit": "cm/s",
+        "suppressant": "Inert Gas Dilution (N2)",
+        "sensor_types": ["Gas Chromatograph", "High-Resolution Spectrometer", "Thermocouple"],
+        "experimental_notes": "Laminar flame maintained at low flow velocity. Measured sooting boundary and radiative emission in spherical flame envelope.",
+        "measurements": [
+          {
+            "metric_name": "Visible Flame Tip Height",
+            "metric_value": 24.5,
+            "unit": "mm",
+            "measurement_time": 40.0
+          },
+          {
+            "metric_name": "Soot Volume Fraction",
+            "metric_value": 1.4e-6,
+            "unit": "fraction",
+            "measurement_time": 50.0
+          }
+        ]
+      }
+    ],
+    "research_documents": [
+      {
+        "id": "doc-acme-001",
+        "title": "Structure and Extinction of Gaseous Diffusion Flames in Microgravity: ACME Results",
+        "document_type": "Journal Article",
+        "doi": "10.1016/j.combustflame.2018.04.015",
+        "source_url": "https://doi.org/10.1016/j.combustflame.2018.04.015",
+        "file_path": "data/processed/acme_gaseous_flames_2018.pdf"
+      }
+    ],
+    "data_sources": [
+      {
+        "source_name": "NASA Physical Sciences Informatics (PSI)",
+        "source_url": "https://psi.nasa.gov/physci/repo",
+        "doi": "10.1016/j.combustflame.2018.04.015",
+        "version": "1.0",
+        "accessed_at": "2026-10-25T16:00:00Z"
+      }
+    ]
+  }
+]

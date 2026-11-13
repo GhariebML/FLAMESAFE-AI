@@ -1,0 +1,79 @@
+erDiagram
+    INVESTIGATIONS ||--o{ EXPERIMENTAL_RUNS : contains
+    INVESTIGATIONS ||--o{ RESEARCH_DOCUMENTS : references
+    INVESTIGATIONS ||--o{ DATA_SOURCES : originates_from
+    EXPERIMENTAL_RUNS ||--o{ MEASUREMENTS : records
+    RESEARCH_DOCUMENTS ||--o{ EVIDENCE_CHUNKS : indexed_into
+
+    INVESTIGATIONS {
+        string id PK "UUID"
+        string psi_id UK "NASA PSI Identifier"
+        string acronym "Investigation Acronym"
+        string title "Full Official Title"
+        string research_area "Scientific Domain"
+        text objectives "Stated Research Goals"
+        text description "Comprehensive Summary"
+        string doi "Digital Object Identifier"
+        string source_url "Provenance URL"
+        json metadata_payload "Target Environments & Hardware"
+        datetime created_at
+        datetime updated_at
+    }
+
+    EXPERIMENTAL_RUNS {
+        string id PK "UUID"
+        string investigation_id FK
+        string run_code "Test ID"
+        string fuel_type "Category (Polymer/Fabric/Liquid/Gas)"
+        string fuel_name "Specific Material Name"
+        string fuel_geometry "Dimensions & Thickness"
+        string gravity_regime "Microgravity/Lunar/Martian/1g"
+        float oxygen_concentration "Volume Percentage (0-100)"
+        float pressure_value "Chamber Atmospheric Pressure"
+        string pressure_unit "kPa (normalized)"
+        float airflow_velocity "Forced Flow Velocity"
+        string airflow_unit "cm/s (normalized)"
+        string suppressant "Quench Agent (N2/CO2/None)"
+        json sensor_types "Sensor Array"
+        text experimental_notes "Observed Extinction Phenomena"
+    }
+
+    MEASUREMENTS {
+        string id PK "UUID"
+        string run_id FK
+        string metric_name "Measured Physical Metric"
+        float metric_value "Numeric Value (null if unmeasured)"
+        string unit "Explicit Measurement Unit"
+        float measurement_time "Elapsed Seconds"
+        string source_document_id FK
+    }
+
+    RESEARCH_DOCUMENTS {
+        string id PK "UUID"
+        string investigation_id FK
+        string title "Paper or Report Title"
+        string document_type "Journal Article / NTRS Technical Paper"
+        string doi "Document DOI"
+        string source_url "Original Access URL"
+        string file_path "Local Cached PDF"
+    }
+
+    EVIDENCE_CHUNKS {
+        string id PK "UUID"
+        string document_id FK
+        text chunk_text "Retrievable Paragraph Segment"
+        int page_number "Publication Page Number"
+        string section_name "Section Title"
+        json embedding "768-dim Vector Representation"
+        json metadata_payload "Scientific Context"
+    }
+
+    DATA_SOURCES {
+        string id PK "UUID"
+        string investigation_id FK
+        string source_name "Archive Name (NASA PSI / NTRS)"
+        string source_url "Public Archive URL"
+        string doi "Source Catalog DOI"
+        string version "Catalog Version"
+        datetime accessed_at "Access Timestamp"
+    }

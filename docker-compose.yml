@@ -1,0 +1,84 @@
+services:
+  # ============================================================================
+  # Relational Database with pgvector Extension
+  # ============================================================================
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: flamesafe_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-flamesafe}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-flamesafe_dev_secret}
+      POSTGRES_DB: ${POSTGRES_DB:-flamesafe_db}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-flamesafe} -d ${POSTGRES_DB:-flamesafe_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - flamesafe_net
+
+  # ============================================================================
+  # Backend API Service (FastAPI)
+  # ============================================================================
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: flamesafe_backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - ENVIRONMENT=development
+      - DEBUG=true
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-flamesafe}:${POSTGRES_PASSWORD:-flamesafe_dev_secret}@db:5432/${POSTGRES_DB:-flamesafe_db}
+      - ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
+      - AI_PROVIDER=${AI_PROVIDER:-mock}
+      - AI_MODEL_NAME=${AI_MODEL_NAME:-gemini-1.5-pro}
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - ./data:/app/data
+    networks:
+      - flamesafe_net
+
+  # ============================================================================
+  # Frontend Client Service (Next.js)
+  # ============================================================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: flamesafe_frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
+      - NEXT_PUBLIC_APP_NAME=FlameSafe AI
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    networks:
+      - flamesafe_net
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  flamesafe_net:
+    driver: bridge

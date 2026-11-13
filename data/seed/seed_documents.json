@@ -1,0 +1,112 @@
+[
+  {
+    "id": "doc-bass-001",
+    "investigation_id": "e0a1b2c3-d4e5-4f6a-8b9c-0d1e2f3a4b5c",
+    "title": "Solid Flammability Boundary Evaluation in Low-Speed Microgravity Flows in BASS",
+    "document_type": "Peer-Reviewed Journal Article",
+    "doi": "10.1016/j.proci.2014.05.077",
+    "source_url": "https://doi.org/10.1016/j.proci.2014.05.077",
+    "file_path": "data/processed/bass_flammability_2014.pdf",
+    "chunks": [
+      {
+        "id": "chunk-bass-001-01",
+        "page_number": 3,
+        "section_name": "Flame Quenching & Airflow Dependence",
+        "chunk_text": "In the microgravity environment of the International Space Station, solid fuel combustion behavior is strongly governed by forced convective flow velocities. In the absence of natural buoyant convection, flames extinguished when forced concurrent airflow dropped below 0.8 cm/s due to radiative cooling exceeding the chemical heat release rate. Above this threshold, flame spread was sustained with flame lengths scaling directly with flow speed.",
+        "metadata": {
+          "investigation_acronym": "BASS",
+          "fuel_name": "PMMA",
+          "key_parameters": ["airflow_threshold: 0.8 cm/s", "gravity: microgravity"]
+        }
+      },
+      {
+        "id": "chunk-bass-001-02",
+        "page_number": 5,
+        "section_name": "Hypoxic Spacecraft Atmospheres",
+        "chunk_text": "Tests conducted on cotton-fiberglass blend fabric samples in reduced oxygen atmospheres (18.5% and 16.5% O2 at 98 kPa) demonstrated that the limiting oxygen concentration (LOC) for flame propagation is lower in microgravity than in 1g upward flame tests for low flow regimes. This indicates that terrestrial flammability screening tests (such as NASA-STD-6001 Test 1) may non-conservatively underestimate fire hazards under specific forced ventilation conditions in space cabins.",
+        "metadata": {
+          "investigation_acronym": "BASS",
+          "fuel_name": "Cotton-Fiberglass Fabric",
+          "key_parameters": ["limiting_oxygen: 16.2%", "pressure: 98 kPa"]
+        }
+      }
+    ]
+  },
+  {
+    "id": "doc-saf-001",
+    "investigation_id": "f1b2c3d4-e5f6-4a7b-8c9d-1e2f3a4b5c6d",
+    "title": "Large-Scale Flammability Tests in Low Gravity: The Saffire Experiments",
+    "document_type": "Peer-Reviewed Journal Article",
+    "doi": "10.2514/1.A34167",
+    "source_url": "https://doi.org/10.2514/1.A34167",
+    "file_path": "data/processed/saffire_large_scale_2018.pdf",
+    "chunks": [
+      {
+        "id": "chunk-saf-001-01",
+        "page_number": 4,
+        "section_name": "Vehicle-Scale Flame Propagation",
+        "chunk_text": "The Saffire-I experiment validated that large-scale fabric samples (0.4 m x 1.0 m) exhibit flame spread rates up to 0.18 cm/s at forced flow rates of 20 cm/s in 21% O2 at atmospheric pressure. The flame exhibited significant downstream preheating, causing pyrolysis gas accumulation ahead of the flame front. Unlike glovebox experiments, large samples generated thermal feedback loops that increased propagation velocity over time.",
+        "metadata": {
+          "investigation_acronym": "SAFFIRE",
+          "fuel_name": "Cotton-Fiberglass Fabric (Sibal)",
+          "key_parameters": ["sample_size: 0.4x1.0m", "flame_spread_rate: 0.18 cm/s"]
+        }
+      },
+      {
+        "id": "chunk-saf-001-02",
+        "page_number": 7,
+        "section_name": "Post-Fire Cabin Recovery & Venting",
+        "chunk_text": "Post-combustion sensor telemetry demonstrated substantial carbon monoxide generation and dense particulate suspension that persisted inside the Cygnus vehicle without natural settling. In closed exploration habitats on the Moon or Mars, active particulate filtration and catalyst-based CO scrubbing are vital before crew can safely re-enter an affected module.",
+        "metadata": {
+          "investigation_acronym": "SAFFIRE",
+          "target_environment": "Exploration Habitat / Spacecraft",
+          "key_parameters": ["CO generation", "smoke particulate persistence"]
+        }
+      }
+    ]
+  },
+  {
+    "id": "doc-flex-001",
+    "investigation_id": "a2c3d4e5-f6a7-4b8c-9d0e-2f3a4b5c6d7e",
+    "title": "Low-temperature cool flame combustion of n-heptane droplets in microgravity",
+    "document_type": "Peer-Reviewed Journal Article",
+    "doi": "10.1016/j.combustflame.2013.06.023",
+    "source_url": "https://doi.org/10.1016/j.combustflame.2013.06.023",
+    "file_path": "data/processed/flex_droplet_combustion_2013.pdf",
+    "chunks": [
+      {
+        "id": "chunk-flex-001-01",
+        "page_number": 2,
+        "section_name": "Cool Flame Transition and Extinction",
+        "chunk_text": "During microgravity droplet combustion tests in the CIR, isolated n-heptane droplets initially burned with a visible hot flame. After apparent hot-flame extinction at approximately 1.9 mm diameter due to radiative loss, droplet vaporization and chemical reaction continued at lower temperatures (600-800 K) supported by low-temperature alkylperoxy radical kinetics. This secondary cool flame burned without visible emissions until final droplet depletion.",
+        "metadata": {
+          "investigation_acronym": "FLEX",
+          "fuel_name": "n-Heptane Droplet",
+          "key_parameters": ["cool_flame: true", "hot_extinction_diameter: 1.92 mm"]
+        }
+      }
+    ]
+  },
+  {
+    "id": "doc-same-001",
+    "investigation_id": "b3c4d5e6-f7a8-4c9d-0e1f-3a4b5c6d7e8f",
+    "title": "Smoke Particle Size Measurements from Microgravity Pyrolysis in the SAME Experiment",
+    "document_type": "Conference Paper",
+    "doi": "10.4271/2009-01-2481",
+    "source_url": "https://doi.org/10.4271/2009-01-2481",
+    "file_path": "data/processed/same_smoke_particle_2009.pdf",
+    "chunks": [
+      {
+        "id": "chunk-same-001-01",
+        "page_number": 2,
+        "section_name": "Particle Agglomeration Dynamics",
+        "chunk_text": "The SAME investigation revealed that smoke aerosols produced by overheated wire insulation and polymers in microgravity display significantly larger mean particulate diameters (0.35 to 0.45 microns) compared to identical materials overheated in normal gravity (0.05 to 0.15 microns). The absence of buoyancy extends aerosol residence times near the overheating site, promoting coagulation and agglomeration prior to transport toward ventilation detectors.",
+        "metadata": {
+          "investigation_acronym": "SAME",
+          "fuel_name": "Kapton Wire Insulation",
+          "key_parameters": ["mean_particle_diameter: 0.38 microns", "agglomeration: enhanced"]
+        }
+      }
+    ]
+  }
+]

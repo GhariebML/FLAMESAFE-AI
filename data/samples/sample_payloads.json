@@ -1,0 +1,42 @@
+{
+  "compare_request": {
+    "investigation_ids": [
+      "e0a1b2c3-d4e5-4f6a-8b9c-0d1e2f3a4b5c",
+      "f1b2c3d4-e5f6-4a7b-8c9d-1e2f3a4b5c6d"
+    ],
+    "target_parameters": [
+      "fuel_type",
+      "gravity_regime",
+      "oxygen_concentration",
+      "pressure_value",
+      "airflow_velocity"
+    ]
+  },
+  "rank_request": {
+    "query": "Evaluate solid polymer flammability limits under low ventilation in a space cabin",
+    "target_environment": "Spacecraft",
+    "fuel_category": "Solid Polymer",
+    "weights": {
+      "domain_relevance": 0.30,
+      "fuel_compatibility": 0.25,
+      "condition_compatibility": 0.20,
+      "mission_applicability": 0.15,
+      "metadata_quality": 0.10
+    }
+  },
+  "scenario_request": {
+    "environment": "Lunar Habitat",
+    "fuel_type": "Solid Polymer",
+    "oxygen_concentration": 28.0,
+    "pressure_value": 56.5,
+    "pressure_unit": "kPa",
+    "airflow_velocity": 8.0,
+    "airflow_unit": "cm/s",
+    "fire_safety_focus": "Solid-material flammability and flame spread"
+  },
+  "assistant_query_request": {
+    "query": "What are the observed airflow extinction limits for solid materials in microgravity according to the BASS experiments?",
+    "investigation_id_filter": "e0a1b2c3-d4e5-4f6a-8b9c-0d1e2f3a4b5c",
+    "max_citations": 3
+  }
+}

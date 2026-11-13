@@ -1,0 +1,15 @@
+flowchart TD
+    Start["User inputs mission scenario parameters<br/>(Environment, Fuel, Oxygen, Pressure, Airflow)"] --> UnitCheck["Normalize Units<br/>(Pressure -> kPa, Airflow -> cm/s)"]
+
+    UnitCheck --> GravityBranch{"Environment Gravity Regime"}
+    GravityBranch -->|"Spacecraft / ISS"| MicroG["Microgravity (~10^-6 g)<br/>Direct experimental analogy"]
+    GravityBranch -->|"Lunar Habitat / Rover"| LunarG["Lunar Surface (0.166 g)<br/>Partial gravity / Hypoxic extrapolation"]
+    GravityBranch -->|"Mars Habitat / Rover"| MarsG["Martian Surface (0.38 g)<br/>Partial gravity / External CO2 buffer"]
+
+    MicroG & LunarG & MarsG --> MatchExp["Match against NASA flight test runs<br/>(BASS, SAFFIRE, FLEX, SAME)"]
+
+    MatchExp --> ConditionEval["Condition Match Report<br/>(Direct Match, Analogous Range, Extrapolated)"]
+    ConditionEval --> GapDetect["Identify Scientific Research Gaps<br/>(Missing high-O2 data, Dust interaction, 0.166g testing)"]
+    GapDetect --> EvidenceRet["Retrieve Supporting Literature Chunks"]
+    EvidenceRet --> SafetyNotice["Attach Partial-Gravity Limitations Notice<br/>(0g does not directly predict partial-g buoyancy)"]
+    SafetyNotice --> Output["Deliver Scenario Analysis Response"]

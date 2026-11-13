@@ -1,0 +1,35 @@
+sequenceDiagram
+    autonumber
+    participant DevA as Developer A (Frontend & Product)
+    participant DevB as Developer B (Backend, Data & AI)
+    participant Contract as Shared API Contract (docs/API_CONTRACT.md)
+    participant Git as Git Repo (integration branch)
+    participant CI as GitHub Actions CI
+
+    Note over DevA,DevB: Step 1: Interface Alignment
+    DevA->>Contract: Reviews requested frontend payload fields
+    DevB->>Contract: Validates Pydantic schemas & endpoint specifications
+    DevA->>DevB: Approve API Contract v1.0
+
+    Note over DevA,DevB: Step 2: Parallel Implementation
+    DevA->>DevA: Develops Next.js UI using apiClient (mock/dev backend)
+    DevB->>DevB: Implements FastAPI endpoints, SQLAlchemy models & RAG
+
+    Note over DevA,DevB: Step 3: Local Quality Verification
+    DevA->>DevA: Runs frontend test suite & typecheck
+    DevB->>DevB: Runs pytest test suite & ruff linting
+
+    Note over DevA,DevB: Step 4: Staging Integration
+    DevB->>Git: PR feature/backend -> integration
+    Git->>CI: Runs CI checks (pytest, lint)
+    CI-->>Git: Pass
+    DevA->>Git: Reviews & Approves Backend PR
+
+    DevA->>Git: PR feature/frontend -> integration
+    Git->>CI: Runs CI checks (tsc, tests)
+    CI-->>Git: Pass
+    DevB->>Git: Reviews & Approves Frontend PR
+
+    Note over DevA,DevB: Step 5: End-to-End Milestone
+    DevA->>DevB: Pair verify live data on http://localhost:3000
+    DevB->>Git: Merge integration into main

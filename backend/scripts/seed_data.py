@@ -1,23 +1,24 @@
 import asyncio
-import hashlib
 import json
 import os
-from datetime import datetime, timezone
-from sqlalchemy import select
+from datetime import UTC, datetime
+
+from sqlalchemy import func, select
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.core.database import AsyncSessionLocal, init_db
-from app.core.config import settings
 from app.core.logging import logger
-from app.models.investigation import Investigation
+from app.models.data_source import DataSource
+from app.models.evidence_chunk import EvidenceChunk
 from app.models.experimental_run import ExperimentalRun
+from app.models.investigation import Investigation
 from app.models.measurement import Measurement
 from app.models.research_document import ResearchDocument
-from app.models.evidence_chunk import EvidenceChunk
-from app.models.data_source import DataSource
-from app.rag.embeddings import MockEmbeddingProvider
 
 
 def get_seed_path(filename: str) -> str:
+    # Try looking in relative paths
     candidates = [
         os.path.join(os.path.dirname(__file__), "..", "..", "data", "seed", filename),
         os.path.join("data", "seed", filename),
@@ -30,6 +31,16 @@ def get_seed_path(filename: str) -> str:
 
 
 async def seed_database_if_empty(session: AsyncSession) -> bool:
+    count_query = select(func.count(Investigation.id))
+    try:
+        count = (await session.execute(count_query)).scalar_one()
+        if count > 0:
+            logger.info(f"Database already contains {count} investigations; skipping seeding.")
+            return False
+    except SQLAlchemyError as e:
+        logger.warning(f"Could not check existing investigations: {e}")
+        return False
+
     inv_path = get_seed_path("seed_investigations.json")
     doc_path = get_seed_path("seed_documents.json")
 
@@ -37,35 +48,12 @@ async def seed_database_if_empty(session: AsyncSession) -> bool:
         logger.warning(f"Seed file not found: {inv_path}")
         return False
 
-    try:
-        existing_inv_ids = set((await session.execute(select(Investigation.id))).scalars().all())
-        existing_doc_ids = set((await session.execute(select(ResearchDocument.id))).scalars().all())
-    except Exception as e:
-        logger.warning(f"Could not inspect existing records before seeding: {e}")
-        return False
+    logger.info(f"Seeding database from {inv_path}...")
 
-    with open(inv_path, "r", encoding="utf-8") as f:
+    with open(inv_path, "r", encoding="utf-8") as f:  # noqa: ASYNC230
         investigations_data = json.load(f)
 
-    docs_data = []
-    if os.path.exists(doc_path):
-        with open(doc_path, "r", encoding="utf-8") as f:
-            docs_data = json.load(f)
-
-    if len(existing_inv_ids) >= len(investigations_data) and len(existing_doc_ids) >= len(docs_data):
-        logger.info(
-            f"Database already contains {len(existing_inv_ids)} investigations and {len(existing_doc_ids)} documents; skipping seeding."
-        )
-        return False
-
-    logger.info(f"Seeding database from {inv_path}...")
-    mock_embedder = MockEmbeddingProvider(dimension=settings.EMBEDDING_DIMENSION)
-    now_utc = datetime.now(timezone.utc)
-
     for item in investigations_data:
-        if item["id"] in existing_inv_ids:
-            continue
-
         inv = Investigation(
             id=item["id"],
             psi_id=item["psi_id"],
@@ -80,6 +68,7 @@ async def seed_database_if_empty(session: AsyncSession) -> bool:
         )
         session.add(inv)
 
+        # Runs
         for run_dict in item.get("experimental_runs", []):
             run = ExperimentalRun(
                 id=run_dict["id"],
@@ -100,6 +89,7 @@ async def seed_database_if_empty(session: AsyncSession) -> bool:
             )
             session.add(run)
 
+            # Measurements
             for m in run_dict.get("measurements", []):
                 meas = Measurement(
                     run_id=run.id,
@@ -110,6 +100,7 @@ async def seed_database_if_empty(session: AsyncSession) -> bool:
                 )
                 session.add(meas)
 
+        # Sources
         for s in item.get("data_sources", []):
             src = DataSource(
                 investigation_id=inv.id,
@@ -117,44 +108,36 @@ async def seed_database_if_empty(session: AsyncSession) -> bool:
                 source_url=s["source_url"],
                 doi=s.get("doi"),
                 version=s.get("version", "1.0"),
-                accessed_at=now_utc,
+                accessed_at=datetime.now(UTC),
             )
             session.add(src)
 
-    for d in docs_data:
-        if d["id"] in existing_doc_ids:
-            continue
-
-        doc = ResearchDocument(
-            id=d["id"],
-            investigation_id=d["investigation_id"],
-            title=d["title"],
-            document_type=d["document_type"],
-            doi=d.get("doi"),
-            source_url=d.get("source_url"),
-            file_path=d.get("file_path"),
-        )
-        session.add(doc)
-
-        for c in d.get("chunks", []):
-            text_val = c["chunk_text"]
-            content_hash = hashlib.sha256(text_val.encode("utf-8")).hexdigest()
-            vector = mock_embedder._generate_vector(text_val)
-            chunk = EvidenceChunk(
-                id=c["id"],
-                document_id=doc.id,
-                chunk_text=text_val,
-                page_number=c.get("page_number"),
-                section_name=c.get("section_name"),
-                content_hash=content_hash,
-                embedding=vector,
-                embedding_provider=mock_embedder.provider_name,
-                embedding_model=mock_embedder.model_name,
-                embedding_dimension=mock_embedder.dimension,
-                embedded_at=now_utc,
-                metadata_payload=c.get("metadata"),
+    # Documents & Evidence Chunks
+    if os.path.exists(doc_path):
+        with open(doc_path, "r", encoding="utf-8") as f:  # noqa: ASYNC230
+            docs_data = json.load(f)
+        for d in docs_data:
+            doc = ResearchDocument(
+                id=d["id"],
+                investigation_id=d["investigation_id"],
+                title=d["title"],
+                document_type=d["document_type"],
+                doi=d.get("doi"),
+                source_url=d.get("source_url"),
+                file_path=d.get("file_path"),
             )
-            session.add(chunk)
+            session.add(doc)
+
+            for c in d.get("chunks", []):
+                chunk = EvidenceChunk(
+                    id=c["id"],
+                    document_id=doc.id,
+                    chunk_text=c["chunk_text"],
+                    page_number=c.get("page_number"),
+                    section_name=c.get("section_name"),
+                    metadata_payload=c.get("metadata"),
+                )
+                session.add(chunk)
 
     await session.commit()
     logger.info("Database seeding successfully completed!")

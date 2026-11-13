@@ -1,5 +1,5 @@
 import re
-from typing import Dict, List, Any, Optional
+from typing import Any
 
 
 class ScientificValidator:
@@ -11,19 +11,18 @@ class ScientificValidator:
     DOI_PATTERN = re.compile(r"^10\.\d{4,9}/[-._;()/:A-Za-z0-9]+$")
 
     @classmethod
-    def validate_doi(cls, doi: Optional[str]) -> bool:
+    def validate_doi(cls, doi: str | None) -> bool:
         if not doi:
             return True  # Optional field
         return bool(cls.DOI_PATTERN.match(doi.strip()))
 
     @classmethod
-    def validate_run_record(cls, run_dict: Dict[str, Any]) -> List[str]:
+    def validate_run_record(cls, run_dict: dict[str, Any]) -> list[str]:
         warnings = []
 
         oxygen = run_dict.get("oxygen_concentration")
-        if oxygen is not None:
-            if oxygen < 0.0 or oxygen > 100.0:
-                warnings.append(f"Oxygen concentration out of physical bounds: {oxygen}%")
+        if oxygen is not None and (oxygen < 0.0 or oxygen > 100.0):
+            warnings.append(f"Oxygen concentration out of physical bounds: {oxygen}%")
 
         pressure = run_dict.get("pressure_value")
         if pressure is not None and pressure < 0.0:

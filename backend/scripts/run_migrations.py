@@ -4,7 +4,12 @@ import sys
 
 def run_migrations():
     print("Running Alembic database migrations...")
-    result = subprocess.run(["alembic", "upgrade", "head"], capture_output=True, text=True)
+    result = subprocess.run(
+        [sys.executable, "-m", "alembic", "upgrade", "head"],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
     print(result.stdout)
     if result.returncode != 0:
         print(f"Migration error: {result.stderr}", file=sys.stderr)

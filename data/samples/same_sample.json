@@ -1,0 +1,12 @@
+{
+  "investigation_sample": {
+    "acronym": "SAME",
+    "psi_id": "PSI-SAME-01",
+    "title": "Smoke Aerosol Measurement Experiment",
+    "fuel_tested": "Kapton Polyimide Wire Insulation",
+    "mean_particle_diameter_microns": 0.38,
+    "chamber_pressure_kPa": 101.3,
+    "airflow_velocity_cm_s": 5.0,
+    "apparatus": "Microgravity Science Glovebox (MSG)"
+  }
+}

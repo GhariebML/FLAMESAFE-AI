@@ -1,0 +1,12 @@
+{
+  "investigation_sample": {
+    "acronym": "ACME",
+    "psi_id": "PSI-ACME-01",
+    "title": "Advanced Combustion via Microgravity Experiments",
+    "fuel_tested": "Methane / Nitrogen Mixture (CH4 / N2)",
+    "visible_flame_tip_height_mm": 24.5,
+    "chamber_pressure_kPa": 101.3,
+    "airflow_velocity_cm_s": 4.0,
+    "apparatus": "Combustion Integrated Rack (CIR)"
+  }
+}

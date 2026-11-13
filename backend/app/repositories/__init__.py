@@ -1,4 +1,4 @@
-from app.repositories.investigation_repo import InvestigationRepository
 from app.repositories.document_repo import DocumentRepository
+from app.repositories.investigation_repo import InvestigationRepository
 
-__all__ = ["InvestigationRepository", "DocumentRepository"]
+__all__ = ["DocumentRepository", "InvestigationRepository"]

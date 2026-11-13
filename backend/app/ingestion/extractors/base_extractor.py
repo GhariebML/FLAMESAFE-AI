@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Dict, List, Any
+from typing import Any
 
 
 class BaseExtractor(ABC):
@@ -8,9 +8,7 @@ class BaseExtractor(ABC):
     @abstractmethod
     def extract_text(self, file_bytes: bytes) -> str:
         """Extract plain text from document binary."""
-        pass
 
     @abstractmethod
-    def extract_sections(self, file_bytes: bytes) -> List[Dict[str, Any]]:
+    def extract_sections(self, file_bytes: bytes) -> list[dict[str, Any]]:
         """Extract structured sections and page demarcations."""
-        pass

@@ -1,4 +1,5 @@
 import asyncio
+import os
 from logging.config import fileConfig
 
 from alembic import context
@@ -6,10 +7,10 @@ from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
-from app.core.config import settings
-from app.models.base import Base
 # Import all models to ensure they are registered with Base.metadata
 import app.models  # noqa: F401
+from app.core.config import settings
+from app.models.base import Base
 
 config = context.config
 
@@ -18,8 +19,21 @@ if config.config_file_name is not None:
 
 target_metadata = Base.metadata
 
+
+def get_url() -> str:
+    env_url = os.getenv("DATABASE_URL")
+    if env_url:
+        return env_url
+    if settings.USE_SQLITE_FALLBACK:
+        try:
+            import asyncpg  # noqa: F401
+        except ImportError:
+            return settings.SQLITE_DATABASE_URL
+    return settings.DATABASE_URL
+
+
 def run_migrations_offline() -> None:
-    url = settings.DATABASE_URL
+    url = get_url()
     context.configure(
         url=url,
         target_metadata=target_metadata,
@@ -30,14 +44,16 @@ def run_migrations_offline() -> None:
     with context.begin_transaction():
         context.run_migrations()
 
+
 def do_run_migrations(connection: Connection) -> None:
     context.configure(connection=connection, target_metadata=target_metadata)
     with context.begin_transaction():
         context.run_migrations()
 
+
 async def run_async_migrations() -> None:
     configuration = config.get_section(config.config_ini_section, {})
-    configuration["sqlalchemy.url"] = settings.DATABASE_URL
+    configuration["sqlalchemy.url"] = get_url()
 
     connectable = async_engine_from_config(
         configuration,

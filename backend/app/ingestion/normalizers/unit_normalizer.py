@@ -1,4 +1,3 @@
-from typing import Optional, Tuple
 
 
 class UnitNormalizer:
@@ -8,7 +7,7 @@ class UnitNormalizer:
     """
 
     @staticmethod
-    def normalize_pressure(value: Optional[float], unit: Optional[str]) -> Tuple[Optional[float], str]:
+    def normalize_pressure(value: float | None, unit: str | None) -> tuple[float | None, str]:
         """Normalize pressure into standard kilopascals (kPa)."""
         if value is None:
             return None, "kPa"
@@ -31,7 +30,7 @@ class UnitNormalizer:
         return value, unit
 
     @staticmethod
-    def normalize_velocity(value: Optional[float], unit: Optional[str]) -> Tuple[Optional[float], str]:
+    def normalize_velocity(value: float | None, unit: str | None) -> tuple[float | None, str]:
         """Normalize airflow velocity into standard centimeters per second (cm/s)."""
         if value is None:
             return None, "cm/s"
@@ -50,7 +49,7 @@ class UnitNormalizer:
         return value, unit
 
     @staticmethod
-    def normalize_oxygen(value: Optional[float]) -> Optional[float]:
+    def normalize_oxygen(value: float | None) -> float | None:
         """Ensure oxygen concentration is recorded as percentage between 0 and 100."""
         if value is None:
             return None

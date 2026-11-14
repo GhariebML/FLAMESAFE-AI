@@ -14,18 +14,18 @@ interface StarParticle {
   twinkleSpeed: number;
   phase: number;
   depth: 1 | 2 | 3;
-  kind: "star" | "cyan" | "ember";
+  kind: "star" | "cyan" | "ember" | "gold";
+  hasFlare: boolean;
 }
 
 /**
- * PHASE 3 & 5 — LIVING ORBITAL SPACE ENVIRONMENT
+ * PHASE 3 & 5 — LIVING ORBITAL SPACE ENVIRONMENT (ENHANCED STARFIELD MOTION GRAPHICS)
  * 5-Layer GPU-lightweight orbital research backdrop:
  * - Layer 1: Deep Space Obsidian Base (#080A0F)
- * - Layer 2: 3-Depth Starfield with slow microgravity drift & subtle pointer parallax
+ * - Layer 2: Multi-Depth Twinkling Starfield with Diffraction Spikes & Zero-G Drift
  * - Layer 3: Distant Nebula & Earth Horizon Atmospheric Glow
- * - Layer 4: Orbital Signals & Trajectory Arcs
- * - Layer 5: Route-Aware Intensity (quieter on /evidence & /insights, coordinate grid on /compare, neural pulse on /research)
- * Automatically pauses when tab is hidden and honors prefers-reduced-motion.
+ * - Layer 4: Rotating Orbital Telemetry Rings & Satellites
+ * - Layer 5: Periodic Shooting Stars & Neural-Orbital Constellation Links
  */
 export const SpaceMotionBackground: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -60,9 +60,6 @@ export const SpaceMotionBackground: React.FC = () => {
     let currentParallaxY = 0;
 
     const particles: StarParticle[] = [];
-    const PARTICLE_COUNT = isQuietReadingRoute ? 52 : 84;
-    const LINK_DISTANCE = isAILabRoute ? 128 : 112;
-    const LINK_DISTANCE_SQ = LINK_DISTANCE * LINK_DISTANCE;
 
     interface OrbitalStreak {
       x: number;
@@ -72,36 +69,50 @@ export const SpaceMotionBackground: React.FC = () => {
       length: number;
       life: number;
       maxLife: number;
+      color: "cyan" | "amber";
     }
 
-    let streak: OrbitalStreak | null = null;
-    let nextStreakAt = performance.now() + 3400;
+    const streaks: OrbitalStreak[] = [];
+    let nextStreakAt = performance.now() + 1400;
 
     const initParticles = () => {
       particles.length = 0;
-      for (let i = 0; i < PARTICLE_COUNT; i++) {
+      const isMobile = width < 768;
+      const baseCount = isMobile ? 96 : 165;
+      const count = isQuietReadingRoute ? Math.floor(baseCount * 0.72) : baseCount;
+
+      for (let i = 0; i < count; i++) {
         const roll = Math.random();
         const kind: StarParticle["kind"] =
-          roll < 0.09 ? "ember" : roll < 0.34 ? "cyan" : "star";
-        const depthRoll = Math.random();
-        const depth: 1 | 2 | 3 = depthRoll < 0.5 ? 1 : depthRoll < 0.82 ? 2 : 3;
+          roll < 0.11
+            ? "ember"
+            : roll < 0.24
+            ? "gold"
+            : roll < 0.52
+            ? "cyan"
+            : "star";
 
-        const speedMultiplier = depth === 1 ? 0.55 : depth === 2 ? 0.85 : 1.2;
+        const depthRoll = Math.random();
+        const depth: 1 | 2 | 3 = depthRoll < 0.42 ? 1 : depthRoll < 0.78 ? 2 : 3;
+        const speedMultiplier = depth === 1 ? 0.65 : depth === 2 ? 1.15 : 1.75;
+
+        const radius =
+          kind === "ember" || kind === "gold"
+            ? (Math.random() * 1.55 + 0.95) * (depth * 0.42)
+            : (Math.random() * 1.45 + 0.65) * (depth * 0.4);
 
         particles.push({
           x: Math.random() * width,
           y: Math.random() * height,
-          vx: (Math.random() - 0.35) * 0.14 * speedMultiplier,
-          vy: -(Math.random() * 0.12 + 0.03) * speedMultiplier,
-          radius:
-            kind === "ember"
-              ? (Math.random() * 1.4 + 0.9) * (depth * 0.38)
-              : (Math.random() * 1.15 + 0.45) * (depth * 0.36),
-          alpha: (Math.random() * 0.5 + 0.22) * (isQuietReadingRoute ? 0.72 : 1),
-          twinkleSpeed: Math.random() * 0.016 + 0.005,
+          vx: (Math.random() - 0.32) * 0.28 * speedMultiplier,
+          vy: -(Math.random() * 0.24 + 0.06) * speedMultiplier,
+          radius,
+          alpha: (Math.random() * 0.52 + 0.38) * (isQuietReadingRoute ? 0.8 : 1),
+          twinkleSpeed: Math.random() * 0.032 + 0.012,
           phase: Math.random() * Math.PI * 2,
           depth,
           kind,
+          hasFlare: depth === 3 && ( radius > 1.25 || i % 7 === 0 ),
         });
       }
     };
@@ -115,15 +126,15 @@ export const SpaceMotionBackground: React.FC = () => {
       canvas.style.width = `${width}px`;
       canvas.style.height = `${height}px`;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      if (particles.length === 0) initParticles();
+      initParticles();
     };
 
     const onPointerMove = (e: PointerEvent) => {
       if (reducedMotion || width === 0 || height === 0) return;
       const nx = (e.clientX / width - 0.5) * 2;
       const ny = (e.clientY / height - 0.5) * 2;
-      targetParallaxX = nx * 12;
-      targetParallaxY = ny * 8;
+      targetParallaxX = nx * 18;
+      targetParallaxY = ny * 12;
     };
 
     const onVisibilityChange = () => {
@@ -147,6 +158,27 @@ export const SpaceMotionBackground: React.FC = () => {
     mediaQuery.addEventListener("change", onMotionChange);
 
     const isDark = resolvedTheme === "dark";
+    const LINK_DISTANCE = isAILabRoute ? 135 : 118;
+    const LINK_DISTANCE_SQ = LINK_DISTANCE * LINK_DISTANCE;
+
+    const drawStarFlare = (
+      cx: number,
+      cy: number,
+      armLength: number,
+      colorRgb: string,
+      alpha: number
+    ) => {
+      ctx.save();
+      ctx.strokeStyle = `rgba(${colorRgb}, ${alpha})`;
+      ctx.lineWidth = 0.9;
+      ctx.beginPath();
+      ctx.moveTo(cx - armLength, cy);
+      ctx.lineTo(cx + armLength, cy);
+      ctx.moveTo(cx, cy - armLength);
+      ctx.lineTo(cx, cy + armLength);
+      ctx.stroke();
+      ctx.restore();
+    };
 
     const renderFrame = (time: number) => {
       animationFrameId = 0;
@@ -163,72 +195,76 @@ export const SpaceMotionBackground: React.FC = () => {
           p.y += p.vy;
           p.phase += p.twinkleSpeed;
 
-          if (p.x < -16) p.x = width + 16;
-          if (p.x > width + 16) p.x = -16;
-          if (p.y < -16) p.y = height + 16;
-          if (p.y > height + 16) p.y = -16;
+          if (p.x < -20) p.x = width + 20;
+          if (p.x > width + 20) p.x = -20;
+          if (p.y < -20) p.y = height + 20;
+          if (p.y > height + 20) p.y = -20;
         }
 
-        const parallaxFactor = p.depth === 1 ? 0.35 : p.depth === 2 ? 0.7 : 1.15;
+        const parallaxFactor = p.depth === 1 ? 0.35 : p.depth === 2 ? 0.75 : 1.25;
         const drawX = p.x + currentParallaxX * parallaxFactor;
         const drawY = p.y + currentParallaxY * parallaxFactor;
 
         const twinkle = reducedMotion
           ? 1
-          : 0.68 + 0.32 * Math.sin(p.phase + time * 0.00038);
-        const opacity = Math.max(0.08, p.alpha * twinkle);
+          : 0.45 + 0.55 * (0.5 + 0.5 * Math.sin(p.phase + time * 0.0012));
+        const opacity = Math.max(0.14, Math.min(1, p.alpha * twinkle));
 
+        let rgb = "247, 247, 245";
         if (isDark) {
-          if (p.kind === "ember") {
-            ctx.fillStyle = `rgba(255, 107, 36, ${opacity * 0.85})`;
-          } else if (p.kind === "cyan") {
-            ctx.fillStyle = `rgba(57, 185, 235, ${opacity * 0.88})`;
-          } else {
-            ctx.fillStyle = `rgba(247, 247, 245, ${opacity * 0.76})`;
-          }
+          if (p.kind === "ember") rgb = "255, 107, 36";
+          else if (p.kind === "gold") rgb = "255, 181, 71";
+          else if (p.kind === "cyan") rgb = "57, 185, 235";
+          else rgb = "247, 247, 245";
         } else {
-          if (p.kind === "ember") {
-            ctx.fillStyle = `rgba(233, 75, 22, ${Math.min(0.7, opacity * 0.85)})`;
-          } else if (p.kind === "cyan") {
-            ctx.fillStyle = `rgba(0, 110, 219, ${Math.min(0.72, opacity * 0.86)})`;
-          } else {
-            ctx.fillStyle = `rgba(24, 52, 94, ${Math.min(0.55, opacity * 0.68)})`;
-          }
+          if (p.kind === "ember") rgb = "233, 75, 22";
+          else if (p.kind === "gold") rgb = "217, 119, 6";
+          else if (p.kind === "cyan") rgb = "0, 110, 219";
+          else rgb = "24, 52, 94";
         }
 
         const drawRadius = isDark ? p.radius : p.radius + 0.3;
+
+        // Soft outer halo for brighter stars and embers
+        if (p.depth >= 2) {
+          ctx.beginPath();
+          ctx.arc(drawX, drawY, drawRadius * 3.2, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${rgb}, ${opacity * 0.18})`;
+          ctx.fill();
+        }
+
+        // Core star point
         ctx.beginPath();
         ctx.arc(drawX, drawY, drawRadius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${rgb}, ${opacity * 0.95})`;
         ctx.fill();
 
-        if (p.kind !== "star" && p.radius > 1.15) {
-          ctx.beginPath();
-          ctx.arc(drawX, drawY, drawRadius * 3.0, 0, Math.PI * 2);
-          ctx.fillStyle =
-            p.kind === "ember"
-              ? `rgba(255, 107, 36, ${opacity * 0.13})`
-              : `rgba(57, 185, 235, ${opacity * 0.13})`;
-          ctx.fill();
+        // 4-point diffraction starlight flare on prime stars
+        if (p.hasFlare && twinkle > 0.62) {
+          const flareLen = drawRadius * (3.6 + twinkle * 2.4);
+          drawStarFlare(drawX, drawY, flareLen, rgb, opacity * 0.52);
         }
       }
 
-      // Micro-Constellation / Neural-Orbital Links (quieter on reading routes)
+      // Micro-Constellation / Neural-Orbital Links
       if (!isQuietReadingRoute) {
-        ctx.lineWidth = 0.7;
+        ctx.lineWidth = 0.75;
         for (let i = 0; i < particles.length; i++) {
           const a = particles[i];
+          if (a.depth === 1) continue;
           let links = 0;
           for (let j = i + 1; j < particles.length; j++) {
             const b = particles[j];
+            if (b.depth === 1) continue;
             const dx = a.x - b.x;
             const dy = a.y - b.y;
             const distSq = dx * dx + dy * dy;
             if (distSq < LINK_DISTANCE_SQ) {
               const falloff = 1 - Math.sqrt(distSq) / LINK_DISTANCE;
-              const baseLinkAlpha = isAILabRoute ? 0.13 : 0.085;
+              const baseLinkAlpha = isAILabRoute ? 0.18 : 0.12;
               ctx.strokeStyle = isDark
                 ? `rgba(57, 185, 235, ${baseLinkAlpha * falloff})`
-                : `rgba(0, 110, 219, ${0.14 * falloff})`;
+                : `rgba(0, 110, 219, ${0.15 * falloff})`;
               ctx.beginPath();
               ctx.moveTo(a.x, a.y);
               ctx.lineTo(b.x, b.y);
@@ -240,46 +276,55 @@ export const SpaceMotionBackground: React.FC = () => {
         }
       }
 
-      // Subtle periodic orbital signal / telemetry streak
+      // Periodic Shooting Stars / Orbital Telemetry Streaks
       if (!reducedMotion && !isQuietReadingRoute) {
-        if (!streak && time >= nextStreakAt && width > 320) {
-          streak = {
-            x: width * (0.15 + Math.random() * 0.55),
-            y: height * (0.06 + Math.random() * 0.28),
-            vx: 4.8 + Math.random() * 2.2,
-            vy: 1.6 + Math.random() * 1.0,
-            length: 85 + Math.random() * 50,
+        if (streaks.length < 2 && time >= nextStreakAt && width > 300) {
+          streaks.push({
+            x: width * (0.08 + Math.random() * 0.65),
+            y: height * (0.04 + Math.random() * 0.38),
+            vx: 5.5 + Math.random() * 3.0,
+            vy: 1.8 + Math.random() * 1.4,
+            length: 95 + Math.random() * 65,
             life: 0,
-            maxLife: 58,
-          };
-          nextStreakAt = time + 6500 + Math.random() * 5000;
+            maxLife: 54,
+            color: Math.random() < 0.35 ? "amber" : "cyan",
+          });
+          nextStreakAt = time + 2800 + Math.random() * 3200;
         }
 
-        if (streak) {
-          streak.x += streak.vx;
-          streak.y += streak.vy;
-          streak.life += 1;
+        for (let sIdx = streaks.length - 1; sIdx >= 0; sIdx--) {
+          const st = streaks[sIdx];
+          st.x += st.vx;
+          st.y += st.vy;
+          st.life += 1;
 
-          const progress = streak.life / streak.maxLife;
+          const progress = st.life / st.maxLife;
           const fade = Math.sin(progress * Math.PI);
-          const mag = Math.hypot(streak.vx, streak.vy) || 1;
-          const tailX = streak.x - (streak.vx / mag) * streak.length;
-          const tailY = streak.y - (streak.vy / mag) * streak.length;
+          const mag = Math.hypot(st.vx, st.vy) || 1;
+          const tailX = st.x - (st.vx / mag) * st.length;
+          const tailY = st.y - (st.vy / mag) * st.length;
 
-          const grad = ctx.createLinearGradient(tailX, tailY, streak.x, streak.y);
-          grad.addColorStop(0, "rgba(57, 185, 235, 0)");
-          grad.addColorStop(0.75, `rgba(57, 185, 235, ${0.26 * fade})`);
-          grad.addColorStop(1, `rgba(247, 247, 245, ${0.6 * fade})`);
+          const grad = ctx.createLinearGradient(tailX, tailY, st.x, st.y);
+          const tailRgb = st.color === "amber" ? "255, 181, 71" : "57, 185, 235";
+          grad.addColorStop(0, `rgba(${tailRgb}, 0)`);
+          grad.addColorStop(0.7, `rgba(${tailRgb}, ${0.42 * fade})`);
+          grad.addColorStop(1, `rgba(247, 247, 245, ${0.85 * fade})`);
 
           ctx.strokeStyle = grad;
-          ctx.lineWidth = 1.3;
+          ctx.lineWidth = 1.6;
           ctx.beginPath();
           ctx.moveTo(tailX, tailY);
-          ctx.lineTo(streak.x, streak.y);
+          ctx.lineTo(st.x, st.y);
           ctx.stroke();
 
-          if (streak.life >= streak.maxLife) {
-            streak = null;
+          // Glowing head of the shooting star
+          ctx.beginPath();
+          ctx.arc(st.x, st.y, 2.1, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(247, 247, 245, ${0.9 * fade})`;
+          ctx.fill();
+
+          if (st.life >= st.maxLife) {
+            streaks.splice(sIdx, 1);
           }
         }
       }
@@ -307,21 +352,21 @@ export const SpaceMotionBackground: React.FC = () => {
     >
       {/* Layer 1 & 3: Obsidian Deep Space + Route-Aware Atmospheric Nebula Glows */}
       <div
-        className={`absolute -top-44 -right-32 h-[34rem] w-[34rem] rounded-full bg-[#FF6B24]/[0.06] blur-3xl animate-space-pulse transition-opacity duration-700 ${
-          isQuietReadingRoute ? "opacity-45" : "opacity-100"
+        className={`absolute -top-40 -right-28 h-[36rem] w-[36rem] rounded-full bg-[#FF6B24]/[0.08] blur-3xl animate-space-pulse transition-opacity duration-700 ${
+          isQuietReadingRoute ? "opacity-50" : "opacity-100"
         }`}
       />
       <div
-        className={`absolute top-[38%] -left-44 h-[30rem] w-[30rem] rounded-full bg-[#39B9EB]/[0.055] blur-3xl animate-space-pulse-delayed transition-opacity duration-700 ${
-          isQuietReadingRoute ? "opacity-40" : "opacity-100"
+        className={`absolute top-[34%] -left-40 h-[32rem] w-[32rem] rounded-full bg-[#39B9EB]/[0.075] blur-3xl animate-space-pulse-delayed transition-opacity duration-700 ${
+          isQuietReadingRoute ? "opacity-45" : "opacity-100"
         }`}
       />
-      <div className="absolute -bottom-40 right-[16%] h-[24rem] w-[24rem] rounded-full bg-[#006EDB]/[0.055] blur-3xl" />
+      <div className="absolute -bottom-36 right-[14%] h-[28rem] w-[28rem] rounded-full bg-[#006EDB]/[0.07] blur-3xl" />
 
       {/* Layer 5A: Route-Specific Telemetry Coordinate Grid on Data Observatory (/compare) */}
       {isObservatoryRoute && (
         <div
-          className="absolute inset-0 opacity-[0.045]"
+          className="absolute inset-0 opacity-[0.055]"
           style={{
             backgroundImage:
               "linear-gradient(to right, #39B9EB 1px, transparent 1px), linear-gradient(to bottom, #39B9EB 1px, transparent 1px)",
@@ -335,7 +380,7 @@ export const SpaceMotionBackground: React.FC = () => {
         viewBox="0 0 1200 800"
         preserveAspectRatio="xMidYMid slice"
         className={`absolute inset-0 w-full h-full transition-opacity duration-700 ${
-          isQuietReadingRoute ? "opacity-15" : "opacity-30"
+          isQuietReadingRoute ? "opacity-25" : "opacity-45"
         }`}
       >
         <g transform="translate(880 210)">
@@ -346,12 +391,12 @@ export const SpaceMotionBackground: React.FC = () => {
               r="240"
               fill="none"
               stroke="#39B9EB"
-              strokeOpacity="0.22"
-              strokeWidth="1.1"
+              strokeOpacity="0.28"
+              strokeWidth="1.2"
               strokeDasharray="8 10"
             />
-            <circle cx="240" cy="0" r="3.5" fill="#39B9EB" fillOpacity="0.75" />
-            <circle cx="-240" cy="0" r="3" fill="#FF6B24" fillOpacity="0.75" />
+            <circle cx="240" cy="0" r="4" fill="#39B9EB" fillOpacity="0.85" />
+            <circle cx="-240" cy="0" r="3.5" fill="#FF6B24" fillOpacity="0.85" />
           </g>
           <g className="animate-orbit-reverse origin-center">
             <ellipse
@@ -362,10 +407,10 @@ export const SpaceMotionBackground: React.FC = () => {
               transform="rotate(-22)"
               fill="none"
               stroke="#006EDB"
-              strokeOpacity="0.2"
-              strokeWidth="1"
+              strokeOpacity="0.26"
+              strokeWidth="1.1"
             />
-            <circle cx="330" cy="-126" r="3" fill="#39B9EB" fillOpacity="0.7" />
+            <circle cx="330" cy="-126" r="3.5" fill="#39B9EB" fillOpacity="0.8" />
           </g>
         </g>
 
@@ -377,11 +422,11 @@ export const SpaceMotionBackground: React.FC = () => {
               r="190"
               fill="none"
               stroke="#39B9EB"
-              strokeOpacity="0.16"
-              strokeWidth="1"
+              strokeOpacity="0.22"
+              strokeWidth="1.1"
               strokeDasharray="4 8"
             />
-            <circle cx="0" cy="-190" r="2.8" fill="#FFB547" fillOpacity="0.65" />
+            <circle cx="0" cy="-190" r="3.2" fill="#FFB547" fillOpacity="0.8" />
           </g>
         </g>
 
@@ -391,13 +436,13 @@ export const SpaceMotionBackground: React.FC = () => {
             d="M -100 790 Q 600 660 1300 790"
             fill="none"
             stroke="#39B9EB"
-            strokeOpacity="0.18"
-            strokeWidth="1.5"
+            strokeOpacity="0.24"
+            strokeWidth="1.6"
           />
         )}
       </svg>
 
-      {/* Layer 2: Live 3-Depth Starfield & Microgravity Ember Canvas */}
+      {/* Layer 2: Live 3-Depth Starfield, Diffraction Spikes & Shooting Stars Canvas */}
       <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
     </div>
   );

@@ -25,8 +25,16 @@ import { Info, AlertTriangle, ExternalLink } from "lucide-react";
 
 export const ComparisonMatrix: React.FC<{ data: ComparisonResponse }> = ({ data }) => {
   const chartTheme = useChartTheme();
+  const invList = Array.isArray(data?.investigations) ? data.investigations : [];
+  const paramMatrix = Array.isArray(data?.parameter_matrix) ? data.parameter_matrix : [];
+  const limitations = Array.isArray(data?.comparison_limitations)
+    ? data.comparison_limitations
+    : Array.isArray((data as any)?.scientific_notes)
+    ? (data as any).scientific_notes
+    : [];
+
   // Compatible quantitative chart data (only unit-matched averages)
-  const quantData = data.investigations.map((inv) => ({
+  const quantData = invList.map((inv) => ({
     name: inv.acronym,
     "Mean O2 (% O2)": inv.numeric_metrics?.avg_oxygen_pct ?? null,
     "Mean Airflow (cm/s)": inv.numeric_metrics?.avg_airflow_cm_s ?? null,
@@ -40,33 +48,33 @@ export const ComparisonMatrix: React.FC<{ data: ComparisonResponse }> = ({ data 
   // Normalized coverage RadarChart (experimental runs, measurements, sensor diversity)
   const maxRuns = Math.max(
     1,
-    ...data.investigations.map((i) => i.numeric_metrics?.runs_count || 1)
+    ...invList.map((i) => i.numeric_metrics?.runs_count || 1)
   );
   const maxMeas = Math.max(
     1,
-    ...data.investigations.map((i) => i.numeric_metrics?.measurements_count || 1)
+    ...invList.map((i) => i.numeric_metrics?.measurements_count || 1)
   );
   const maxSens = Math.max(
     1,
-    ...data.investigations.map((i) => i.numeric_metrics?.sensor_diversity || 1)
+    ...invList.map((i) => i.numeric_metrics?.sensor_diversity || 1)
   );
 
   const radarSubjects = [
     {
       metric: "Experimental Runs",
-      values: data.investigations.map((i) =>
+      values: invList.map((i) =>
         Math.round(((i.numeric_metrics?.runs_count || 0) / maxRuns) * 100)
       ),
     },
     {
       metric: "Measurements Recorded",
-      values: data.investigations.map((i) =>
+      values: invList.map((i) =>
         Math.round(((i.numeric_metrics?.measurements_count || 0) / maxMeas) * 100)
       ),
     },
     {
       metric: "Sensor Diversity",
-      values: data.investigations.map((i) =>
+      values: invList.map((i) =>
         Math.round(((i.numeric_metrics?.sensor_diversity || 0) / maxSens) * 100)
       ),
     },
@@ -74,7 +82,7 @@ export const ComparisonMatrix: React.FC<{ data: ComparisonResponse }> = ({ data 
 
   const radarData = radarSubjects.map((row) => {
     const entry: Record<string, string | number> = { subject: row.metric };
-    data.investigations.forEach((inv, idx) => {
+    invList.forEach((inv, idx) => {
       entry[inv.acronym] = row.values[idx];
     });
     return entry;
@@ -147,7 +155,7 @@ export const ComparisonMatrix: React.FC<{ data: ComparisonResponse }> = ({ data 
               <PolarGrid stroke={chartTheme.axisLineColor} />
               <PolarAngleAxis dataKey="subject" tick={{ fill: chartTheme.axisTickColor, fontSize: 11 }} />
               <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fill: chartTheme.axisTickColor, fontSize: 10 }} />
-              {data.investigations.map((inv, idx) => (
+              {invList.map((inv, idx) => (
                 <Radar
                   key={inv.id}
                   name={inv.acronym}
@@ -178,7 +186,7 @@ export const ComparisonMatrix: React.FC<{ data: ComparisonResponse }> = ({ data 
           <thead>
             <tr className="border-b border-space-800 bg-space-950/90">
               <th className="p-4 font-semibold text-slate-400 w-1/4">Parameter / Condition</th>
-              {data.investigations.map((inv) => (
+              {invList.map((inv) => (
                 <th key={inv.id} className="p-4 font-bold text-slate-100">
                   <div className="flex flex-wrap items-center gap-2">
                     <Badge variant="flame">{inv.acronym}</Badge>
@@ -199,8 +207,8 @@ export const ComparisonMatrix: React.FC<{ data: ComparisonResponse }> = ({ data 
             </tr>
           </thead>
           <tbody className="divide-y divide-space-800">
-            {data.parameter_matrix.map((param) => (
-              <tr key={param.parameter_name} className="hover:bg-space-950/50">
+            {paramMatrix.map((param, pIdx) => (
+              <tr key={param.parameter_name || (param as any).parameter_key || pIdx} className="hover:bg-space-950/50">
                 <td className="p-4 font-medium text-slate-200 align-top">
                   <div className="flex items-center gap-1.5 flex-wrap">
                     <span>{param.display_name}</span>
@@ -211,13 +219,13 @@ export const ComparisonMatrix: React.FC<{ data: ComparisonResponse }> = ({ data 
                     )}
                   </div>
                   <div className="text-[10px] text-slate-500 mt-0.5">
-                    {param.is_compatible_for_direct_diff
+                    {param.is_compatible_for_direct_diff !== false
                       ? "Direct unit-compatible comparison"
                       : "Categorical / non-equivalent phases"}
                   </div>
                 </td>
-                {data.investigations.map((inv) => {
-                  const val = param.values_by_investigation[inv.acronym];
+                {invList.map((inv) => {
+                  const val = param.values_by_investigation?.[inv.acronym];
                   const isMissing = val === undefined || val === null || val === "Not recorded";
                   return (
                     <td
@@ -242,7 +250,7 @@ export const ComparisonMatrix: React.FC<{ data: ComparisonResponse }> = ({ data 
           <AlertTriangle className="h-4 w-4" /> Scientific Comparison Limitations
         </div>
         <ul className="list-disc list-inside space-y-1 text-xs text-slate-300">
-          {data.comparison_limitations.map((lim, i) => (
+          {limitations.map((lim: string, i: number) => (
             <li key={i}>{lim}</li>
           ))}
         </ul>

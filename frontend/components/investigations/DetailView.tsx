@@ -18,19 +18,29 @@ import { formatOxygen, formatPressure, formatVelocity } from "@/lib/utils/units"
 export const DetailView: React.FC<{ investigation: InvestigationDetail }> = ({
   investigation,
 }) => {
+  const runs = Array.isArray(investigation?.experimental_runs)
+    ? investigation.experimental_runs
+    : [];
+  const docs = Array.isArray(investigation?.research_documents)
+    ? investigation.research_documents
+    : Array.isArray((investigation as any)?.documents)
+    ? (investigation as any).documents
+    : [];
+  const sources = Array.isArray(investigation?.data_sources)
+    ? investigation.data_sources
+    : [];
+
   const allSensors = Array.from(
-    new Set(
-      investigation.experimental_runs.flatMap((r) => r.sensor_types || [])
-    )
+    new Set(runs.flatMap((r) => (Array.isArray(r?.sensor_types) ? r.sensor_types : [])))
   );
-  const allEvidenceChunks = investigation.research_documents.flatMap((doc) =>
-    (doc.evidence_chunks || []).map((chunk) => ({
+  const allEvidenceChunks = docs.flatMap((doc: any) =>
+    (Array.isArray(doc?.evidence_chunks) ? doc.evidence_chunks : []).map((chunk: any) => ({
       ...chunk,
       documentTitle: doc.title,
       doi: doc.doi,
     }))
   );
-  const meta = investigation.metadata_payload || {};
+  const meta = investigation?.metadata_payload || {};
 
   return (
     <div className="space-y-6">
@@ -118,27 +128,27 @@ export const DetailView: React.FC<{ investigation: InvestigationDetail }> = ({
         <div className="flex items-center gap-2 text-base font-semibold text-white">
           <Layers className="h-4 w-4 text-electric-400" />
           <span>
-            Experimental Runs, Conditions & Measurements ({investigation.experimental_runs.length})
+            Experimental Runs, Conditions & Measurements ({runs.length})
           </span>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {investigation.experimental_runs.map((run) => (
+          {runs.map((run) => (
             <Card key={run.id} className="space-y-3 border-space-800 bg-space-900/80">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <span className="font-mono text-xs font-semibold text-amber-400">
-                  {run.run_code}
+                  {run.run_code || (run as any).run_name}
                 </span>
-                <Badge variant="outline">{run.gravity_regime}</Badge>
+                <Badge variant="outline">{run.gravity_regime || (run as any).gravity_level || "Microgravity (~0g)"}</Badge>
               </div>
 
               <div>
                 <div className="text-sm font-semibold text-slate-100 flex items-center gap-1.5">
                   <Flame className="h-3.5 w-3.5 text-flame-400 shrink-0" />
-                  <span>{run.fuel_name}</span>
+                  <span>{run.fuel_name || (run as any).fuel_sample || "Research Sample"}</span>
                 </div>
                 <div className="text-xs text-slate-400 mt-0.5">
-                  Category: {run.fuel_type}
+                  Category: {run.fuel_type || "Solid / Liquid Fuel"}
                   {run.fuel_geometry ? ` · Geometry: ${run.fuel_geometry}` : ""}
                 </div>
                 {run.suppressant && (
@@ -152,30 +162,30 @@ export const DetailView: React.FC<{ investigation: InvestigationDetail }> = ({
                 <div>
                   <span className="block text-slate-500">Oxygen</span>
                   <span className="font-mono font-medium text-slate-100">
-                    {formatOxygen(run.oxygen_concentration)}
+                    {formatOxygen(run.oxygen_concentration ?? (run as any).oxygen_concentration_pct)}
                   </span>
                 </div>
                 <div>
                   <span className="block text-slate-500">Pressure</span>
                   <span className="font-mono font-medium text-slate-100">
-                    {formatPressure(run.pressure_value, run.pressure_unit || "kPa")}
+                    {formatPressure(run.pressure_value ?? (run as any).pressure_kpa, run.pressure_unit || "kPa")}
                   </span>
                 </div>
                 <div>
                   <span className="block text-slate-500">Airflow</span>
                   <span className="font-mono font-medium text-slate-100">
-                    {formatVelocity(run.airflow_velocity, run.airflow_unit || "cm/s")}
+                    {formatVelocity(run.airflow_velocity ?? (run as any).airflow_velocity_cm_s, run.airflow_unit || "cm/s")}
                   </span>
                 </div>
               </div>
 
-              {run.measurements.length > 0 && (
+              {(run.measurements || []).length > 0 && (
                 <div className="space-y-1.5 pt-1">
                   <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
                     Null-Safe Quantitative Measurements
                   </span>
                   <div className="space-y-1">
-                    {run.measurements.map((m) => (
+                    {(run.measurements || []).map((m) => (
                       <div
                         key={m.id}
                         className="flex items-center justify-between text-xs py-1.5 px-2.5 rounded bg-space-950/70 border border-space-800/80"
@@ -226,22 +236,22 @@ export const DetailView: React.FC<{ investigation: InvestigationDetail }> = ({
         <Card className="space-y-3 border-space-800 bg-space-900/80">
           <div className="flex items-center gap-2 text-sm font-semibold text-white">
             <Database className="h-4 w-4 text-emerald-400" />
-            <span>Authoritative NASA Data Sources ({investigation.data_sources.length})</span>
+            <span>Authoritative NASA Data Sources ({sources.length})</span>
           </div>
           <div className="space-y-2">
-            {investigation.data_sources.map((src) => (
+            {sources.map((src) => (
               <div
                 key={src.id}
                 className="flex items-center justify-between gap-2 p-2.5 rounded-lg bg-space-950 border border-space-800 text-xs"
               >
                 <div>
-                  <div className="font-semibold text-slate-200">{src.source_name}</div>
+                  <div className="font-semibold text-slate-200">{src.source_name || (src as any).name}</div>
                   <div className="text-[11px] font-mono text-slate-400">
                     {src.doi ? `DOI: ${src.doi}` : "NASA Archive"}
                   </div>
                 </div>
                 <a
-                  href={src.source_url}
+                  href={src.source_url || (src as any).url}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="p-1.5 rounded bg-space-800 text-plasma-400 hover:text-white"
@@ -260,12 +270,12 @@ export const DetailView: React.FC<{ investigation: InvestigationDetail }> = ({
         <div className="flex items-center gap-2 text-base font-semibold text-white">
           <FileText className="h-4 w-4 text-plasma-400" />
           <span>
-            Peer-Reviewed Publications ({investigation.research_documents.length})
+            Peer-Reviewed Publications ({docs.length})
           </span>
         </div>
 
         <div className="space-y-2">
-          {investigation.research_documents.map((doc) => (
+          {docs.map((doc: any) => (
             <Card
               key={doc.id}
               className="flex items-center justify-between gap-3 p-4 border-space-800 bg-space-900/80"
@@ -273,7 +283,7 @@ export const DetailView: React.FC<{ investigation: InvestigationDetail }> = ({
               <div>
                 <h4 className="text-sm font-semibold text-slate-100">{doc.title}</h4>
                 <div className="text-xs text-slate-400 mt-0.5 font-mono">
-                  {doc.document_type} {doc.doi ? `· DOI: ${doc.doi}` : ""}
+                  {doc.document_type || "NASA PSI Publication"} {doc.doi ? `· DOI: ${doc.doi}` : ""}
                 </div>
               </div>
               {doc.doi && (
@@ -298,8 +308,8 @@ export const DetailView: React.FC<{ investigation: InvestigationDetail }> = ({
               <span>Indexed Evidence Excerpts ({allEvidenceChunks.length})</span>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {allEvidenceChunks.map((chunk) => (
-                <Card key={chunk.id} className="p-3.5 space-y-2 border-space-800 bg-space-950/70">
+              {allEvidenceChunks.map((chunk: any) => (
+                <Card key={chunk.id || chunk.chunk_id} className="p-3.5 space-y-2 border-space-800 bg-space-950/70">
                   <div className="flex items-center justify-between gap-2 text-[11px]">
                     <span className="font-semibold text-plasma-400">
                       {chunk.section_name || "Technical Excerpt"}
@@ -309,7 +319,7 @@ export const DetailView: React.FC<{ investigation: InvestigationDetail }> = ({
                     )}
                   </div>
                   <p className="text-xs text-slate-300 leading-relaxed">
-                    “{chunk.chunk_text}”
+                    “{chunk.chunk_text || chunk.excerpt}”
                   </p>
                 </Card>
               ))}

@@ -22,12 +22,16 @@ interface DomainItem {
 
 export const DomainDistribution: React.FC<{ items: DomainItem[] }> = ({ items }) => {
   const chartTheme = useChartTheme();
-  const chartData = items.map((item) => ({
-    name: item.domain.length > 22 ? `${item.domain.slice(0, 20)}...` : item.domain,
-    fullName: item.domain,
-    Programs: item.investigations_count,
-    Runs: item.runs_count,
-  }));
+  const safeItems = Array.isArray(items) ? items : [];
+  const chartData = safeItems.map((item: any) => {
+    const domainName = String(item?.domain || item?.research_area || "Research Area");
+    return {
+      name: domainName.length > 22 ? `${domainName.slice(0, 20)}...` : domainName,
+      fullName: domainName,
+      Programs: item?.investigations_count ?? item?.count ?? 1,
+      Runs: item?.runs_count ?? item?.count ?? 1,
+    };
+  });
 
   return (
     <ChartContainer

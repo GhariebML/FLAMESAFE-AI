@@ -17,8 +17,9 @@ export function useInvestigations(initialFilters: InvestigationFilterParams = {}
     setIsLoading(true);
     try {
       const res = await apiClient.getInvestigations(currentFilters);
-      setInvestigations(res.items);
-      setTotal(res.total);
+      const items = Array.isArray(res?.items) ? res.items : Array.isArray(res) ? res : FALLBACK_INVESTIGATIONS;
+      setInvestigations(items);
+      setTotal(typeof res?.total === "number" ? res.total : items.length);
       setError(null);
       setIsUsingFallback(false);
     } catch (err: any) {

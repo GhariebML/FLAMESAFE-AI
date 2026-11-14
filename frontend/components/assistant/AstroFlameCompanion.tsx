@@ -461,7 +461,7 @@ export const AstroFlameCompanion: React.FC = () => {
       )}
 
       {/* Floating Bottom-Right Mascot Launcher */}
-      <div className="fixed bottom-5 right-5 z-50 flex items-center gap-2.5">
+      <div className="fixed bottom-4 right-4 sm:bottom-5 sm:right-5 z-50 flex items-center gap-2.5">
         {!isOpen && (
           <button
             type="button"
@@ -478,7 +478,7 @@ export const AstroFlameCompanion: React.FC = () => {
           onClick={() => setIsOpen((prev) => !prev)}
           aria-label={isOpen ? "Close Astro-Flame companion" : "Ask Astro-Flame AI companion"}
           title="Ask Astro-Flame"
-          className={`group relative h-14 w-14 rounded-full border-2 overflow-hidden transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#39B9EB] ${
+          className={`group relative h-12 w-12 sm:h-14 sm:w-14 rounded-full border-2 overflow-hidden transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#39B9EB] ${
             isOpen
               ? "border-[#FF6B24] shadow-[0_0_24px_rgba(255,107,36,0.6)]"
               : "border-[#39B9EB]/85 shadow-[0_8px_28px_rgba(0,0,0,0.75),0_0_20px_rgba(255,107,36,0.38)]"

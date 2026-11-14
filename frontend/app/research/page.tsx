@@ -121,6 +121,10 @@ export default function ResearchIntelligenceWorkspacePage() {
       } else {
         setDatasetDetail(null);
         setDatasetAnalysis(null);
+        setDatasetCoverage(null);
+        setDatasetLineage(null);
+        setDatasetDiff(null);
+        setPandasAnalytics(null);
       }
     },
     [loadDatasetForRequest]

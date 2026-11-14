@@ -327,14 +327,52 @@ async def export_dataset(
             filename=p.name,
         )
 
-    # Fallback inline JSON serialization if vault file was cleaned
+    # Fallback inline serialization from DB items if vault file was cleaned (e.g. ephemeral container restart)
+    items_payload = [
+        {
+            "id": it.id,
+            "investigation_acronym": it.investigation_acronym,
+            "parameter_name": it.parameter_name,
+            "normalized_value": it.normalized_value,
+            "normalized_unit": it.normalized_unit,
+            "source_doi": it.source_doi,
+            "page_number": it.page_number,
+        }
+        for it in (d.items or [])
+    ]
+    if fmt == "csv":
+        import csv
+        import io
+        from fastapi.responses import Response
+
+        buf = io.StringIO()
+        fieldnames = [
+            "id",
+            "investigation_acronym",
+            "parameter_name",
+            "normalized_value",
+            "normalized_unit",
+            "source_doi",
+            "page_number",
+        ]
+        writer = csv.DictWriter(buf, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(items_payload)
+        return Response(
+            content=buf.getvalue(),
+            media_type="text/csv; charset=utf-8",
+            headers={"Content-Disposition": f'attachment; filename="{d.dataset_key}-{latest_ver.version_tag}.csv"'},
+        )
+
     return JSONResponse(
         content={
             "dataset_key": d.dataset_key,
             "version_tag": latest_ver.version_tag,
             "record_count": latest_ver.record_count,
             "format": fmt,
-        }
+            "items": items_payload,
+        },
+        headers={"Content-Disposition": f'attachment; filename="{d.dataset_key}-{latest_ver.version_tag}.json"'},
     )
 
 

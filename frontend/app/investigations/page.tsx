@@ -14,14 +14,14 @@ import {
   Badge,
   Card,
 } from "@/components/ui";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight, FlaskConical } from "lucide-react";
 
 const STORY_CATEGORY_PILLS = [
-  { id: "All", label: "All", query: "" },
+  { id: "All", label: "All Campaigns", query: "" },
   { id: "Combustion", label: "Combustion", query: "combustion" },
-  { id: "Safety", label: "Safety", query: "fire" },
-  { id: "Materials", label: "Materials", query: "solid" },
-  { id: "Smoke", label: "Smoke", query: "smoke" },
+  { id: "Safety", label: "Fire Safety", query: "fire" },
+  { id: "Materials", label: "Solid Materials", query: "solid" },
+  { id: "Smoke", label: "Smoke & Aerosols", query: "smoke" },
 ] as const;
 
 function InvestigationsExplorerInner() {
@@ -37,7 +37,6 @@ function InvestigationsExplorerInner() {
   const [viewMode, setViewMode] = useState("cards");
   const [activePill, setActivePill] = useState<string>("All");
 
-  // Debounce search text
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedQuery(searchInput);
@@ -60,7 +59,6 @@ function InvestigationsExplorerInner() {
     sort_by: sortBy || undefined,
   });
 
-  // Sync filters to hook & URL search params
   useEffect(() => {
     setFilters({
       query: debouncedQuery || undefined,
@@ -104,100 +102,78 @@ function InvestigationsExplorerInner() {
   return (
     <div className="w-full max-w-[88rem] mx-auto space-y-7 min-w-0 pb-10">
       {/* =====================================================================
-          DEDICATED STORYBOARD SHOWCASE: INVESTIGATION EXPLORER
+          PHASE 7.3 — INVESTIGATION EXPLORER HEADER (NO REPEATED MASCOT BOX)
       ===================================================================== */}
-      <section className="relative rounded-3xl bg-gradient-to-br from-[#060E20] via-[#09152E] to-[#050A18] border-2 border-[#254B8C]/90 p-6 sm:p-9 shadow-[0_24px_70px_rgba(0,0,0,0.8)] overflow-hidden">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-7 items-center">
-          {/* Left 4 Columns: Realistic Astro-Flame Bot Explorer Showcase */}
-          <div className="lg:col-span-4">
-            <div className="relative h-64 sm:h-72 w-full rounded-2xl overflow-hidden border border-[#254B8C] bg-[#040914] shadow-2xl">
-              <img
-                src="/images/story/mascot-explorer.png"
-                alt="Realistic Astro-Flame Bot NASA Investigation Explorer"
-                className="h-full w-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#040918]/90 via-transparent to-transparent" />
-              <div className="absolute bottom-3.5 left-4 right-4 flex items-center justify-between">
-                <span className="text-xs font-extrabold text-white">
-                  NASA PSI Catalog
-                </span>
-                <Badge variant="outline">Indexed: {total}</Badge>
-              </div>
-            </div>
+      <section className="relative rounded-2xl bg-[#10151D] border border-[#283340] p-6 sm:p-8 shadow-[0_20px_60px_rgba(0,0,0,0.75)] space-y-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <span className="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-widest text-[#FF6B24]">
+              <FlaskConical className="h-3.5 w-3.5 text-[#39B9EB]" />
+              NASA PHYSICAL SCIENCES INFORMATICS (PSI) · {total} INDEXED CAMPAIGNS
+            </span>
+            <h1 className="mt-1 text-2xl sm:text-4xl font-extrabold text-[#F7F7F5] tracking-tight">
+              Investigation Explorer
+            </h1>
+            <p className="text-xs sm:text-sm text-[#A1A8B3] mt-1 max-w-2xl">
+              Search and filter orbital microgravity combustion programs by research
+              domain, fuel class, gravity regime, and verified DOI records.
+            </p>
           </div>
 
-          {/* Right 8 Columns: Title, Story Pills & Featured Preview Strip */}
-          <div className="lg:col-span-8 space-y-5">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div>
-                <span className="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-widest text-[#FF7A18]">
-                  <Sparkles className="h-3.5 w-3.5 text-[#39B9EB]" />
-                  NASA PHYSICAL SCIENCES INFORMATICS
-                </span>
-                <h1 className="mt-1 text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-                  Investigation Explorer
-                </h1>
-                <p className="text-sm text-[#B4C6E4] mt-1">
-                  Dive into NASA&apos;s groundbreaking microgravity combustion experiments.
-                </p>
-              </div>
-
-              <div className="flex items-center gap-3 self-start sm:self-auto">
-                <Tabs
-                  activeTab={viewMode}
-                  onChange={setViewMode}
-                  tabs={[
-                    { id: "cards", label: "Cards" },
-                    { id: "table", label: "Table" },
-                  ]}
-                />
-              </div>
-            </div>
-
-            {/* Storyboard Category Filter Pills */}
-            <div className="flex flex-wrap items-center gap-2.5">
-              <span className="text-xs font-semibold text-[#9BB0CD] mr-1">
-                Filter by:
-              </span>
-              {STORY_CATEGORY_PILLS.map((pill) => {
-                const active = activePill === pill.id;
-                return (
-                  <button
-                    key={pill.id}
-                    type="button"
-                    onClick={() => handlePillClick(pill)}
-                    className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${
-                      active
-                        ? "bg-[#0088FF] text-white shadow-[0_0_16px_rgba(0,136,255,0.5)]"
-                        : "bg-[#0A162E] text-[#9BB0CD] border border-[#1E3A6E] hover:text-white"
-                    }`}
-                  >
-                    {pill.label}
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Advanced FilterBar inside Hero */}
-            <FilterBar
-              searchQuery={searchInput}
-              onSearchChange={(val) => {
-                setActivePill("All");
-                setSearchInput(val);
-              }}
-              selectedDomain={domain}
-              onDomainChange={setDomain}
-              selectedFuel={fuelType}
-              onFuelChange={setFuelType}
-              selectedGravity={gravityRegime}
-              onGravityChange={setGravityRegime}
-              sortBy={sortBy}
-              onSortChange={setSortBy}
-              onClearAll={handleClearAll}
-              hasActiveFilters={hasActiveFilters}
+          <div className="flex items-center gap-3 self-start sm:self-auto">
+            <Tabs
+              activeTab={viewMode}
+              onChange={setViewMode}
+              tabs={[
+                { id: "cards", label: "Cards" },
+                { id: "table", label: "Table" },
+              ]}
             />
           </div>
         </div>
+
+        {/* Category Filter Pills */}
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xs font-semibold text-[#778495] mr-1">
+            Quick Domain Filter:
+          </span>
+          {STORY_CATEGORY_PILLS.map((pill) => {
+            const active = activePill === pill.id;
+            return (
+              <button
+                key={pill.id}
+                type="button"
+                onClick={() => handlePillClick(pill)}
+                className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all ${
+                  active
+                    ? "bg-[#FF6B24] text-white keep-white shadow-[0_0_16px_rgba(255,107,36,0.35)]"
+                    : "bg-[#151D27] text-[#A1A8B3] border border-[#283340] hover:text-[#F7F7F5]"
+                }`}
+              >
+                {pill.label}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Advanced FilterBar */}
+        <FilterBar
+          searchQuery={searchInput}
+          onSearchChange={(val) => {
+            setActivePill("All");
+            setSearchInput(val);
+          }}
+          selectedDomain={domain}
+          onDomainChange={setDomain}
+          selectedFuel={fuelType}
+          onFuelChange={setFuelType}
+          selectedGravity={gravityRegime}
+          onGravityChange={setGravityRegime}
+          sortBy={sortBy}
+          onSortChange={setSortBy}
+          onClearAll={handleClearAll}
+          hasActiveFilters={hasActiveFilters}
+        />
       </section>
 
       {isUsingFallback && (
@@ -208,7 +184,7 @@ function InvestigationsExplorerInner() {
         />
       )}
 
-      {/* Featured Investigations Cards Grid */}
+      {/* Investigations Grid / Table */}
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <LoadingSkeleton className="h-72" />
@@ -227,10 +203,10 @@ function InvestigationsExplorerInner() {
           ))}
         </div>
       ) : (
-        <Card className="p-0 overflow-x-auto border-[#1E3A6E]">
+        <Card className="p-0 overflow-x-auto border-[#283340] bg-[#10151D]">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="border-b border-[#1E3A6E] bg-[#050C1D] text-[#9BB0CD]">
+              <tr className="border-b border-[#283340] bg-[#151D27] text-[#A1A8B3]">
                 <th className="p-3.5 font-semibold">Acronym / PSI ID</th>
                 <th className="p-3.5 font-semibold">Investigation Title</th>
                 <th className="p-3.5 font-semibold">Research Domain</th>
@@ -239,29 +215,29 @@ function InvestigationsExplorerInner() {
                 <th className="p-3.5 font-semibold text-right">Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#1E3A6E]/60">
+            <tbody className="divide-y divide-[#283340]">
               {investigations.map((inv) => (
-                <tr key={inv.id} className="hover:bg-[#0A1836]/60">
+                <tr key={inv.id} className="hover:bg-[#151D27]/70">
                   <td className="p-3.5 whitespace-nowrap">
                     <div className="flex items-center gap-2">
                       <Badge variant="flame">{inv.acronym}</Badge>
-                      <span className="font-mono text-[11px] text-[#9BB0CD]">{inv.psi_id}</span>
+                      <span className="font-mono text-[11px] text-[#778495]">{inv.psi_id}</span>
                     </div>
                   </td>
-                  <td className="p-3.5 font-semibold text-white">{inv.title}</td>
+                  <td className="p-3.5 font-semibold text-[#F7F7F5]">{inv.title}</td>
                   <td className="p-3.5 text-[#39B9EB]">{inv.research_area}</td>
-                  <td className="p-3.5 text-[#D6E4FF]">
+                  <td className="p-3.5 text-[#A1A8B3]">
                     {inv.primary_fuel_types?.length
                       ? inv.primary_fuel_types.join(", ")
                       : "Not recorded"}
                   </td>
-                  <td className="p-3.5 text-right font-mono text-[#D6E4FF]">
+                  <td className="p-3.5 text-right font-mono text-[#F7F7F5]">
                     {inv.experimental_runs_count} / {inv.documents_count}
                   </td>
                   <td className="p-3.5 text-right">
                     <Link
                       href={`/investigations/${inv.id}`}
-                      className="inline-flex items-center gap-1 text-[#39B9EB] hover:text-white font-semibold"
+                      className="inline-flex items-center gap-1 text-[#39B9EB] hover:text-[#F7F7F5] font-semibold"
                     >
                       Inspect <ArrowRight className="h-3 w-3" />
                     </Link>

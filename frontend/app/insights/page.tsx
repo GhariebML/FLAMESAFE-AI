@@ -100,22 +100,23 @@ export default function InsightsPage() {
   return (
     <div className="w-full max-w-[88rem] mx-auto space-y-8 min-w-0 pb-10">
       {/* =====================================================================
-          DEDICATED STORYBOARD SHOWCASE: FIRE SAFETY DECISION LAB
+          PHASE 7.7 — INSIGHTS: EXPLAINABLE RELEVANCE SCORING & SAFETY PROTOCOLS
       ===================================================================== */}
-      <section className="relative rounded-3xl bg-gradient-to-br from-[#060E20] via-[#09152E] to-[#050A18] border-2 border-[#254B8C]/90 p-6 sm:p-9 shadow-[0_24px_70px_rgba(0,0,0,0.8)] overflow-hidden">
+      <section className="relative rounded-2xl bg-[#10151D] border border-[#283340] p-6 sm:p-8 shadow-[0_20px_60px_rgba(0,0,0,0.75)] overflow-hidden">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-          {/* Left 6 Columns: 4 Safety Protocol Buttons + Active Insight */}
-          <div className="lg:col-span-6 space-y-5">
+          {/* Left 7 Columns: 4 Safety Protocol Modes + Active Insight */}
+          <div className="lg:col-span-7 space-y-5">
             <div>
-              <span className="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-widest text-[#FF7A18]">
+              <span className="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-widest text-[#FF6B24]">
                 <Sparkles className="h-3.5 w-3.5 text-[#39B9EB]" />
-                MISSION SAFETY PROTOCOLS
+                EXPLAINABLE EVIDENCE RANKING · MISSION SAFETY INSIGHTS
               </span>
-              <h1 className="mt-1 text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-                Fire Safety Decision Lab
+              <h1 className="mt-1 text-2xl sm:text-4xl font-extrabold text-[#F7F7F5] tracking-tight">
+                Fire Safety Insights &amp; Relevance Engine
               </h1>
-              <p className="text-sm text-[#B4C6E4] mt-1">
-                Make informed decisions for safer space missions.
+              <p className="text-xs sm:text-sm text-[#A1A8B3] mt-1">
+                Rank NASA PSI investigations by domain alignment, fuel match, atmospheric
+                condition coverage, and measurement completeness.
               </p>
             </div>
 
@@ -130,14 +131,14 @@ export default function InsightsPage() {
                       setSelectedDecision(mode.id);
                       setQuery(mode.query);
                     }}
-                    className={`flex items-center gap-3 px-4 py-3.5 rounded-2xl border text-left transition-all ${
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl border text-left transition-all ${
                       active
-                        ? "bg-[#11264E] border-[#FF7A18] text-white shadow-[0_0_20px_rgba(255,122,24,0.3)]"
-                        : "bg-[#07132A] border-[#1E3A6E] text-[#B4C6E4] hover:text-white hover:border-[#39B9EB]/60"
+                        ? "bg-[#1C2633] border-[#FF6B24] text-[#F7F7F5] shadow-[0_0_18px_rgba(255,107,36,0.22)]"
+                        : "bg-[#151D27] border-[#283340] text-[#A1A8B3] hover:text-[#F7F7F5] hover:border-[#39B9EB]/50"
                     }`}
                   >
-                    <span className="h-8 w-8 rounded-full bg-[#FF7A18]/20 border border-[#FF7A18]/50 flex items-center justify-center shrink-0">
-                      <Flame className="h-4 w-4 text-[#FF7A18]" />
+                    <span className="h-8 w-8 rounded-full bg-[#FF6B24]/15 border border-[#FF6B24]/40 flex items-center justify-center shrink-0">
+                      <Flame className="h-4 w-4 text-[#FF6B24]" />
                     </span>
                     <span className="text-sm font-bold">{mode.label}</span>
                   </button>
@@ -145,36 +146,56 @@ export default function InsightsPage() {
               })}
             </div>
 
-            <div className="rounded-2xl bg-[#071530]/90 border border-[#254B8C] p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <p className="text-xs sm:text-sm text-[#D6E4FF] leading-relaxed">
+            <div className="rounded-xl bg-[#151D27] border border-[#283340] p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <p className="text-xs sm:text-sm text-[#F7F7F5] leading-relaxed">
                 <strong className="text-[#FFB547] mr-1.5">{activeDecisionObj.label}:</strong>
                 {activeDecisionObj.insight}
               </p>
               <button
                 type="button"
                 onClick={executeRanking}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-[#FF7A18] to-[#E94B16] text-white keep-white font-bold text-xs whitespace-nowrap shadow-[0_6px_20px_rgba(255,122,24,0.4)] shrink-0"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-[#FF6B24] to-[#E94B16] text-white keep-white font-bold text-xs whitespace-nowrap shadow-[0_6px_20px_rgba(255,107,36,0.35)] shrink-0"
               >
-                <span>Get Safety Insight</span>
+                <span>Recompute Ranking</span>
                 <ArrowRight className="h-3.5 w-3.5" />
               </button>
             </div>
           </div>
 
-          {/* Right 6 Columns: Realistic Astro-Flame Bot & Glowing Shield */}
-          <div className="lg:col-span-6">
-            <div className="relative h-72 sm:h-80 w-full rounded-2xl overflow-hidden border-2 border-[#254B8C] bg-black shadow-2xl">
-              <img
-                src="/images/story/mascot-shield.png"
-                alt="Realistic Astro-Flame Bot Fire Safety Decision Lab"
-                className="h-full w-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#040918]/85 via-transparent to-transparent" />
-              <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
-                <span className="text-xs font-extrabold text-white">
-                  Explainable Scoring Model (R = 0.30D + 0.25F + 0.20C + 0.15M + 0.10Q)
+          {/* Right 5 Columns: Explainable Multi-Factor Formula Breakdown */}
+          <div className="lg:col-span-5">
+            <div className="rounded-xl bg-[#151D27] border border-[#283340] p-5 space-y-3.5">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-mono font-bold text-[#39B9EB]">
+                  EXPLAINABLE SCORING MODEL
                 </span>
+                <Badge variant="outline">Deterministic</Badge>
               </div>
+              <div className="rounded-lg bg-[#080A0F] border border-[#283340] px-3.5 py-2.5 font-mono text-xs text-[#FFB547]">
+                R = 0.30·D + 0.25·F + 0.20·C + 0.15·M + 0.10·Q
+              </div>
+              <ul className="space-y-1.5 text-xs text-[#A1A8B3]">
+                <li>
+                  <strong className="text-[#F7F7F5]">D (30%):</strong> Research domain &amp;
+                  gravity regime match
+                </li>
+                <li>
+                  <strong className="text-[#F7F7F5]">F (25%):</strong> Fuel &amp; material class
+                  overlap
+                </li>
+                <li>
+                  <strong className="text-[#F7F7F5]">C (20%):</strong> Cabin O₂, pressure &amp;
+                  flow coverage
+                </li>
+                <li>
+                  <strong className="text-[#F7F7F5]">M (15%):</strong> Empirical measurement
+                  completeness
+                </li>
+                <li>
+                  <strong className="text-[#F7F7F5]">Q (10%):</strong> Semantic query token
+                  relevance
+                </li>
+              </ul>
             </div>
           </div>
         </div>

@@ -9,7 +9,7 @@ import { UncertaintyBanner } from "@/components/ui/UncertaintyBanner";
 import { Card } from "@/components/shared/Card";
 import { Button } from "@/components/shared/Button";
 import { LoadingSkeleton } from "@/components/shared/LoadingSkeleton";
-import { Download, ArrowRight, Sparkles } from "lucide-react";
+import { Download, ArrowRight, Scale, CheckCircle2, AlertTriangle } from "lucide-react";
 
 type GravityMode = "earth" | "microgravity" | "lunar";
 
@@ -79,33 +79,49 @@ export default function ComparePage() {
     URL.revokeObjectURL(url);
   };
 
-  const gravityInsight =
+  const gravityMeta =
     gravityMode === "earth"
-      ? "On Earth (1g), buoyant convection pulls hot gases upward into a classic yellow teardrop flame."
+      ? {
+          status: "Measured 1g Terrestrial Baseline",
+          isExtrapolated: false,
+          insight:
+            "On Earth (1.0g), natural buoyant convection accelerates hot combustion products upward, drawing fresh oxidizer into the base and forming a yellow teardrop flame.",
+        }
       : gravityMode === "lunar"
-      ? "In Lunar gravity (0.16g), partial buoyancy accelerates flame spread under reduced-pressure cabin oxygen."
-      : "In microgravity (0g), flames form a spherical diffusion shell instead of a teardrop.";
+      ? {
+          status: "Extrapolated Partial-g Scenario (Research Gap)",
+          isExtrapolated: true,
+          insight:
+            "In Lunar partial gravity (0.16g), weak buoyancy combines with reduced-pressure elevated-O₂ cabin atmospheres; direct flight measurements remain sparse across NASA PSI.",
+        }
+      : {
+          status: "Measured ISS Flight Data (NASA PSI)",
+          isExtrapolated: false,
+          insight:
+            "In orbital microgravity (~0g), buoyant convection vanishes; oxygen transport is governed by molecular diffusion and low-velocity HVAC flow, forming a spherical diffusion flame.",
+        };
 
   return (
     <div className="w-full max-w-[88rem] mx-auto space-y-8 min-w-0 pb-10">
       {/* =====================================================================
-          DEDICATED STORYBOARD SHOWCASE: MICROGRAVITY VS EARTH
+          PHASE 7.5 — DATA OBSERVATORY: MEASURED vs EXTRAPOLATED GRAVITY REGIMES
       ===================================================================== */}
-      <section className="relative rounded-3xl bg-gradient-to-br from-[#060E20] via-[#09152E] to-[#050A18] border-2 border-[#254B8C]/90 p-6 sm:p-9 shadow-[0_24px_70px_rgba(0,0,0,0.8)] overflow-hidden">
+      <section className="relative rounded-2xl bg-[#10151D] border border-[#283340] p-6 sm:p-8 shadow-[0_20px_60px_rgba(0,0,0,0.75)] overflow-hidden">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-7 items-center">
-          {/* Left 8 Columns: Title, Regime Pills & 3 Ultra-HD Flame Cards */}
+          {/* Left 8 Columns: Title, Regime Pills & 3 Provenance-Labeled Flame Cards */}
           <div className="lg:col-span-8 space-y-5">
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
               <div>
                 <span className="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-widest text-[#39B9EB]">
-                  <Sparkles className="h-3.5 w-3.5 text-[#FF7A18]" />
-                  DATA OBSERVATORY • GRAVITY REGIMES
+                  <Scale className="h-3.5 w-3.5 text-[#FF6B24]" />
+                  DATA OBSERVATORY · GRAVITY REGIME COMPARISON
                 </span>
-                <h1 className="mt-1 text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-                  Microgravity vs Earth
+                <h1 className="mt-1 text-2xl sm:text-4xl font-extrabold text-[#F7F7F5] tracking-tight">
+                  Microgravity vs. Terrestrial &amp; Lunar Regimes
                 </h1>
-                <p className="text-sm text-[#B4C6E4] mt-1">
-                  See how fire behaves differently in space!
+                <p className="text-xs sm:text-sm text-[#A1A8B3] mt-1">
+                  Compare measured ISS microgravity (`~0g`) and terrestrial (`1g`) baselines
+                  against extrapolated partial-gravity (`0.16g`) scenarios.
                 </p>
               </div>
 
@@ -113,9 +129,9 @@ export default function ComparePage() {
               <div className="flex flex-wrap items-center gap-2">
                 {(
                   [
-                    { id: "earth", label: "Earth Gravity" },
-                    { id: "microgravity", label: "Microgravity" },
-                    { id: "lunar", label: "Lunar Gravity" },
+                    { id: "earth", label: "1.0g Earth" },
+                    { id: "microgravity", label: "~0g Microgravity" },
+                    { id: "lunar", label: "0.16g Lunar (Gap)" },
                   ] as const
                 ).map((tab) => {
                   const active = gravityMode === tab.id;
@@ -124,10 +140,10 @@ export default function ComparePage() {
                       key={tab.id}
                       type="button"
                       onClick={() => setGravityMode(tab.id)}
-                      className={`px-4 py-2 rounded-full text-xs font-bold transition-all ${
+                      className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all ${
                         active
-                          ? "bg-gradient-to-r from-[#FF7A18] to-[#E94B16] text-white border border-[#FFB547]/60 shadow-[0_0_18px_rgba(255,122,24,0.45)]"
-                          : "bg-[#0A162E] text-[#9BB0CD] border border-[#1E3A6E] hover:text-white"
+                          ? "bg-[#FF6B24] text-white keep-white shadow-[0_0_16px_rgba(255,107,36,0.35)]"
+                          : "bg-[#151D27] text-[#A1A8B3] border border-[#283340] hover:text-[#F7F7F5]"
                       }`}
                     >
                       {tab.label}
@@ -137,101 +153,121 @@ export default function ComparePage() {
               </div>
             </div>
 
-            {/* 3 Ultra-HD Flame Cards */}
+            {/* 3 Flame Regime Cards with Explicit Provenance Badges */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div
                 onClick={() => setGravityMode("earth")}
-                className={`cursor-pointer rounded-2xl bg-[#040914] border p-3.5 text-center transition-all ${
+                className={`cursor-pointer rounded-xl bg-[#080A0F] border p-3.5 text-center transition-all ${
                   gravityMode === "earth"
-                    ? "border-[#FF7A18] ring-2 ring-[#FF7A18]/35 shadow-[0_0_28px_rgba(255,122,24,0.28)]"
-                    : "border-[#1E3A6E] hover:border-[#39B9EB]/60"
+                    ? "border-[#FF6B24] ring-1 ring-[#FF6B24]/40"
+                    : "border-[#283340] hover:border-[#39B9EB]/50"
                 }`}
               >
-                <div className="h-52 w-full rounded-xl overflow-hidden bg-black">
+                <div className="relative h-48 w-full rounded-lg overflow-hidden bg-black">
                   <img
                     src="/images/story/flame-on-earth.png"
-                    alt="On Earth 1G Teardrop Flame"
-                    className="h-full w-full object-cover hover:scale-105 transition-transform duration-500"
+                    alt="On Earth 1G Buoyant Teardrop Flame"
+                    className="h-full w-full object-cover"
                   />
+                  <span className="absolute top-2 left-2 rounded-full bg-[#10151D]/90 border border-[#22C55E]/40 px-2 py-0.5 text-[10px] font-mono text-[#22C55E]">
+                    Measured 1g Baseline
+                  </span>
                 </div>
-                <p className="mt-3 text-sm font-extrabold text-white">On Earth</p>
-                <p className="text-[11px] font-mono text-[#FFB547]">1.0G Buoyant Teardrop</p>
+                <p className="mt-2.5 text-sm font-bold text-[#F7F7F5]">On Earth (1.0g)</p>
+                <p className="text-[11px] font-mono text-[#FFB547]">Buoyancy-Driven Teardrop</p>
               </div>
 
               <div
                 onClick={() => setGravityMode("microgravity")}
-                className={`cursor-pointer rounded-2xl bg-[#040914] border p-3.5 text-center transition-all ${
+                className={`cursor-pointer rounded-xl bg-[#080A0F] border p-3.5 text-center transition-all ${
                   gravityMode === "microgravity"
-                    ? "border-[#39B9EB] ring-2 ring-[#39B9EB]/35 shadow-[0_0_28px_rgba(57,185,235,0.3)]"
-                    : "border-[#1E3A6E] hover:border-[#39B9EB]/60"
+                    ? "border-[#39B9EB] ring-1 ring-[#39B9EB]/40"
+                    : "border-[#283340] hover:border-[#39B9EB]/50"
                 }`}
               >
-                <div className="h-52 w-full rounded-xl overflow-hidden bg-black">
+                <div className="relative h-48 w-full rounded-lg overflow-hidden bg-black">
                   <img
                     src="/images/story/flame-in-space.png"
-                    alt="In Space 0G Spherical Flame"
-                    className="h-full w-full object-cover hover:scale-105 transition-transform duration-500"
+                    alt="In Space 0G Spherical Diffusion Flame"
+                    className="h-full w-full object-cover"
                   />
+                  <span className="absolute top-2 left-2 rounded-full bg-[#10151D]/90 border border-[#39B9EB]/50 px-2 py-0.5 text-[10px] font-mono text-[#39B9EB]">
+                    Measured ISS Flight Data
+                  </span>
                 </div>
-                <p className="mt-3 text-sm font-extrabold text-white">In Space</p>
-                <p className="text-[11px] font-mono text-[#39B9EB]">0G Spherical Diffusion</p>
+                <p className="mt-2.5 text-sm font-bold text-[#F7F7F5]">In Space (~0g)</p>
+                <p className="text-[11px] font-mono text-[#39B9EB]">Spherical Diffusion Shell</p>
               </div>
 
               <div
                 onClick={() => setGravityMode("lunar")}
-                className={`cursor-pointer rounded-2xl bg-[#040914] border p-3.5 text-center transition-all ${
+                className={`cursor-pointer rounded-xl bg-[#080A0F] border p-3.5 text-center transition-all ${
                   gravityMode === "lunar"
-                    ? "border-[#FFB547] ring-2 ring-[#FFB547]/35 shadow-[0_0_28px_rgba(255,181,71,0.3)]"
-                    : "border-[#1E3A6E] hover:border-[#39B9EB]/60"
+                    ? "border-[#FFB547] ring-1 ring-[#FFB547]/40"
+                    : "border-[#283340] hover:border-[#39B9EB]/50"
                 }`}
               >
-                <div className="h-52 w-full rounded-xl overflow-hidden bg-black">
+                <div className="relative h-48 w-full rounded-lg overflow-hidden bg-black">
                   <img
                     src="/images/story/flame-lunar.png"
-                    alt="Lunar Gravity 0.16G Dome Flame"
-                    className="h-full w-full object-cover hover:scale-105 transition-transform duration-500"
+                    alt="Lunar Gravity 0.16G Partial Buoyancy Concept"
+                    className="h-full w-full object-cover"
                   />
+                  <span className="absolute top-2 left-2 rounded-full bg-[#10151D]/90 border border-[#FFB547]/50 px-2 py-0.5 text-[10px] font-mono text-[#FFB547]">
+                    Extrapolated Scenario
+                  </span>
                 </div>
-                <p className="mt-3 text-sm font-extrabold text-white">Lunar Gravity</p>
-                <p className="text-[11px] font-mono text-[#FFB547]">0.16G Partial Buoyancy</p>
+                <p className="mt-2.5 text-sm font-bold text-[#F7F7F5]">Lunar Gravity (0.16g)</p>
+                <p className="text-[11px] font-mono text-[#FFB547]">Partial Buoyancy (Gap Area)</p>
               </div>
             </div>
           </div>
 
-          {/* Right 4 Columns: Realistic Astro-Flame Bot Window + Key Insight Card */}
+          {/* Right 4 Columns: Scientific Telemetry Visual + Provenance Insight */}
           <div className="lg:col-span-4">
-            <div className="rounded-2xl bg-[#081632]/95 border border-[#254B8C] p-5 shadow-2xl space-y-4">
-              <div className="relative h-56 w-full rounded-xl overflow-hidden border border-[#1E3A6E]">
+            <div className="rounded-xl bg-[#151D27] border border-[#283340] p-5 space-y-4">
+              <div className="relative h-44 w-full rounded-lg overflow-hidden border border-[#283340] bg-[#080A0F]">
                 <img
-                  src="/images/story/mascot-window.png"
-                  alt="Realistic Astro-Flame Bot observing microgravity flame"
+                  src="/images/story/scientific-measurements.png"
+                  alt="Multi-Regime Flame Front Telemetry"
                   className="h-full w-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#060E20]/85 via-transparent to-transparent" />
-                <span className="absolute bottom-3 left-3.5 text-sm font-extrabold text-[#FFB547]">
-                  Key Insight:
-                </span>
+                <div className="absolute inset-0 bg-gradient-to-t from-[#080A0F]/85 via-transparent to-transparent" />
+                <div className="absolute bottom-2.5 left-3 right-3 flex items-center justify-between">
+                  <span
+                    className={`inline-flex items-center gap-1 text-[11px] font-mono font-semibold ${
+                      gravityMeta.isExtrapolated ? "text-[#FFB547]" : "text-[#22C55E]"
+                    }`}
+                  >
+                    {gravityMeta.isExtrapolated ? (
+                      <AlertTriangle className="h-3.5 w-3.5" />
+                    ) : (
+                      <CheckCircle2 className="h-3.5 w-3.5" />
+                    )}
+                    {gravityMeta.status}
+                  </span>
+                </div>
               </div>
 
-              <p className="text-sm text-[#D6E4FF] leading-relaxed">
-                {gravityInsight}
+              <p className="text-xs sm:text-sm text-[#A1A8B3] leading-relaxed">
+                {gravityMeta.insight}
               </p>
 
               <div className="flex items-center justify-between pt-1">
                 <Link
                   href="/investigations"
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#10244A] hover:bg-[#FF7A18] border border-[#39B9EB]/50 text-xs font-bold text-white transition-all"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-[#10151D] hover:bg-[#1C2633] border border-[#283340] text-xs font-semibold text-[#F7F7F5] transition-all"
                 >
-                  <span>Explore More</span>
-                  <ArrowRight className="h-3.5 w-3.5" />
+                  <span>Inspect PSI Studies</span>
+                  <ArrowRight className="h-3.5 w-3.5 text-[#39B9EB]" />
                 </Link>
 
                 {comparisonData && (
                   <div className="flex items-center gap-1.5">
-                    <Button size="sm" variant="outline" onClick={handleExportCSV} className="gap-1">
+                    <Button variant="secondary" size="sm" onClick={handleExportCSV}>
                       <Download className="h-3.5 w-3.5" /> CSV
                     </Button>
-                    <Button size="sm" variant="outline" onClick={handleExportJSON} className="gap-1">
+                    <Button variant="secondary" size="sm" onClick={handleExportJSON}>
                       <Download className="h-3.5 w-3.5" /> JSON
                     </Button>
                   </div>
@@ -245,32 +281,36 @@ export default function ComparePage() {
       {isUsingFallback && (
         <UncertaintyBanner
           variant="demo"
-          title="Backend API Unavailable"
-          message="Comparison calculations require the live FastAPI comparison engine."
+          title="Demo Comparison Mode"
+          message="Using local reference data because the backend API was unreachable."
         />
       )}
 
-      {/* Multi-Study Comparison Selector */}
-      <Card className="space-y-3 border-[#1E3A6E] bg-[#071226]/90">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <span className="text-xs font-bold text-white">
-            Select 2–4 NASA PSI Investigations to Compare Side-by-Side (Selected: {selectedIds.length})
-          </span>
+      {/* Investigation Selector Panel */}
+      <Card className="space-y-4 border-[#283340] bg-[#10151D]">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <h3 className="text-sm font-bold text-[#F7F7F5]">
+              Select 2 to 4 Investigations to Compare ({selectedIds.length} selected)
+            </h3>
+            <p className="text-xs text-[#A1A8B3]">
+              Click cards below to toggle selection, then update the comparison matrix.
+            </p>
+          </div>
           <Button
-            size="sm"
             variant="primary"
-            isLoading={isComparing}
-            disabled={selectedIds.length < 2}
+            size="sm"
             onClick={handleRunComparison}
+            disabled={selectedIds.length < 2 || isComparing}
           >
-            Update Comparison
+            {isComparing ? "Computing Matrix..." : "Update Comparison"}
           </Button>
         </div>
 
         {isInvLoading ? (
-          <LoadingSkeleton className="h-14 w-full" />
+          <LoadingSkeleton className="h-24" />
         ) : (
-          <div className="flex flex-wrap gap-2 pt-1">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
             {investigations.map((inv) => {
               const isSelected = selectedIds.includes(inv.id);
               return (
@@ -278,14 +318,32 @@ export default function ComparePage() {
                   key={inv.id}
                   type="button"
                   onClick={() => toggleSelect(inv.id)}
-                  className={`px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all text-left ${
+                  className={`text-left p-3.5 rounded-xl border transition-all ${
                     isSelected
-                      ? "bg-[#11264E] text-white border-[#39B9EB] shadow-[0_0_14px_rgba(57,185,235,0.25)]"
-                      : "bg-[#050C1D] text-[#9BB0CD] border-[#1E3A6E] hover:border-[#39B9EB]/50 hover:text-white"
+                      ? "bg-[#151D27] border-[#39B9EB] ring-1 ring-[#39B9EB]/35"
+                      : "bg-[#080A0F] border-[#283340] hover:border-[#778495]"
                   }`}
                 >
-                  <span className="font-mono font-bold text-[#FFB547] mr-1.5">[{inv.acronym}]</span>
-                  <span>{inv.title}</span>
+                  <div className="flex items-center justify-between gap-2 mb-1">
+                    <span className="font-mono text-xs font-bold text-[#39B9EB]">
+                      {inv.acronym}
+                    </span>
+                    <span
+                      className={`h-4 w-4 rounded-full border flex items-center justify-center text-[10px] ${
+                        isSelected
+                          ? "bg-[#39B9EB] border-[#39B9EB] text-[#080A0F] font-bold"
+                          : "border-[#778495]"
+                      }`}
+                    >
+                      {isSelected ? "✓" : ""}
+                    </span>
+                  </div>
+                  <div className="text-xs font-medium text-[#F7F7F5] line-clamp-1">
+                    {inv.title}
+                  </div>
+                  <div className="text-[11px] text-[#778495] mt-1">
+                    {inv.experimental_runs_count} runs · {inv.research_area}
+                  </div>
                 </button>
               );
             })}
@@ -293,16 +351,12 @@ export default function ComparePage() {
         )}
       </Card>
 
-      {/* Comparison Matrix View */}
+      {error && (
+        <UncertaintyBanner variant="warning" title="Comparison Notice" message={error} />
+      )}
+
       {isComparing ? (
-        <div className="space-y-4">
-          <LoadingSkeleton className="h-24 w-full" />
-          <LoadingSkeleton className="h-80 w-full" />
-        </div>
-      ) : error ? (
-        <div className="p-4 rounded-xl bg-red-950/20 border border-red-500/30 text-xs text-red-300">
-          {error}
-        </div>
+        <LoadingSkeleton className="h-96" />
       ) : comparisonData ? (
         <ComparisonMatrix data={comparisonData} />
       ) : null}

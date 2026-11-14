@@ -6,17 +6,18 @@ import { Navbar } from "./Navbar";
 import { Footer } from "./Footer";
 import { SpaceMotionBackground } from "./SpaceMotionBackground";
 import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
+import { AstroFlameCompanion } from "@/components/assistant/AstroFlameCompanion";
 
 export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const pathname = usePathname();
   const isLanding = pathname === "/";
 
   return (
-    <div className="relative min-h-screen flex flex-col text-fg-primary min-w-0">
+    <div className="relative min-h-screen flex flex-col text-[#F7F7F5] bg-[#080A0F] min-w-0">
       <SpaceMotionBackground />
 
       <div className="relative z-10 flex flex-col min-h-screen min-w-0">
-        {/* Unified Top Navigation Bar across all pages (No Side Menu) */}
+        {/* Unified Top Navigation Bar across all pages */}
         <Navbar isLanding={isLanding} />
 
         <div className="flex flex-1 min-w-0 w-full">
@@ -34,6 +35,9 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
           </main>
         </div>
       </div>
+
+      {/* Global Floating Astro-Flame Research Companion */}
+      <AstroFlameCompanion />
     </div>
   );
 };

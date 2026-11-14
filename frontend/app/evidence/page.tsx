@@ -69,57 +69,56 @@ export default function EvidenceCenterPage() {
   return (
     <div className="w-full max-w-[88rem] mx-auto space-y-8 min-w-0 pb-10">
       {/* =====================================================================
-          DEDICATED STORYBOARD SHOWCASE: RESEARCH REPORT — MISSION COMPLETE!
+          PHASE 7.7 — EVIDENCE VAULT: TRACEABLE NASA PSI PUBLICATIONS & DOIS
       ===================================================================== */}
-      <section className="relative rounded-3xl bg-gradient-to-br from-[#060E20] via-[#09152E] to-[#050A18] border-2 border-[#254B8C]/90 p-6 sm:p-9 shadow-[0_24px_70px_rgba(0,0,0,0.8)] overflow-hidden">
+      <section className="relative rounded-2xl bg-[#10151D] border border-[#283340] p-6 sm:p-8 shadow-[0_20px_60px_rgba(0,0,0,0.75)] overflow-hidden">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-          {/* Left 7 Columns: Research Report Mission Complete Showcase */}
-          <div className="lg:col-span-7 space-y-5">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-400/40 text-xs font-bold text-emerald-300">
-              <CheckCircle2 className="h-4 w-4" />
-              <span>Research Report • Traceable NASA Corpus</span>
+          {/* Left 8 Columns: Traceable NASA Corpus Header */}
+          <div className="lg:col-span-8 space-y-4">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#22C55E]/15 border border-[#22C55E]/40 text-xs font-bold text-[#22C55E]">
+              <CheckCircle2 className="h-3.5 w-3.5" />
+              <span>Traceable NASA PSI Evidence Vault</span>
             </div>
 
-            <h1 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
-              Mission <span className="text-[#FF7A18]">Complete!</span>
+            <h1 className="text-2xl sm:text-4xl font-extrabold text-[#F7F7F5] tracking-tight">
+              Primary Literature &amp; <span className="text-[#FF6B24]">Citation Vault</span>
             </h1>
 
-            <p className="text-sm sm:text-base text-[#D6E4FF] leading-relaxed max-w-xl">
-              Here&apos;s your scientific summary with verified sources, DOI
-              identifiers, and page-level evidence excerpts from NASA PSI.
+            <p className="text-xs sm:text-sm text-[#A1A8B3] leading-relaxed max-w-2xl">
+              Inspect peer-reviewed NASA Physical Sciences Informatics (PSI) and NTRS technical
+              publications, DOI identifiers, and page-level evidence excerpts used to ground
+              autonomous research synthesis.
             </p>
 
             <div className="flex flex-wrap items-center gap-3.5 pt-1">
               <button
                 type="button"
                 onClick={handleDownloadReport}
-                className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-gradient-to-r from-[#FF7A18] to-[#E94B16] hover:from-[#FF8B33] hover:to-[#FF6B24] text-white keep-white font-bold text-sm shadow-[0_10px_28px_rgba(255,122,24,0.45)] transition-all"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-[#FF6B24] to-[#E94B16] hover:from-[#FF8040] hover:to-[#FF6B24] text-white keep-white font-bold text-xs sm:text-sm shadow-[0_8px_24px_rgba(255,107,36,0.38)] transition-all"
               >
                 <Download className="h-4 w-4" />
-                <span>Download Report</span>
+                <span>Export Evidence Catalog (JSON)</span>
               </button>
 
-              <Badge variant="success" className="gap-1.5 py-2 px-3.5">
-                <ShieldCheck className="h-4 w-4" /> Verified NASA Citations
+              <Badge variant="success" className="gap-1.5 py-1.5 px-3">
+                <ShieldCheck className="h-4 w-4" /> Page &amp; Section Verified
               </Badge>
             </div>
           </div>
 
-          {/* Right 5 Columns: NASA Dossier Visual + Realistic Astro-Flame Bot */}
-          <div className="lg:col-span-5 grid grid-cols-2 gap-4">
-            <div className="relative h-56 rounded-2xl overflow-hidden border border-[#254B8C] bg-black shadow-xl">
+          {/* Right 4 Columns: Single NASA Report Dossier Visual (No Repeated Mascot) */}
+          <div className="lg:col-span-4">
+            <div className="relative h-48 rounded-xl overflow-hidden border border-[#283340] bg-[#080A0F] shadow-xl">
               <img
                 src="/images/story/report-docs.png"
-                alt="NASA Research Report Dossier"
+                alt="NASA PSI Primary Literature Dossier"
                 className="h-full w-full object-cover"
               />
-            </div>
-            <div className="relative h-56 rounded-2xl overflow-hidden border border-[#254B8C] bg-black shadow-xl">
-              <img
-                src="/images/story/mascot-journey.png"
-                alt="Realistic Astro-Flame Bot Mission Complete"
-                className="h-full w-full object-cover"
-              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#080A0F]/85 via-transparent to-transparent" />
+              <div className="absolute bottom-3 left-3.5 right-3.5 flex items-center justify-between text-xs">
+                <span className="font-bold text-[#F7F7F5]">NASA PSI / NTRS Archive</span>
+                <span className="font-mono text-[#39B9EB]">DOI Indexed</span>
+              </div>
             </div>
           </div>
         </div>

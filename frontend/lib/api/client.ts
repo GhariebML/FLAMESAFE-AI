@@ -23,16 +23,45 @@ import {
 import { API_ENDPOINTS } from "./endpoints";
 
 function normalizeBaseUrl(raw?: string): string {
-  const trimmed = (raw || "http://localhost:8001/api/v1").trim().replace(/\/+$/, "");
+  const trimmed = (raw || "").trim().replace(/\/+$/, "");
+  if (!trimmed) {
+    if (
+      typeof window !== "undefined" &&
+      window.location.hostname !== "localhost" &&
+      window.location.hostname !== "127.0.0.1"
+    ) {
+      return "/api/v1";
+    }
+    return "http://localhost:8001/api/v1";
+  }
+  if (
+    typeof window !== "undefined" &&
+    window.location.hostname !== "localhost" &&
+    window.location.hostname !== "127.0.0.1" &&
+    (trimmed.includes("localhost") || trimmed.includes("127.0.0.1"))
+  ) {
+    return "/api/v1";
+  }
   return trimmed.endsWith("/api/v1") ? trimmed : `${trimmed}/api/v1`;
 }
 
+function getCandidateBaseUrls(): string[] {
+  const primary = normalizeBaseUrl(process.env.NEXT_PUBLIC_API_URL);
+  const candidates: string[] = [primary];
+
+  if (primary.includes(":8001")) {
+    candidates.push(primary.replace(":8001", ":8000"));
+  } else if (primary.includes(":8000")) {
+    candidates.push(primary.replace(":8000", ":8001"));
+  }
+
+  if (typeof window !== "undefined" && !candidates.includes("/api/v1")) {
+    candidates.push("/api/v1");
+  }
+  return candidates;
+}
+
 const PRIMARY_BASE_URL = normalizeBaseUrl(process.env.NEXT_PUBLIC_API_URL);
-const FALLBACK_BASE_URL = PRIMARY_BASE_URL.includes(":8001")
-  ? PRIMARY_BASE_URL.replace(":8001", ":8000")
-  : PRIMARY_BASE_URL.includes(":8000")
-  ? PRIMARY_BASE_URL.replace(":8000", ":8001")
-  : PRIMARY_BASE_URL;
 
 class APIError extends Error {
   code: string;
@@ -76,28 +105,28 @@ async function fetchFromBase<T>(
 }
 
 async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-  try {
-    return await fetchFromBase<T>(PRIMARY_BASE_URL, endpoint, options);
-  } catch (primaryErr) {
-    if (
-      FALLBACK_BASE_URL !== PRIMARY_BASE_URL &&
-      (!(primaryErr instanceof APIError) || primaryErr.status === 404 || primaryErr.status === 0)
-    ) {
-      try {
-        return await fetchFromBase<T>(FALLBACK_BASE_URL, endpoint, options);
-      } catch {
-        // Fall through and throw the primary error
+  const candidates = getCandidateBaseUrls();
+  let lastError: unknown = null;
+
+  for (const baseUrl of candidates) {
+    try {
+      return await fetchFromBase<T>(baseUrl, endpoint, options);
+    } catch (err) {
+      lastError = err;
+      if (err instanceof APIError && err.status !== 404 && err.status !== 0 && err.status < 500) {
+        throw err;
       }
     }
-    if (primaryErr instanceof APIError) {
-      throw primaryErr;
-    }
-    throw new APIError(
-      (primaryErr as Error).message || "Network connectivity failure",
-      "NETWORK_ERROR",
-      0
-    );
   }
+
+  if (lastError instanceof APIError) {
+    throw lastError;
+  }
+  throw new APIError(
+    (lastError as Error)?.message || "Network connectivity failure",
+    "NETWORK_ERROR",
+    0
+  );
 }
 
 export const apiClient = {

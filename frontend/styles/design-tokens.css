@@ -79,7 +79,7 @@ html.light {
 html.dark {
   color-scheme: dark;
 
-  /* FLAMESAFE — THE BLACK FIRE LAB (Official Black Dominant Identity) */
+  /* FLAMESAFE — THE BLACK FIRE LAB & ORBITAL RESEARCH EXPERIENCE */
   --black-lab-bg-primary: #080A0F;
   --black-lab-bg-secondary: #0D1117;
   --black-lab-surface-card: #121820;
@@ -93,25 +93,40 @@ html.dark {
   --black-lab-scientific-cyan: #39B9EB;
   --black-lab-border: #252D38;
 
-  /* Tailwind RGB Surface Tokens mapped to Black Fire Lab */
+  /* Phase 2 Semantic Orbital Tokens */
+  --orbital-bg-obsidian: #080A0F;
+  --orbital-surface-primary: #10151D;
+  --orbital-surface-secondary: #151D27;
+  --orbital-surface-elevated: #1C2633;
+  --orbital-text-primary: #F7F7F5;
+  --orbital-text-secondary: #A1A8B3;
+  --orbital-text-muted: #778495;
+  --orbital-flame-orange: #FF6B24;
+  --orbital-flame-deep: #E94B16;
+  --orbital-solar-amber: #FFB547;
+  --orbital-cyan: #39B9EB;
+  --orbital-research-blue: #006EDB;
+  --orbital-border-subtle: #283340;
+
+  /* Tailwind RGB Surface Tokens mapped to Orbital Obsidian */
   --space-950: 8 10 15;    /* #080A0F */
-  --space-900: 18 24 32;   /* #121820 */
-  --space-800: 37 45 56;   /* #252D38 */
+  --space-900: 16 21 29;   /* #10151D */
+  --space-800: 40 51 64;   /* #283340 */
   --space-700: 52 63 78;   /* #343F4E */
-  --space-600: 100 112 128; /* #647080 */
+  --space-600: 119 132 149; /* #778495 */
 
   --text-primary: 247 247 245;   /* #F7F7F5 */
   --text-secondary: 161 168 179; /* #A1A8B3 */
-  --text-muted: 161 168 179;     /* #A1A8B3 */
+  --text-muted: 138 150 166;     /* #8A96A6 */
 
   --bg-canvas: #080A0F;
-  --bg-surface: #121820;
-  --bg-surface-soft: #191F28;
-  --border-subtle: #252D38;
+  --bg-surface: #10151D;
+  --bg-surface-soft: #151D27;
+  --border-subtle: #283340;
   --text-ink: #F7F7F5;
   --text-secondary-ink: #A1A8B3;
-  --header-surface: rgba(8, 10, 15, 0.88);
-  --header-border: #252D38;
+  --header-surface: rgba(8, 10, 15, 0.90);
+  --header-border: #283340;
 
   --bg-deep-space: #071525;
   --bg-midnight-blue: #0D2035;

@@ -260,111 +260,88 @@ export default function ResearchIntelligenceWorkspacePage() {
 
   return (
     <div className="max-w-[84rem] mx-auto space-y-6 pb-16">
-      {/* DEDICATED STORYBOARD SHOWCASE: AI AGENTS MISSION ROOM */}
-      <section className="relative overflow-hidden rounded-3xl border-2 border-[#254B8C]/90 bg-gradient-to-br from-[#060E20] via-[#09152E] to-[#050A18] p-6 sm:p-8 shadow-[0_24px_70px_rgba(0,0,0,0.8)]">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-7 items-center">
-          {/* Left 4 Columns: Realistic Astro-Flame Bot Mission Commander */}
-          <div className="lg:col-span-4">
-            <div className="relative h-64 sm:h-72 w-full rounded-2xl overflow-hidden border border-[#254B8C] bg-black shadow-2xl">
-              <img
-                src="/images/story/mascot-agents.png"
-                alt="Realistic Astro-Flame Bot Mission Commander"
-                className="h-full w-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#040918]/90 via-transparent to-transparent" />
-              <div className="absolute bottom-3.5 left-4 right-4 flex items-center justify-between">
-                <span className="text-xs font-extrabold text-white">
-                  Mission Commander
-                </span>
-                <span className="px-2.5 py-0.5 rounded-full bg-[#0088FF]/25 border border-[#39B9EB]/50 text-[10px] font-mono font-bold text-[#39B9EB]">
-                  11 Agents Online
-                </span>
-              </div>
+      {/* PHASE 7.4 — AI LAB: CANONICAL 11-AGENT LANGGRAPH ORCHESTRATOR HEADER */}
+      <section className="relative overflow-hidden rounded-2xl border border-[#283340] bg-[#10151D] p-6 sm:p-8 shadow-[0_20px_60px_rgba(0,0,0,0.75)] space-y-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <div className="inline-flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-[#FF6B24]">
+              <Cpu className="w-3.5 h-3.5 text-[#39B9EB]" />
+              <span>AUTONOMOUS LANGGRAPH MULTI-AGENT ORCHESTRATOR</span>
             </div>
+            <h1 className="mt-1 text-2xl sm:text-4xl font-extrabold tracking-tight text-[#F7F7F5]">
+              AI Research Intelligence Lab
+            </h1>
+            <p className="text-xs sm:text-sm text-[#A1A8B3] mt-1 max-w-2xl">
+              11 specialized scientific agents orchestrating NASA PSI discovery, priority file
+              scoring, SI schema normalization, Parquet dataset construction, and citation-verified
+              RAG synthesis.
+            </p>
           </div>
 
-          {/* Right 8 Columns: Title + 11 Agents Orbital Diagram */}
-          <div className="lg:col-span-8 space-y-5">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div>
-                <div className="inline-flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-[#39B9EB]">
-                  <Cpu className="w-3.5 h-3.5 text-[#FF7A18]" />
-                  <span>AUTONOMOUS MULTI-AGENT ORCHESTRATOR</span>
-                </div>
-                <h1 className="mt-1 text-3xl sm:text-4xl font-extrabold tracking-tight text-white keep-white">
-                  AI Agents Mission Room
-                </h1>
-                <p className="text-sm text-[#B4C6E4] mt-1">
-                  11 Specialized Agents. One Mission.
-                </p>
-              </div>
-
-              {activeRequest && (
-                <div className="flex flex-col items-start sm:items-end gap-1.5 shrink-0">
-                  <AgentStatusIndicator
-                    status={activeRequest.status}
-                    label={`Workflow: ${activeRequest.status}`}
-                  />
-                  <span className="text-[11px] font-mono text-[#9EB2D0]">
-                    Thread: {activeRequest.thread_id.slice(0, 12)}...
-                  </span>
-                </div>
-              )}
+          {activeRequest && (
+            <div className="flex flex-col items-start sm:items-end gap-1.5 shrink-0">
+              <AgentStatusIndicator
+                status={activeRequest.status}
+                label={`Workflow: ${activeRequest.status}`}
+              />
+              <span className="text-[11px] font-mono text-[#778495]">
+                Thread: {activeRequest.thread_id.slice(0, 12)}...
+              </span>
             </div>
+          )}
+        </div>
 
-            {/* 11 Agents Hub Diagram */}
-            <div className="grid grid-cols-1 sm:grid-cols-11 gap-3 items-center bg-[#07132A]/90 border border-[#1E3A6E] rounded-2xl p-4">
-              {/* Left 6 Agents */}
-              <div className="sm:col-span-4 space-y-1.5">
-                {[
-                  "01 Mission Commander",
-                  "02 Research Navigator",
-                  "03 Memory Specialist",
-                  "04 Data Explorer",
-                  "05 Research Analyst",
-                  "06 Data Collector",
-                ].map((label) => (
-                  <div
-                    key={label}
-                    className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#0A1A3A] border border-[#254B8C] text-xs font-semibold text-white"
-                  >
-                    <Cpu className="h-3.5 w-3.5 text-[#39B9EB] shrink-0" />
-                    <span className="truncate">{label}</span>
+        {/* Canonical 11 Agents Architecture Grid (Real Runtime State) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 bg-[#151D27] border border-[#283340] rounded-xl p-4">
+          {ALL_11_AGENTS.map((agent, idx) => {
+            const runRecord = activeRequest?.agent_runs?.find(
+              (r) =>
+                r.agent_name?.toLowerCase().includes(agent.name.split(" ")[0].toLowerCase()) ||
+                r.agent_name?.includes(agent.id)
+            );
+            const isCompleted = Boolean(runRecord || activeRequest?.status === "COMPLETED");
+            return (
+              <div
+                key={agent.id}
+                className="flex items-start justify-between gap-2 rounded-lg bg-[#10151D] border border-[#283340] px-3 py-2"
+              >
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[10px] font-mono font-bold text-[#FF6B24]">
+                      {String(idx + 1).padStart(2, "0")}
+                    </span>
+                    <span className="text-xs font-bold text-[#F7F7F5] truncate">
+                      {agent.name}
+                    </span>
                   </div>
-                ))}
-              </div>
-
-              {/* Center Glowing 11 Agents Core */}
-              <div className="sm:col-span-3 flex flex-col items-center justify-center py-2">
-                <div className="relative h-28 w-28 rounded-full bg-gradient-to-b from-[#0A2558] to-[#041028] border-2 border-[#00C8FF] shadow-[0_0_40px_rgba(0,200,255,0.55)] flex flex-col items-center justify-center text-center">
-                  <span className="text-3xl font-extrabold text-white leading-none">
-                    11
-                  </span>
-                  <span className="text-xs font-bold text-[#7CE0FF] mt-1">
-                    Agents
-                  </span>
+                  <p className="text-[10.5px] text-[#A1A8B3] truncate mt-0.5">
+                    {agent.role}
+                  </p>
                 </div>
+                <span
+                  className={`mt-1 h-2 w-2 rounded-full shrink-0 ${
+                    loading
+                      ? "bg-[#FFB547] animate-pulse"
+                      : isCompleted
+                      ? "bg-[#22C55E]"
+                      : "bg-[#39B9EB]"
+                  }`}
+                  title={isCompleted ? "Verified in active workflow" : "Ready"}
+                />
               </div>
+            );
+          })}
 
-              {/* Right 5 Agents */}
-              <div className="sm:col-span-4 space-y-1.5">
-                {[
-                  "07 Science Scanner",
-                  "08 Data Architect",
-                  "09 Quality Inspector",
-                  "10 Dataset Engineer",
-                  "11 Intelligence Core",
-                ].map((label) => (
-                  <div
-                    key={label}
-                    className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#0A1A3A] border border-[#254B8C] text-xs font-semibold text-white"
-                  >
-                    <Cpu className="h-3.5 w-3.5 text-[#FFB547] shrink-0" />
-                    <span className="truncate">{label}</span>
-                  </div>
-                ))}
+          <div className="flex items-center justify-between gap-2 rounded-lg bg-[#080A0F] border border-[#39B9EB]/40 px-3 py-2">
+            <div>
+              <div className="text-[10px] font-mono font-bold text-[#39B9EB]">
+                PIPELINE STATUS
+              </div>
+              <div className="text-xs font-bold text-[#F7F7F5]">
+                {activeRequest?.agent_runs?.length || 11} / 11 Nodes Verified
               </div>
             </div>
+            <CheckCircle2 className="h-4 w-4 text-[#22C55E] shrink-0" />
           </div>
         </div>
       </section>

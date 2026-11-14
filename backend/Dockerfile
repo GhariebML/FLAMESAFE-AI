@@ -9,15 +9,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy dependency specifications
-COPY requirements.txt pyproject.toml ./
+# Support both build contexts: repo root (.) and ./backend
+COPY . /tmp/build_ctx
+
+RUN if [ -f /tmp/build_ctx/backend/requirements.txt ]; then \
+      cp -r /tmp/build_ctx/backend/. /app/; \
+    else \
+      cp -r /tmp/build_ctx/. /app/; \
+    fi && \
+    rm -rf /tmp/build_ctx
 
 # Install python dependencies
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
-
-# Copy backend application source, seed data, and scripts
-COPY . .
 
 # Expose default FastAPI port
 EXPOSE 8000

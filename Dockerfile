@@ -1,0 +1,26 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install system dependencies for scientific packages and PostgreSQL driver
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    libpq-dev \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy dependency specifications from backend/
+COPY backend/requirements.txt backend/pyproject.toml ./
+
+# Install python dependencies
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
+
+# Copy backend application source, seed data, and scripts
+COPY backend/ ./
+
+# Expose default FastAPI port
+EXPOSE 8000
+
+# Run FastAPI with Uvicorn (respects Render's dynamic $PORT environment variable)
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]

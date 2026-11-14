@@ -86,8 +86,15 @@ let warmupTriggered = false;
 
 function triggerBackgroundWarmup() {
   if (warmupTriggered || typeof window === "undefined") return;
+  if (
+    !PRIMARY_BASE_URL.startsWith("http") ||
+    PRIMARY_BASE_URL.includes("localhost") ||
+    PRIMARY_BASE_URL.includes("127.0.0.1")
+  ) {
+    return;
+  }
   warmupTriggered = true;
-  fetch(`${DEFAULT_RENDER_API_URL}/health`, { mode: "cors" }).catch(() => {});
+  fetch(`${PRIMARY_BASE_URL}/health`, { mode: "cors" }).catch(() => {});
 }
 
 function isFastCacheableGet(endpoint: string, options: RequestInit): boolean {
@@ -278,6 +285,7 @@ export const apiClient = {
     require_approval?: boolean;
     force_psi_discovery?: boolean;
   }): Promise<ResearchRequestDetail> {
+    responseCache.clear();
     return request<ResearchRequestDetail>(API_ENDPOINTS.RESEARCH_REQUESTS, {
       method: "POST",
       body: JSON.stringify(payload),
@@ -399,6 +407,9 @@ export const apiClient = {
   },
 
   getDatasetExportUrl(id: string, format: "json" | "csv" | "parquet"): string {
+    if (id.startsWith("ds-fallback") || id.startsWith("ds-seed")) {
+      return `/api/v1${API_ENDPOINTS.DATASET_EXPORT(id, format)}`;
+    }
     return `${PRIMARY_BASE_URL}${API_ENDPOINTS.DATASET_EXPORT(id, format)}`;
   },
 };

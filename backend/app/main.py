@@ -1,6 +1,7 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
 from app.core.config import settings
 from app.core.logging import logger
@@ -37,6 +38,9 @@ app = FastAPI(
     openapi_url="/api/v1/openapi.json",
     lifespan=lifespan,
 )
+
+# Compress JSON payloads >= 1 KB for faster delivery over the network
+app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 # CORS Middleware (Supports localhost + all Vercel & Render deployment URLs)
 app.add_middleware(

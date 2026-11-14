@@ -15,6 +15,7 @@ router = APIRouter(prefix="/sources", tags=["Sources & Evidence"])
 
 
 @router.get("", response_model=APIResponseEnvelope[SourceCatalogResponse], status_code=status.HTTP_200_OK)
+@router.get("/catalog", response_model=APIResponseEnvelope[SourceCatalogResponse], status_code=status.HTTP_200_OK)
 async def list_sources_and_evidence(
     investigation: Optional[str] = Query(None, description="Filter by investigation acronym or ID"),
     query: Optional[str] = Query(None, description="Filter evidence excerpts or document titles"),

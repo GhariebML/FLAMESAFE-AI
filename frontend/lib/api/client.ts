@@ -22,7 +22,11 @@ import {
 } from "@/types/research";
 import { API_ENDPOINTS } from "./endpoints";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+const PRIMARY_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8001/api/v1";
+const FALLBACK_BASE_URL = PRIMARY_BASE_URL.includes(":8001")
+  ? PRIMARY_BASE_URL.replace(":8001", ":8000")
+  : PRIMARY_BASE_URL.replace(":8000", ":8001");
 
 class APIError extends Error {
   code: string;
@@ -38,34 +42,52 @@ class APIError extends Error {
   }
 }
 
-async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-  const url = `${BASE_URL}${endpoint}`;
+async function fetchFromBase<T>(
+  baseUrl: string,
+  endpoint: string,
+  options: RequestInit = {}
+): Promise<T> {
+  const url = `${baseUrl}${endpoint}`;
   const headers = {
     "Content-Type": "application/json",
     ...options.headers,
   };
 
+  const res = await fetch(url, { ...options, headers });
+  const payload = await res.json().catch(() => ({}));
+
+  if (!res.ok || payload.success === false) {
+    const err = payload.error || {};
+    throw new APIError(
+      err.message || `Request failed with status ${res.status}`,
+      err.code || "REQUEST_FAILED",
+      res.status,
+      err.details
+    );
+  }
+
+  return (payload as APIResponseEnvelope<T>).data;
+}
+
+async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   try {
-    const res = await fetch(url, { ...options, headers });
-    const payload = await res.json();
-
-    if (!res.ok || payload.success === false) {
-      const err = payload.error || {};
-      throw new APIError(
-        err.message || `Request failed with status ${res.status}`,
-        err.code || "REQUEST_FAILED",
-        res.status,
-        err.details
-      );
+    return await fetchFromBase<T>(PRIMARY_BASE_URL, endpoint, options);
+  } catch (primaryErr) {
+    if (
+      FALLBACK_BASE_URL !== PRIMARY_BASE_URL &&
+      (!(primaryErr instanceof APIError) || primaryErr.status === 404 || primaryErr.status === 0)
+    ) {
+      try {
+        return await fetchFromBase<T>(FALLBACK_BASE_URL, endpoint, options);
+      } catch {
+        // Fall through and throw the primary error
+      }
     }
-
-    return (payload as APIResponseEnvelope<T>).data;
-  } catch (error) {
-    if (error instanceof APIError) {
-      throw error;
+    if (primaryErr instanceof APIError) {
+      throw primaryErr;
     }
     throw new APIError(
-      (error as Error).message || "Network connectivity failure",
+      (primaryErr as Error).message || "Network connectivity failure",
       "NETWORK_ERROR",
       0
     );
@@ -287,6 +309,6 @@ export const apiClient = {
   },
 
   getDatasetExportUrl(id: string, format: "json" | "csv" | "parquet"): string {
-    return `${BASE_URL}${API_ENDPOINTS.DATASET_EXPORT(id, format)}`;
+    return `${PRIMARY_BASE_URL}${API_ENDPOINTS.DATASET_EXPORT(id, format)}`;
   },
 };

@@ -22,11 +22,17 @@ import {
 } from "@/types/research";
 import { API_ENDPOINTS } from "./endpoints";
 
-const PRIMARY_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8001/api/v1";
+function normalizeBaseUrl(raw?: string): string {
+  const trimmed = (raw || "http://localhost:8001/api/v1").trim().replace(/\/+$/, "");
+  return trimmed.endsWith("/api/v1") ? trimmed : `${trimmed}/api/v1`;
+}
+
+const PRIMARY_BASE_URL = normalizeBaseUrl(process.env.NEXT_PUBLIC_API_URL);
 const FALLBACK_BASE_URL = PRIMARY_BASE_URL.includes(":8001")
   ? PRIMARY_BASE_URL.replace(":8001", ":8000")
-  : PRIMARY_BASE_URL.replace(":8000", ":8001");
+  : PRIMARY_BASE_URL.includes(":8000")
+  ? PRIMARY_BASE_URL.replace(":8000", ":8001")
+  : PRIMARY_BASE_URL;
 
 class APIError extends Error {
   code: string;

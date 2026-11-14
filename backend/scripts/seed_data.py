@@ -19,6 +19,7 @@ from app.rag.embeddings import MockEmbeddingProvider
 
 def get_seed_path(filename: str) -> str:
     candidates = [
+        os.path.join(os.path.dirname(__file__), "..", "data", "seed", filename),
         os.path.join(os.path.dirname(__file__), "..", "..", "data", "seed", filename),
         os.path.join("data", "seed", filename),
         os.path.join("/app", "data", "seed", filename),

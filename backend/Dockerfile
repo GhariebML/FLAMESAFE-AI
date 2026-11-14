@@ -16,11 +16,11 @@ COPY requirements.txt pyproject.toml ./
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
-# Copy backend application source and scripts
+# Copy backend application source, seed data, and scripts
 COPY . .
 
 # Expose default FastAPI port
 EXPOSE 8000
 
-# Run FastAPI with Uvicorn
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Run FastAPI with Uvicorn (respects Render's dynamic $PORT environment variable)
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]

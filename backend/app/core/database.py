@@ -5,8 +5,13 @@ from app.core.config import settings
 from app.core.logging import logger
 from app.models.base import Base
 
-# Determine initial database URL
+# Determine initial database URL and normalize Render postgres:// / postgresql:// URLs
 db_url = settings.DATABASE_URL
+if db_url.startswith("postgres://"):
+    db_url = db_url.replace("postgres://", "postgresql+asyncpg://", 1)
+elif db_url.startswith("postgresql://"):
+    db_url = db_url.replace("postgresql://", "postgresql+asyncpg://", 1)
+
 if settings.USE_SQLITE_FALLBACK and importlib.util.find_spec("asyncpg") is None:
     logger.info("asyncpg not installed in current environment; switching to SQLite fallback.")
     db_url = settings.SQLITE_DATABASE_URL

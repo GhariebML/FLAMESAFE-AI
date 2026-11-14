@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: flamesafe-ai-backend
+    runtime: python
+    rootDir: backend
+    plan: free
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: ENVIRONMENT
+        value: production
+      - key: DEBUG
+        value: "false"
+      - key: USE_SQLITE_FALLBACK
+        value: "true"
+      - key: SQLITE_DATABASE_URL
+        value: sqlite+aiosqlite:///./flamesafe_prod.db
+      - key: AI_PROVIDER
+        value: gemini
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        value: gemini-3.8-flash
+      - key: GEMINI_EMBEDDING_MODEL
+        value: gemini-embedding-2
+      - key: AI_FALLBACK_TO_MOCK
+        value: "true"

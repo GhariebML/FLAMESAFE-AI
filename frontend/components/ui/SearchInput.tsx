@@ -9,6 +9,7 @@ interface SearchInputProps {
   placeholder?: string;
   ariaLabel?: string;
   className?: string;
+  id?: string;
 }
 
 export const SearchInput: React.FC<SearchInputProps> = ({
@@ -17,19 +18,20 @@ export const SearchInput: React.FC<SearchInputProps> = ({
   placeholder = "Search investigations, fuels, DOIs, or parameters...",
   ariaLabel = "Search scientific records",
   className = "",
+  id = "scientific-search-input",
 }) => {
   return (
     <div className={`relative flex items-center ${className}`}>
       <Search className="h-4 w-4 text-fg-muted absolute left-3.5 pointer-events-none" />
       <input
-        id="scientific-search-input"
+        id={id}
         name="search"
         type="search"
         aria-label={ariaLabel}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full pl-10 pr-9 py-2.5 rounded-xl bg-space-950 border border-space-800 text-xs sm:text-sm text-fg-primary placeholder:text-fg-muted focus:outline-none focus:border-blue-500 transition-colors"
+        className="w-full pl-10 pr-9 py-2.5 rounded-xl bg-space-950 border border-space-800 text-xs sm:text-sm text-fg-primary placeholder:text-fg-muted focus:outline-none focus:border-brand-intelligent focus:ring-2 focus:ring-brand-intelligent/15 transition-all"
       />
       {value && (
         <button

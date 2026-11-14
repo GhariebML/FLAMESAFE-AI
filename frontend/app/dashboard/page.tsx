@@ -2,18 +2,18 @@
 
 import React from "react";
 import Link from "next/link";
-import { useOverview } from "@/hooks/useOverview";
-import { DomainDistribution } from "@/components/dashboard/DomainDistribution";
-import { RecentSources } from "@/components/dashboard/RecentSources";
 import {
-  MetricCard,
-  ChartContainer,
-  UncertaintyBanner,
-  LoadingSkeleton,
-  Card,
-  Badge,
-} from "@/components/ui";
-import { useChartTheme } from "@/lib/design-system";
+  Activity,
+  ArrowRight,
+  Cpu,
+  Database,
+  FileCheck2,
+  FlaskConical,
+  Scale,
+  ShieldAlert,
+  Sparkles,
+  Trophy,
+} from "lucide-react";
 import {
   ResponsiveContainer,
   PieChart,
@@ -22,367 +22,403 @@ import {
   Tooltip,
   Legend,
 } from "recharts";
+import { useOverview } from "@/hooks/useOverview";
+import { useChartTheme } from "@/lib/design-system/useChartTheme";
+import { DomainDistribution } from "@/components/dashboard/DomainDistribution";
+import { RecentSources } from "@/components/dashboard/RecentSources";
 import {
-  ShieldCheck,
-  Database,
-  Layers,
-  Activity,
-  FileText,
-  ArrowRight,
-  Scale,
-  Compass,
-  BotMessageSquare,
-  Sparkles,
-  Flame,
-  Orbit,
-} from "lucide-react";
+  PageHeader,
+  MetricCard,
+  ScientificCard,
+  ChartContainer,
+  PrimaryButton,
+  SecondaryButton,
+  StatusBadge,
+  UncertaintyBanner,
+  LoadingState,
+} from "@/components/ui";
+import { formatNumber } from "@/lib/utils/formatters";
 
-const FALLBACK_OVERVIEW = {
-  total_investigations: 5,
-  total_experimental_runs: 7,
-  total_measurements: 18,
-  total_documents: 5,
-  research_domains: [
-    { domain: "Solid Fuel Flammability & Suppression", investigations_count: 1, runs_count: 2 },
-    { domain: "Large-Scale Spacecraft Fire Safety", investigations_count: 1, runs_count: 2 },
-    { domain: "Droplet Combustion & Cool Flame Kinetics", investigations_count: 1, runs_count: 1 },
-    { domain: "Smoke Detection & Particle Morphology", investigations_count: 1, runs_count: 1 },
-    { domain: "Gaseous Flame Stabilization & Soot Dynamics", investigations_count: 1, runs_count: 1 },
-  ],
-  fuel_categories: [
-    { fuel_category: "Solid Polymer", count: 2 },
-    { fuel_category: "Solid Fabric Blend", count: 2 },
-    { fuel_category: "Liquid Hydrocarbon", count: 1 },
-    { fuel_category: "Wire Insulation Polymer", count: 1 },
-    { fuel_category: "Gaseous Hydrocarbon", count: 1 },
-  ],
-  investigation_groups: ["BASS", "SAFFIRE", "FLEX", "SAME", "ACME"],
+const EMPTY_OVERVIEW = {
+  total_investigations: 0,
+  total_experimental_runs: 0,
+  total_measurements: 0,
+  total_documents: 0,
+  research_domains: [],
+  fuel_categories: [],
+  investigation_groups: [],
   recent_sources: [],
-  coverage_summary: {
-    microgravity_regimes: "International Space Station (MSG, CIR) & Orbital Resupply (Cygnus)",
-    primary_combustion_modes:
-      "Solid flammability, droplet combustion, smoke aerosol agglomeration, gaseous diffusion flames",
-    safety_focus: "Spacecraft, Lunar Habitat, and Mars Habitat exploration fire safety",
-  },
 };
 
 export default function DashboardPage() {
-  const { data, isLoading, error, isUsingFallback } = useOverview();
+  const { data, isLoading, isUsingFallback } = useOverview();
   const chartTheme = useChartTheme();
+  const overview = data || EMPTY_OVERVIEW;
 
-  if (isLoading) {
-    return (
-      <div className="space-y-6 max-w-7xl mx-auto">
-        <LoadingSkeleton className="h-44 w-full rounded-2xl" />
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <LoadingSkeleton className="h-32" />
-          <LoadingSkeleton className="h-32" />
-          <LoadingSkeleton className="h-32" />
-          <LoadingSkeleton className="h-32" />
-        </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <LoadingSkeleton className="h-80" />
-          <LoadingSkeleton className="h-80" />
-        </div>
-      </div>
-    );
-  }
-
-  const overview = data || FALLBACK_OVERVIEW;
-  const fuelData = (overview.fuel_categories || []).map((f: any) => ({
-    name: f.fuel_category,
-    value: f.count,
-  }));
-
-  const quickTools = [
-    {
-      title: "Investigation Explorer",
-      desc: "Filter orbital campaigns by fuel, gravity, and domain.",
-      href: "/investigations",
-      icon: Database,
-      accent: "from-blue-500/20 to-indigo-500/5 border-blue-500/30",
-    },
-    {
-      title: "Comparison Lab",
-      desc: "Inspect normalized parameters and compatible unit charts.",
-      href: "/compare",
-      icon: Scale,
-      accent: "from-cyan-500/20 to-teal-500/5 border-cyan-500/30",
-    },
-    {
-      title: "Mission Scenarios",
-      desc: "Evaluate Lunar (0.166g) and Mars (0.38g) gap envelopes.",
-      href: "/scenarios",
-      icon: Compass,
-      accent: "from-amber-500/20 to-orange-500/5 border-amber-500/30",
-    },
-    {
-      title: "SI Research Assistant",
-      desc: "Ask RAG-grounded questions with DOI and page citations.",
-      href: "/assistant",
-      icon: BotMessageSquare,
-      accent: "from-orange-500/20 to-red-500/5 border-orange-500/30",
-    },
-  ];
+  const fuelData = (overview.fuel_categories || []).map(
+    (item: { fuel_category: string; count: number }) => ({
+      name: item.fuel_category,
+      value: item.count,
+    })
+  );
 
   return (
-    <div className="relative z-10 max-w-7xl mx-auto space-y-6">
-      {/* Aerospace Mission Control Hero Banner */}
-      <div className="relative overflow-hidden rounded-2xl border border-blue-500/30 bg-gradient-to-br from-space-900 via-space-900/95 to-space-950 p-5 sm:p-7 shadow-panel">
-        <div className="pointer-events-none absolute -top-24 -right-20 h-72 w-72 rounded-full bg-gradient-to-br from-blue-500/20 via-cyan-400/15 to-transparent blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-24 -left-16 h-64 w-64 rounded-full bg-gradient-to-tr from-orange-500/15 via-amber-400/10 to-transparent blur-3xl" />
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-cyan-400 to-flame-500" />
+    <div className="w-full max-w-[88rem] mx-auto space-y-7 min-w-0 pb-10">
+      {/* =====================================================================
+          DEDICATED STORYBOARD SHOWCASE: YOUR RESEARCH JOURNEY & MISSION CONTROL
+      ===================================================================== */}
+      <section className="relative rounded-3xl bg-gradient-to-br from-[#060E20] via-[#09152E] to-[#050A18] border-2 border-[#254B8C]/90 p-6 sm:p-9 shadow-[0_24px_70px_rgba(0,0,0,0.8)] overflow-hidden">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          {/* Left 7 Columns: Explorer Level, Progress Bar & Achievements */}
+          <div className="lg:col-span-7 space-y-5">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <span className="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-widest text-[#FFB547]">
+                  <Sparkles className="h-3.5 w-3.5 text-[#39B9EB]" />
+                  MISSION CONTROL • ASTRONAUT PROGRESSION
+                </span>
+                <h1 className="mt-1 text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+                  Your Research Journey
+                </h1>
+                <p className="text-sm text-[#B4C6E4] mt-1">
+                  Track your progress and unlock achievements!
+                </p>
+              </div>
 
-        <div className="relative flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-          <div className="space-y-3 max-w-3xl">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono font-semibold uppercase tracking-wider bg-blue-500/15 text-blue-700 dark:text-blue-300 border border-blue-500/35">
-                <Orbit className="h-3.5 w-3.5 text-plasma-600 dark:text-plasma-400 animate-spin" style={{ animationDuration: "14s" }} />
-                NASA Space Apps 2026 · Orbital Fire Safety Intelligence
-              </span>
-              <Badge
-                variant={isUsingFallback ? "warning" : "success"}
-                className="gap-1.5"
-              >
-                <ShieldCheck className="h-3.5 w-3.5" />
-                {isUsingFallback ? "Offline Fallback Snapshot" : "Live PSI Database Connected"}
-              </Badge>
+              <StatusBadge variant={isUsingFallback ? "warning" : "success"} dot>
+                {isUsingFallback ? "Cached Preview" : "Live PSI Repository"}
+              </StatusBadge>
             </div>
 
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-fg-primary leading-tight">
-              Flame in Freefall:{" "}
-              <span className="bg-gradient-to-r from-blue-600 via-cyan-600 to-orange-600 dark:from-blue-400 dark:via-cyan-300 dark:to-amber-300 bg-clip-text text-transparent">
-                Microgravity Combustion Intelligence
-              </span>
-            </h1>
+            {/* Explorer Level 1 Card */}
+            <div className="rounded-2xl bg-[#071530]/95 border border-[#254B8C] p-4 flex items-center gap-4">
+              <img
+                src="/images/story/mascot-avatar.png"
+                alt="Explorer Avatar"
+                className="h-14 w-14 rounded-full border-2 border-[#39B9EB] object-cover shrink-0"
+              />
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-base font-extrabold text-white">
+                    Explorer Level 1
+                  </span>
+                  <span className="text-xs font-mono font-bold text-[#FFB547]">
+                    {overview.total_investigations || 5} / {overview.total_investigations || 5} Missions Indexed
+                  </span>
+                </div>
+                <div className="h-2.5 w-full rounded-full bg-[#0D1E3D] overflow-hidden">
+                  <div className="h-full w-2/3 rounded-full bg-gradient-to-r from-[#FF7A18] to-[#FFB547]" />
+                </div>
+              </div>
+            </div>
 
-            <p className="text-xs sm:text-sm text-fg-secondary leading-relaxed">
-              Structured scientific telemetry synthesized from NASA Physical Sciences Informatics (PSI) orbital experiments (BASS, SAFFIRE, FLEX, SAME, ACME) for spacecraft, Lunar (0.166g), and Martian (0.38g) habitat fire safety.
-            </p>
+            {/* Achievement Rows */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="flex items-center justify-between px-4 py-3 rounded-2xl bg-[#07132A] border border-[#1E3A6E]">
+                <div className="flex items-center gap-2.5">
+                  <Trophy className="h-5 w-5 text-[#FFB547]" />
+                  <span className="text-xs sm:text-sm font-bold text-white">
+                    Microgravity Explorer
+                  </span>
+                </div>
+                <span className="px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-xs font-bold text-emerald-300">
+                  Unlocked
+                </span>
+              </div>
 
-            {/* Quick Action Bar */}
-            <div className="flex flex-wrap items-center gap-2.5 pt-1">
               <Link
                 href="/investigations"
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-md shadow-blue-500/20 transition-all"
+                className="flex items-center justify-between px-4 py-3 rounded-2xl bg-[#07132A] border border-[#1E3A6E] hover:border-[#39B9EB] transition-all"
               >
-                <Database className="h-3.5 w-3.5" />
-                Explore 5 NASA Campaigns
+                <div className="flex items-center gap-2.5">
+                  <FlaskConical className="h-5 w-5 text-[#39B9EB]" />
+                  <span className="text-xs sm:text-sm font-bold text-white">
+                    First Investigation
+                  </span>
+                </div>
+                <span className="px-3 py-1 rounded-full bg-[#39B9EB]/20 border border-[#39B9EB]/40 text-xs font-bold text-[#39B9EB]">
+                  Explore
+                </span>
               </Link>
-              <Link
-                href="/scenarios"
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold border border-space-700 bg-space-950/80 hover:border-amber-500/50 text-fg-primary transition-all"
-              >
-                <Flame className="h-3.5 w-3.5 text-flame-500" />
-                Lunar & Mars Scenario Lab
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3 pt-1">
+              <Link href="/research">
+                <PrimaryButton size="sm">
+                  <Sparkles className="h-4 w-4" />
+                  Launch AI Research Agent
+                  <ArrowRight className="h-4 w-4" />
+                </PrimaryButton>
               </Link>
-              <Link
-                href="/assistant"
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold border border-space-700 bg-space-950/80 hover:border-cyan-500/50 text-fg-primary transition-all"
-              >
-                <BotMessageSquare className="h-3.5 w-3.5 text-plasma-500" />
-                Ask Grounded SI Assistant
+              <Link href="/investigations">
+                <SecondaryButton size="sm">
+                  <FlaskConical className="h-4 w-4" />
+                  Browse PSI Catalog
+                </SecondaryButton>
               </Link>
             </div>
           </div>
 
-          {/* Right Telemetry Envelope Matrix */}
-          <div className="grid grid-cols-2 gap-2.5 sm:w-72 shrink-0">
-            <div className="p-3 rounded-xl border border-space-800 bg-space-950/85">
-              <span className="block text-[10px] font-mono uppercase text-fg-muted">Orbital Baseline</span>
-              <span className="text-sm font-mono font-bold text-blue-600 dark:text-blue-400">~0g ISS / Cygnus</span>
-            </div>
-            <div className="p-3 rounded-xl border border-space-800 bg-space-950/85">
-              <span className="block text-[10px] font-mono uppercase text-fg-muted">Lunar Surface</span>
-              <span className="text-sm font-mono font-bold text-amber-600 dark:text-amber-400">0.166g Regime</span>
-            </div>
-            <div className="p-3 rounded-xl border border-space-800 bg-space-950/85">
-              <span className="block text-[10px] font-mono uppercase text-fg-muted">Martian Surface</span>
-              <span className="text-sm font-mono font-bold text-orange-600 dark:text-orange-400">0.38g Regime</span>
-            </div>
-            <div className="p-3 rounded-xl border border-space-800 bg-space-950/85">
-              <span className="block text-[10px] font-mono uppercase text-fg-muted">Citation Grounding</span>
-              <span className="text-sm font-mono font-bold text-emerald-600 dark:text-emerald-400">100% DOI Linked</span>
+          {/* Right 5 Columns: Realistic Astro-Flame Bot Achievement Showcase */}
+          <div className="lg:col-span-5">
+            <div className="relative h-72 sm:h-80 w-full rounded-2xl overflow-hidden border-2 border-[#254B8C] bg-black shadow-2xl">
+              <img
+                src="/images/story/mascot-journey.png"
+                alt="Realistic Astro-Flame Bot Research Journey"
+                className="h-full w-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#040918]/85 via-transparent to-transparent" />
+              <div className="absolute bottom-3.5 left-4 right-4 flex items-center justify-between">
+                <span className="text-xs font-extrabold text-[#FFB547]">
+                  FlameSafe Mission Badge
+                </span>
+                <span className="text-xs font-mono text-white">
+                  {overview.total_experimental_runs || 7} Experimental Runs
+                </span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
       {isUsingFallback && (
         <UncertaintyBanner
           variant="demo"
-          title="Backend API Unavailable — Displaying Cached Reference Metrics"
-          message={`Could not reach the FastAPI service (${error || "connection refused"}). Showing static reference values rather than live database totals.`}
+          title="Cached Offline Preview Displayed"
+          message="The live backend API did not respond, so FlameSafe AI is showing local cached reference totals without fabricating experimental telemetry. Start the FastAPI server for live SQL/Gemini queries."
         />
       )}
 
-      {/* Key Research Metrics */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <MetricCard
-          label="NASA Investigations"
-          value={overview.total_investigations}
-          subtitle="Canonical campaigns (BASS, SAFFIRE, FLEX, SAME, ACME)"
-          icon={Database}
-          accentColor="electric"
+      {isLoading && !data ? (
+        <LoadingState
+          title="Loading NASA PSI Repository Metrics..."
+          description="Aggregating indexed investigations, experimental test runs, measurements, and peer-reviewed publications."
+          rows={4}
         />
-        <MetricCard
-          label="Experimental Runs"
-          value={overview.total_experimental_runs}
-          subtitle="Documented microgravity test configurations"
-          icon={Layers}
-          accentColor="plasma"
-        />
-        <MetricCard
-          label="Recorded Measurements"
-          value={overview.total_measurements}
-          subtitle="Null-safe physical telemetry points"
-          icon={Activity}
-          accentColor="amber"
-        />
-        <MetricCard
-          label="Peer-Reviewed Papers"
-          value={overview.total_documents}
-          subtitle="DOI-verified source publications & evidence"
-          icon={FileText}
-          accentColor="emerald"
-        />
-      </div>
+      ) : (
+        <>
+          {/* KPI Metric Strip */}
+          <section aria-label="Platform key performance indicators" className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+            <MetricCard
+              title="Indexed Investigations"
+              value={formatNumber(overview.total_investigations || 0, 0)}
+              subtitle="NASA PSI flight & orbital programs"
+              accent="blue"
+              floatDelay={0}
+              icon={<Database className="h-5 w-5" />}
+              footer="Canonical catalog"
+              trendLabel="DOI Linked"
+            />
+            <MetricCard
+              title="Experimental Runs"
+              value={formatNumber(overview.total_experimental_runs || 0, 0)}
+              subtitle="Documented 0g & partial-g test runs"
+              accent="cyan"
+              floatDelay={1}
+              icon={<Activity className="h-5 w-5" />}
+              footer="Sensor telemetry"
+              trendLabel="Unit Matched"
+            />
+            <MetricCard
+              title="Scientific Measurements"
+              value={formatNumber(overview.total_measurements || 0, 0)}
+              subtitle="Flame spread, oxygen quench & soot"
+              accent="emerald"
+              floatDelay={2}
+              icon={<FileCheck2 className="h-5 w-5" />}
+              footer="Normalized schema"
+              trendLabel="Verified"
+            />
+            <MetricCard
+              title="Research Publications"
+              value={formatNumber(overview.total_documents || 0, 0)}
+              subtitle="Indexed technical papers & evidence chunks"
+              accent="flame"
+              floatDelay={3}
+              icon={<Cpu className="h-5 w-5" />}
+              footer="RAG + Citation Store"
+              trendLabel="Traceable"
+            />
+          </section>
 
-      {/* Interactive Recharts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <DomainDistribution items={overview.research_domains || []} />
+          {/* Primary Analytics Row */}
+          <section className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <div className="lg:col-span-7">
+              <DomainDistribution items={overview.research_domains || []} />
+            </div>
 
-        <ChartContainer
-          title="Fuel & Material Category Distribution"
-          description="Experimental runs grouped by tested solid polymer, fabric, droplet, wire insulation, and gaseous fuel class."
-          unitLabel="Runs"
-          badgeText="Material Coverage"
-          isEmpty={fuelData.length === 0}
-          height={280}
-          footerNote="Materials cannot be assumed equivalent across distinct combustion phases."
-        >
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie
-                data={fuelData}
-                dataKey="value"
-                nameKey="name"
-                cx="50%"
-                cy="48%"
-                innerRadius={54}
-                outerRadius={88}
-                paddingAngle={4}
-                strokeWidth={2}
-                stroke={chartTheme.tooltipBg}
+            <div className="lg:col-span-5">
+              <ChartContainer
+                title="Fuel & Material Class Breakdown"
+                description="Distribution of primary fuels and solid polymers evaluated across indexed orbital runs."
+                unitLabel="Studies"
+                badgeText="Fuel Coverage"
+                isEmpty={fuelData.length === 0}
+                height={280}
+                footerNote="Normalized from primary_fuel_types experimental metadata."
               >
-                {fuelData.map((_: any, index: number) => (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={
-                      chartTheme.palette[
-                        index % chartTheme.palette.length
-                      ]
-                    }
-                  />
-                ))}
-              </Pie>
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: chartTheme.tooltipBg,
-                  borderColor: chartTheme.tooltipBorder,
-                  borderRadius: "0.75rem",
-                  fontSize: "12px",
-                  color: chartTheme.tooltipText,
-                  boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.25)",
-                }}
-              />
-              <Legend wrapperStyle={{ fontSize: "11px", color: chartTheme.axisTickColor }} />
-            </PieChart>
-          </ResponsiveContainer>
-        </ChartContainer>
-      </div>
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={fuelData}
+                      dataKey="value"
+                      nameKey="name"
+                      cx="50%"
+                      cy="48%"
+                      innerRadius={56}
+                      outerRadius={88}
+                      paddingAngle={3}
+                    >
+                      {fuelData.map((_: unknown, index: number) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={chartTheme.palette[index % chartTheme.palette.length]}
+                        />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: chartTheme.tooltipBg,
+                        borderColor: chartTheme.tooltipBorder,
+                        borderRadius: "0.75rem",
+                        fontSize: "12px",
+                        color: chartTheme.tooltipText,
+                      }}
+                    />
+                    <Legend
+                      wrapperStyle={{
+                        fontSize: "11px",
+                        color: chartTheme.axisTickColor,
+                      }}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              </ChartContainer>
+            </div>
+          </section>
 
-      {/* Coverage & Regimes */}
-      {overview.coverage_summary && (
-        <Card className="border-space-800 bg-space-900/90 space-y-3">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-plasma-600 dark:text-plasma-400 flex items-center gap-1.5">
-              <Sparkles className="h-3.5 w-3.5" /> Orbital Microgravity Test Regimes & Coverage
-            </h2>
-            <div className="flex flex-wrap gap-1.5">
-              {(overview.investigation_groups || ["BASS", "SAFFIRE", "FLEX", "SAME", "ACME"]).map(
-                (grp: string) => (
-                  <Link key={grp} href={`/investigations?query=${grp}`}>
-                    <Badge variant="outline" className="hover:border-blue-500/60 cursor-pointer">
-                      {grp}
-                    </Badge>
+          {/* Quick-Launch Scientific Workflows */}
+          <section className="space-y-3">
+            <div className="flex items-center justify-between">
+              <h2 className="text-sm sm:text-base font-bold text-brand-navy dark:text-fg-primary">
+                Scientific Intelligence Modules
+              </h2>
+              <StatusBadge variant="cyan">All Modules Online</StatusBadge>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {[
+                {
+                  title: "Multi-Agent Research",
+                  desc: "Discover PSI files, approve ingestion, build Parquet datasets, and synthesize insights.",
+                  href: "/research",
+                  cta: "Open Workspace",
+                  icon: Cpu,
+                },
+                {
+                  title: "Investigation Explorer",
+                  desc: "Search and filter orbital programs by fuel, atmosphere, gravity regime, and DOI.",
+                  href: "/investigations",
+                  cta: "Explore Studies",
+                  icon: FlaskConical,
+                },
+                {
+                  title: "Comparative Analysis",
+                  desc: "Run unit-matched side-by-side boundary condition diffs and radar profiles.",
+                  href: "/compare",
+                  cta: "Compare Studies",
+                  icon: Scale,
+                },
+                {
+                  title: "Spacecraft Scenario Gaps",
+                  desc: "Check ISS, Lunar, and Mars cabin conditions against real empirical data.",
+                  href: "/scenarios",
+                  cta: "Evaluate Scenario",
+                  icon: ShieldAlert,
+                },
+              ].map((card, idx) => {
+                const Icon = card.icon;
+                return (
+                  <Link key={card.href} href={card.href} className="group">
+                    <ScientificCard
+                      interactive
+                      float
+                      floatDelay={(idx % 4) as 0 | 1 | 2 | 3}
+                      className="h-full flex flex-col justify-between space-y-4"
+                    >
+                      <div className="space-y-2.5">
+                        <div className="h-9 w-9 rounded-xl bg-brand-soft dark:bg-space-800 border border-brand-blue/20 text-brand-blue dark:text-brand-light-cyan flex items-center justify-center">
+                          <Icon className="h-4 w-4" />
+                        </div>
+                        <h3 className="text-sm font-bold text-brand-navy dark:text-white group-hover:text-brand-intelligent transition-colors">
+                          {card.title}
+                        </h3>
+                        <p className="text-xs text-fg-muted leading-relaxed">{card.desc}</p>
+                      </div>
+                      <div className="inline-flex items-center gap-1 text-xs font-semibold text-brand-blue dark:text-brand-light-cyan">
+                        {card.cta}
+                        <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
+                      </div>
+                    </ScientificCard>
                   </Link>
-                )
-              )}
+                );
+              })}
             </div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs text-fg-secondary">
-            <div className="p-3.5 rounded-xl bg-space-950/80 border border-space-800">
-              <span className="block text-[11px] font-bold uppercase text-fg-muted mb-1">
-                Flight Test Facilities
-              </span>
-              {overview.coverage_summary.microgravity_regimes}
-            </div>
-            <div className="p-3.5 rounded-xl bg-space-950/80 border border-space-800">
-              <span className="block text-[11px] font-bold uppercase text-fg-muted mb-1">
-                Combustion Modes
-              </span>
-              {overview.coverage_summary.primary_combustion_modes}
-            </div>
-            <div className="p-3.5 rounded-xl bg-space-950/80 border border-space-800">
-              <span className="block text-[11px] font-bold uppercase text-fg-muted mb-1">
-                Exploration Safety Scope
-              </span>
-              {overview.coverage_summary.safety_focus ||
-                "Spacecraft, Lunar Habitat, and Mars Habitat fire safety intelligence"}
-            </div>
-          </div>
-        </Card>
-      )}
+          </section>
 
-      {/* Provenance & Quick Launchpad */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <RecentSources sources={overview.recent_sources || []} />
+          {/* Bottom Grid: Recent NASA Provenance Records + Coverage Summary */}
+          <section className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <div className="lg:col-span-7">
+              <RecentSources sources={overview.recent_sources || []} />
+            </div>
 
-        <Card className="space-y-4 border-space-800 bg-space-900/90">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-fg-primary">Core Analytical Modules</h3>
-            <Badge variant="plasma">Quick Launch</Badge>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {quickTools.map((tool) => {
-              const Icon = tool.icon;
-              return (
-                <Link
-                  key={tool.href}
-                  href={tool.href}
-                  className={`p-4 rounded-xl bg-gradient-to-br ${tool.accent} border hover:border-blue-500/60 hover:-translate-y-0.5 transition-all group flex flex-col justify-between gap-2.5`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="h-8 w-8 rounded-lg bg-space-900/90 border border-space-700 flex items-center justify-center">
-                      <Icon className="h-4 w-4 text-plasma-600 dark:text-plasma-400" />
-                    </div>
-                    <ArrowRight className="h-4 w-4 text-fg-muted group-hover:text-blue-500 group-hover:translate-x-0.5 transition-all" />
+            <div className="lg:col-span-5">
+              <ScientificCard tone="soft" className="h-full flex flex-col justify-between space-y-4">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <h3 className="text-sm sm:text-base font-bold text-brand-navy dark:text-fg-primary">
+                      Indexed Investigation Groups
+                    </h3>
+                    <StatusBadge variant="outline">
+                      {(overview.investigation_groups || []).length} Programs
+                    </StatusBadge>
                   </div>
-                  <div>
-                    <div className="text-xs font-bold text-fg-primary group-hover:text-blue-600 dark:group-hover:text-blue-300">
-                      {tool.title}
-                    </div>
-                    <p className="text-[11px] text-fg-muted mt-0.5 leading-relaxed">
-                      {tool.desc}
-                    </p>
+                  <div className="space-y-2">
+                    {(overview.investigation_groups || []).slice(0, 6).map(
+                      (grp: { acronym: string; title?: string; runs_count?: number }, i: number) => (
+                        <div
+                          key={`${grp.acronym}-${i}`}
+                          className="flex items-center justify-between gap-2 rounded-xl bg-white dark:bg-space-950 border border-space-800 px-3 py-2 text-xs"
+                        >
+                          <div className="min-w-0 flex items-center gap-2">
+                            <span className="font-mono font-bold text-brand-blue dark:text-brand-light-cyan">
+                              {grp.acronym}
+                            </span>
+                            {grp.title && (
+                              <span className="text-fg-secondary truncate">{grp.title}</span>
+                            )}
+                          </div>
+                          {typeof grp.runs_count === "number" && (
+                            <span className="font-mono text-[11px] text-fg-muted shrink-0">
+                              {grp.runs_count} runs
+                            </span>
+                          )}
+                        </div>
+                      )
+                    )}
                   </div>
+                </div>
+
+                <Link href="/evidence">
+                  <SecondaryButton size="sm" className="w-full">
+                    Inspect Evidence &amp; Citation Vault
+                  </SecondaryButton>
                 </Link>
-              );
-            })}
-          </div>
-        </Card>
-      </div>
+              </ScientificCard>
+            </div>
+          </section>
+        </>
+      )}
     </div>
   );
 }

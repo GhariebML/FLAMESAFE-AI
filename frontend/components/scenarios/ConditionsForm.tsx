@@ -2,9 +2,10 @@
 
 import React, { useState } from "react";
 import { ScenarioRequest } from "@/types/scenario";
-import { Card } from "@/components/shared/Card";
-import { Button } from "@/components/shared/Button";
+import { ScientificCard } from "@/components/shared/Card";
+import { PrimaryButton } from "@/components/shared/Button";
 import { FUEL_CATEGORIES } from "@/lib/constants/domains";
+import { SlidersHorizontal } from "lucide-react";
 
 interface FormProps {
   initialValues: Partial<ScenarioRequest>;
@@ -39,17 +40,24 @@ export const ConditionsForm: React.FC<FormProps> = ({
   };
 
   return (
-    <Card className="space-y-4">
-      <h3 className="text-sm font-bold text-white">Atmospheric & Fire Safety Conditions</h3>
+    <ScientificCard className="space-y-4">
+      <div className="flex items-center gap-2">
+        <SlidersHorizontal className="h-4 w-4 text-brand-intelligent" />
+        <h3 className="text-sm sm:text-base font-bold text-brand-navy dark:text-white">
+          Atmospheric &amp; Fire Safety Boundary Conditions
+        </h3>
+      </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 text-xs">
           <div>
-            <label className="block text-slate-400 mb-1 font-medium">Fuel / Material Category</label>
+            <label className="block text-fg-secondary mb-1.5 font-semibold">
+              Fuel / Material Category
+            </label>
             <select
               value={fuelType}
               onChange={(e) => setFuelType(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg bg-space-950 border border-space-800 text-slate-200"
+              className="w-full px-3 py-2.5 rounded-xl bg-space-950 border border-space-800 text-fg-primary focus:outline-none focus:border-brand-intelligent"
             >
               {FUEL_CATEGORIES.map((f) => (
                 <option key={f} value={f}>
@@ -60,59 +68,67 @@ export const ConditionsForm: React.FC<FormProps> = ({
           </div>
 
           <div>
-            <label className="block text-slate-400 mb-1 font-medium">Oxygen Fraction (% O₂)</label>
+            <label className="block text-fg-secondary mb-1.5 font-semibold">
+              Oxygen Fraction (% O₂)
+            </label>
             <input
               type="number"
               step="0.1"
               value={oxygen}
               onChange={(e) => setOxygen(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg bg-space-950 border border-space-800 text-slate-200"
+              className="w-full px-3 py-2.5 rounded-xl bg-space-950 border border-space-800 text-fg-primary font-mono focus:outline-none focus:border-brand-intelligent"
               placeholder="e.g. 21.0"
             />
           </div>
 
           <div>
-            <label className="block text-slate-400 mb-1 font-medium">Cabin Pressure (kPa)</label>
+            <label className="block text-fg-secondary mb-1.5 font-semibold">
+              Cabin Pressure (kPa)
+            </label>
             <input
               type="number"
               step="0.1"
               value={pressure}
               onChange={(e) => setPressure(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg bg-space-950 border border-space-800 text-slate-200"
+              className="w-full px-3 py-2.5 rounded-xl bg-space-950 border border-space-800 text-fg-primary font-mono focus:outline-none focus:border-brand-intelligent"
               placeholder="e.g. 101.3"
             />
           </div>
 
           <div>
-            <label className="block text-slate-400 mb-1 font-medium">Ventilation Airflow (cm/s)</label>
+            <label className="block text-fg-secondary mb-1.5 font-semibold">
+              Ventilation Airflow (cm/s)
+            </label>
             <input
               type="number"
               step="0.1"
               value={airflow}
               onChange={(e) => setAirflow(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg bg-space-950 border border-space-800 text-slate-200"
+              className="w-full px-3 py-2.5 rounded-xl bg-space-950 border border-space-800 text-fg-primary font-mono focus:outline-none focus:border-brand-intelligent"
               placeholder="e.g. 5.0"
             />
           </div>
 
           <div className="sm:col-span-2">
-            <label className="block text-slate-400 mb-1 font-medium">Safety Investigation Focus</label>
+            <label className="block text-fg-secondary mb-1.5 font-semibold">
+              Safety Investigation Focus
+            </label>
             <input
               type="text"
               value={focus}
               onChange={(e) => setFocus(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg bg-space-950 border border-space-800 text-slate-200"
-              placeholder="e.g. Extinction limits, smoke detection, polymer flammability"
+              className="w-full px-3 py-2.5 rounded-xl bg-space-950 border border-space-800 text-fg-primary focus:outline-none focus:border-brand-intelligent"
+              placeholder="e.g. Material Flammability, Smoke Detection, Suppression"
             />
           </div>
         </div>
 
-        <div className="pt-2 flex justify-end">
-          <Button type="submit" variant="primary" isLoading={isLoading}>
-            Evaluate Scenario & Research Gaps
-          </Button>
+        <div className="flex justify-end pt-2 border-t border-space-800">
+          <PrimaryButton type="submit" disabled={isLoading}>
+            {isLoading ? "Evaluating NASA PSI Coverage..." : "Run Condition & Gap Evaluation"}
+          </PrimaryButton>
         </div>
       </form>
-    </Card>
+    </ScientificCard>
   );
 };

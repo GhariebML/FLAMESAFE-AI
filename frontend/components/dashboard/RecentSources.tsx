@@ -1,7 +1,6 @@
 import React from "react";
-import { Card } from "@/components/shared/Card";
-import { Badge } from "@/components/shared/Badge";
-import { ExternalLink } from "lucide-react";
+import { ScientificCard } from "@/components/shared/Card";
+import { StatusBadge } from "@/components/shared/Badge";
 import { formatDate } from "@/lib/utils/formatters";
 
 interface SourceItem {
@@ -14,33 +13,45 @@ interface SourceItem {
 
 export const RecentSources: React.FC<{ sources: SourceItem[] }> = ({ sources }) => {
   return (
-    <Card className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-slate-200">Recent NASA Provenance Records</h3>
-        <Badge variant="outline">Verified DOI</Badge>
+    <ScientificCard className="space-y-4">
+      <div className="flex items-center justify-between gap-2">
+        <h3 className="text-sm sm:text-base font-bold text-brand-navy dark:text-fg-primary">
+          Recent NASA Provenance Records
+        </h3>
+        <StatusBadge variant="success" dot>
+          Verified DOI
+        </StatusBadge>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-2.5">
         {sources.length === 0 ? (
-          <div className="text-xs text-slate-500 py-4">No sources recorded yet.</div>
+          <div className="text-xs text-fg-muted py-4 text-center rounded-xl border border-dashed border-space-800">
+            No provenance records synced yet.
+          </div>
         ) : (
           sources.map((s) => (
             <div
               key={s.id}
-              className="flex items-center justify-between p-2.5 rounded-lg bg-space-950/40 border border-space-800 text-xs"
+              className="flex items-center justify-between gap-3 p-3 rounded-xl bg-brand-soft/60 dark:bg-space-950 border border-space-800 text-xs"
             >
-              <div>
-                <span className="font-semibold text-flame-400 mr-2">[{s.investigation_acronym}]</span>
-                <span className="text-slate-300">{s.source_name}</span>
-                <div className="text-[10px] text-slate-500 mt-0.5">DOI: {s.doi}</div>
+              <div className="min-w-0">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="font-mono font-bold text-brand-blue dark:text-brand-light-cyan">
+                    [{s.investigation_acronym}]
+                  </span>
+                  <span className="font-semibold text-fg-primary truncate">{s.source_name}</span>
+                </div>
+                <div className="text-[11px] font-mono text-fg-muted mt-0.5 truncate">
+                  DOI: {s.doi}
+                </div>
               </div>
-              <div className="text-[10px] text-slate-500 shrink-0 ml-3">
+              <div className="text-[11px] font-mono text-fg-muted shrink-0">
                 {formatDate(s.accessed_at)}
               </div>
             </div>
           ))
         )}
       </div>
-    </Card>
+    </ScientificCard>
   );
 };

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 
 export type ThemeMode = "light" | "dark" | "system";
 export type ResolvedTheme = "light" | "dark";
@@ -12,22 +12,15 @@ interface ThemeContextValue {
   toggleTheme: () => void;
 }
 
-const STORAGE_KEY = "flamesafe-theme";
-
-const ThemeContext = createContext<ThemeContextValue>({
-  theme: "dark",
-  resolvedTheme: "dark",
-  setTheme: () => undefined,
-  toggleTheme: () => undefined,
-});
+const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
+const STORAGE_KEY = "flamesafe-black-lab-theme";
 
 function getSystemTheme(): ResolvedTheme {
   if (typeof window === "undefined") return "dark";
-  return window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 }
 
 function applyThemeToDOM(resolved: ResolvedTheme) {
-  if (typeof document === "undefined") return;
   const root = document.documentElement;
   root.classList.remove("light", "dark");
   root.classList.add(resolved);
@@ -35,63 +28,63 @@ function applyThemeToDOM(resolved: ResolvedTheme) {
 }
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  // Default to the dominant Black Fire Lab identity (#080A0F).
   const [theme, setThemeState] = useState<ThemeMode>("dark");
   const [resolvedTheme, setResolvedTheme] = useState<ResolvedTheme>("dark");
 
-  const resolveAndApply = useCallback((mode: ThemeMode) => {
-    const resolved: ResolvedTheme = mode === "system" ? getSystemTheme() : mode;
-    setResolvedTheme(resolved);
-    applyThemeToDOM(resolved);
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY) as ThemeMode | null;
+      const initialMode: ThemeMode =
+        saved === "light" || saved === "dark" || saved === "system" ? saved : "dark";
+      const resolved = initialMode === "system" ? getSystemTheme() : initialMode;
+      setThemeState(initialMode);
+      setResolvedTheme(resolved);
+      applyThemeToDOM(resolved);
+    } catch {
+      applyThemeToDOM("dark");
+    }
   }, []);
 
   useEffect(() => {
-    try {
-      const saved = window.localStorage.getItem(STORAGE_KEY) as ThemeMode | null;
-      const initial: ThemeMode =
-        saved === "light" || saved === "dark" || saved === "system" ? saved : "dark";
-      setThemeState(initial);
-      resolveAndApply(initial);
-    } catch {
-      resolveAndApply("dark");
-    }
-  }, [resolveAndApply]);
-
-  useEffect(() => {
-    if (theme !== "system") return;
-    const media = window.matchMedia("(prefers-color-scheme: light)");
-    const listener = () => resolveAndApply("system");
-    media.addEventListener("change", listener);
-    return () => media.removeEventListener("change", listener);
-  }, [theme, resolveAndApply]);
-
-  const setTheme = useCallback(
-    (mode: ThemeMode) => {
-      setThemeState(mode);
-      try {
-        window.localStorage.setItem(STORAGE_KEY, mode);
-      } catch {
-        // Ignore storage write errors in restricted browsing modes
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    const handleChange = () => {
+      if (theme === "system") {
+        const next = getSystemTheme();
+        setResolvedTheme(next);
+        applyThemeToDOM(next);
       }
-      resolveAndApply(mode);
-    },
-    [resolveAndApply]
-  );
+    };
+    media.addEventListener("change", handleChange);
+    return () => media.removeEventListener("change", handleChange);
+  }, [theme]);
 
-  const toggleTheme = useCallback(() => {
-    const next: ThemeMode = resolvedTheme === "dark" ? "light" : "dark";
-    setTheme(next);
-  }, [resolvedTheme, setTheme]);
+  const setTheme = (mode: ThemeMode) => {
+    const resolved = mode === "system" ? getSystemTheme() : mode;
+    setThemeState(mode);
+    setResolvedTheme(resolved);
+    applyThemeToDOM(resolved);
+    try {
+      localStorage.setItem(STORAGE_KEY, mode);
+    } catch {
+      // Ignore private browsing storage blocks
+    }
+  };
+
+  const toggleTheme = () => {
+    setTheme(resolvedTheme === "dark" ? "light" : "dark");
+  };
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.altKey && e.key.toLowerCase() === "t") {
+      if (e.altKey && (e.key === "t" || e.key === "T")) {
         e.preventDefault();
-        toggleTheme();
+        setTheme(resolvedTheme === "dark" ? "light" : "dark");
       }
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [toggleTheme]);
+  }, [resolvedTheme]);
 
   return (
     <ThemeContext.Provider value={{ theme, resolvedTheme, setTheme, toggleTheme }}>
@@ -101,5 +94,9 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 };
 
 export function useTheme(): ThemeContextValue {
-  return useContext(ThemeContext);
+  const ctx = useContext(ThemeContext);
+  if (!ctx) {
+    throw new Error("useTheme must be used within a ThemeProvider");
+  }
+  return ctx;
 }

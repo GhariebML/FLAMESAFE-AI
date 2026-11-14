@@ -1,21 +1,19 @@
+"use client";
+
 import React from "react";
 import { Card } from "@/components/shared/Card";
-import { Badge } from "@/components/shared/Badge";
-import { LoadingSkeleton } from "@/components/shared/LoadingSkeleton";
-import { AlertTriangle, BarChart3 } from "lucide-react";
+import { StatusBadge } from "@/components/shared/Badge";
 
-interface ChartContainerProps {
+export interface ChartContainerProps {
   title: string;
   description?: string;
   unitLabel?: string;
   badgeText?: string;
-  isLoading?: boolean;
   isEmpty?: boolean;
   emptyMessage?: string;
-  error?: string | null;
+  footerNote?: string;
   height?: number;
   children: React.ReactNode;
-  footerNote?: string;
 }
 
 export const ChartContainer: React.FC<ChartContainerProps> = ({
@@ -23,57 +21,49 @@ export const ChartContainer: React.FC<ChartContainerProps> = ({
   description,
   unitLabel,
   badgeText,
-  isLoading = false,
   isEmpty = false,
-  emptyMessage = "No empirical records available for this visualization.",
-  error = null,
+  emptyMessage = "Insufficient experimental data to display this visualization.",
+  footerNote,
   height = 280,
   children,
-  footerNote,
 }) => {
   return (
-    <Card className="flex flex-col justify-between space-y-4 border-space-800 bg-space-900 shadow-panel">
-      <div className="flex flex-wrap items-start justify-between gap-2 border-b border-space-800/80 pb-3">
-        <div>
-          <h3 className="text-sm font-semibold text-fg-primary flex items-center gap-2">
-            <BarChart3 className="h-4 w-4 text-electric-600 dark:text-electric-400 shrink-0" />
-            <span>{title}</span>
-          </h3>
+    <Card className="space-y-4">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="space-y-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <h3 className="text-sm sm:text-base font-bold text-brand-navy dark:text-fg-primary">
+              {title}
+            </h3>
+            {unitLabel && (
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-brand-soft dark:bg-space-950 border border-space-800 text-fg-secondary">
+                Unit: {unitLabel}
+              </span>
+            )}
+          </div>
           {description && (
-            <p className="text-xs text-fg-muted mt-0.5 leading-relaxed">{description}</p>
+            <p className="text-xs text-fg-muted leading-relaxed">{description}</p>
           )}
         </div>
-        <div className="flex items-center gap-1.5">
-          {unitLabel && (
-            <span className="px-2 py-0.5 rounded bg-space-950 border border-space-800 font-mono text-[11px] text-plasma-600 dark:text-plasma-400">
-              Unit: {unitLabel}
-            </span>
-          )}
-          {badgeText && <Badge variant="plasma">{badgeText}</Badge>}
-        </div>
+
+        {badgeText && <StatusBadge variant="brand">{badgeText}</StatusBadge>}
       </div>
 
-      <div className="w-full" style={{ minHeight: `${height}px` }}>
-        {isLoading ? (
-          <LoadingSkeleton className="w-full h-full rounded-xl" />
-        ) : error ? (
-          <div className="flex flex-col items-center justify-center h-full min-h-[220px] p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-center">
-            <AlertTriangle className="h-6 w-6 text-red-600 dark:text-red-400 mb-2" />
-            <p className="text-xs font-medium text-red-700 dark:text-red-300">{error}</p>
-          </div>
-        ) : isEmpty ? (
-          <div className="flex flex-col items-center justify-center h-full min-h-[220px] p-4 rounded-xl bg-space-950/60 border border-space-800 text-center">
-            <p className="text-xs text-fg-muted">{emptyMessage}</p>
-          </div>
-        ) : (
-          <div className="w-full" style={{ height: `${height}px` }}>
-            {children}
-          </div>
-        )}
-      </div>
+      {isEmpty ? (
+        <div
+          style={{ height }}
+          className="flex items-center justify-center rounded-xl border border-dashed border-space-800 bg-brand-soft/40 dark:bg-space-950/60 text-xs text-fg-muted text-center px-6"
+        >
+          {emptyMessage}
+        </div>
+      ) : (
+        <div style={{ height }} className="w-full min-w-0">
+          {children}
+        </div>
+      )}
 
       {footerNote && (
-        <div className="pt-2 border-t border-space-800/60 text-[11px] text-fg-muted font-mono">
+        <div className="pt-2.5 border-t border-space-800 text-[11px] text-fg-muted">
           {footerNote}
         </div>
       )}

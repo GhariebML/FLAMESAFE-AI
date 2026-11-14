@@ -20,6 +20,8 @@ import {
   SlidersHorizontal,
   ExternalLink,
   BookOpen,
+  Clock,
+  ChevronDown,
 } from "lucide-react";
 import { apiClient } from "@/lib/api/client";
 import {
@@ -29,6 +31,10 @@ import {
   AIRuntimeStatus,
 } from "@/types/research";
 import { AIRuntimeStatusCard } from "@/components/research/AIRuntimeStatusCard";
+import {
+  AgentStatusIndicator,
+  normalizeAgentStatus,
+} from "@/components/ui/AgentStatusIndicator";
 
 const SAMPLE_PROMPTS = [
   "Compare opposed and concurrent flame spread rates and oxygen extinction limits for PMMA and SIBAL fabric across BASS and SAFFIRE.",
@@ -253,48 +259,115 @@ export default function ResearchIntelligenceWorkspacePage() {
   }
 
   return (
-    <div className="space-y-8 pb-16">
-      {/* HEADER BANNER */}
-      <div className="glass-card relative overflow-hidden rounded-2xl border border-slate-200/80 dark:border-slate-800/80 bg-white/90 dark:bg-slate-900/85 p-6 sm:p-8 shadow-sm">
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-          <div className="space-y-2 max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20">
-              <Cpu className="w-3.5 h-3.5" />
-              11-Agent Autonomous Scientific Data Intelligence System
+    <div className="max-w-[84rem] mx-auto space-y-6 pb-16">
+      {/* DEDICATED STORYBOARD SHOWCASE: AI AGENTS MISSION ROOM */}
+      <section className="relative overflow-hidden rounded-3xl border-2 border-[#254B8C]/90 bg-gradient-to-br from-[#060E20] via-[#09152E] to-[#050A18] p-6 sm:p-8 shadow-[0_24px_70px_rgba(0,0,0,0.8)]">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-7 items-center">
+          {/* Left 4 Columns: Realistic Astro-Flame Bot Mission Commander */}
+          <div className="lg:col-span-4">
+            <div className="relative h-64 sm:h-72 w-full rounded-2xl overflow-hidden border border-[#254B8C] bg-black shadow-2xl">
+              <img
+                src="/images/story/mascot-agents.png"
+                alt="Realistic Astro-Flame Bot Mission Commander"
+                className="h-full w-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#040918]/90 via-transparent to-transparent" />
+              <div className="absolute bottom-3.5 left-4 right-4 flex items-center justify-between">
+                <span className="text-xs font-extrabold text-white">
+                  Mission Commander
+                </span>
+                <span className="px-2.5 py-0.5 rounded-full bg-[#0088FF]/25 border border-[#39B9EB]/50 text-[10px] font-mono font-bold text-[#39B9EB]">
+                  11 Agents Online
+                </span>
+              </div>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
-              Autonomous Research &amp; Dynamic Dataset Workspace
-            </h1>
-            <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-              Ask a microgravity combustion research question. FlameSafe AI orchestrates 11 specialized agents to audit existing coverage, discover NASA PSI campaigns, score file manifests (
-              <code className="font-mono text-xs px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-orange-600 dark:text-orange-400">
-                F = 0.35Q + 0.25T + 0.20C + 0.10P + 0.10A
-              </code>
-              ), construct versioned SI-normalized datasets, and synthesize citation-grounded answers.
-            </p>
           </div>
 
-          {activeRequest && (
-            <div className="flex flex-col sm:flex-row lg:flex-col items-start sm:items-center lg:items-end gap-2 shrink-0">
-              <span
-                className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider border ${
-                  activeRequest.status === "READY"
-                    ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30"
-                    : activeRequest.status === "AWAITING_APPROVAL"
-                    ? "bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/30 animate-pulse"
-                    : "bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/30"
-                }`}
-              >
-                <span className="w-2 h-2 rounded-full bg-current" />
-                Workflow State: {activeRequest.status}
-              </span>
-              <span className="text-xs font-mono text-slate-500 dark:text-slate-400">
-                Thread ID: {activeRequest.thread_id.slice(0, 12)}...
-              </span>
+          {/* Right 8 Columns: Title + 11 Agents Orbital Diagram */}
+          <div className="lg:col-span-8 space-y-5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <div className="inline-flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-[#39B9EB]">
+                  <Cpu className="w-3.5 h-3.5 text-[#FF7A18]" />
+                  <span>AUTONOMOUS MULTI-AGENT ORCHESTRATOR</span>
+                </div>
+                <h1 className="mt-1 text-3xl sm:text-4xl font-extrabold tracking-tight text-white keep-white">
+                  AI Agents Mission Room
+                </h1>
+                <p className="text-sm text-[#B4C6E4] mt-1">
+                  11 Specialized Agents. One Mission.
+                </p>
+              </div>
+
+              {activeRequest && (
+                <div className="flex flex-col items-start sm:items-end gap-1.5 shrink-0">
+                  <AgentStatusIndicator
+                    status={activeRequest.status}
+                    label={`Workflow: ${activeRequest.status}`}
+                  />
+                  <span className="text-[11px] font-mono text-[#9EB2D0]">
+                    Thread: {activeRequest.thread_id.slice(0, 12)}...
+                  </span>
+                </div>
+              )}
             </div>
-          )}
+
+            {/* 11 Agents Hub Diagram */}
+            <div className="grid grid-cols-1 sm:grid-cols-11 gap-3 items-center bg-[#07132A]/90 border border-[#1E3A6E] rounded-2xl p-4">
+              {/* Left 6 Agents */}
+              <div className="sm:col-span-4 space-y-1.5">
+                {[
+                  "01 Mission Commander",
+                  "02 Research Navigator",
+                  "03 Memory Specialist",
+                  "04 Data Explorer",
+                  "05 Research Analyst",
+                  "06 Data Collector",
+                ].map((label) => (
+                  <div
+                    key={label}
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#0A1A3A] border border-[#254B8C] text-xs font-semibold text-white"
+                  >
+                    <Cpu className="h-3.5 w-3.5 text-[#39B9EB] shrink-0" />
+                    <span className="truncate">{label}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Center Glowing 11 Agents Core */}
+              <div className="sm:col-span-3 flex flex-col items-center justify-center py-2">
+                <div className="relative h-28 w-28 rounded-full bg-gradient-to-b from-[#0A2558] to-[#041028] border-2 border-[#00C8FF] shadow-[0_0_40px_rgba(0,200,255,0.55)] flex flex-col items-center justify-center text-center">
+                  <span className="text-3xl font-extrabold text-white leading-none">
+                    11
+                  </span>
+                  <span className="text-xs font-bold text-[#7CE0FF] mt-1">
+                    Agents
+                  </span>
+                </div>
+              </div>
+
+              {/* Right 5 Agents */}
+              <div className="sm:col-span-4 space-y-1.5">
+                {[
+                  "07 Science Scanner",
+                  "08 Data Architect",
+                  "09 Quality Inspector",
+                  "10 Dataset Engineer",
+                  "11 Intelligence Core",
+                ].map((label) => (
+                  <div
+                    key={label}
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#0A1A3A] border border-[#254B8C] text-xs font-semibold text-white"
+                  >
+                    <Cpu className="h-3.5 w-3.5 text-[#FFB547] shrink-0" />
+                    <span className="truncate">{label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
+      </section>
 
       {/* AI INFRASTRUCTURE & PROVIDER TELEMETRY */}
       <AIRuntimeStatusCard
@@ -311,10 +384,10 @@ export default function ResearchIntelligenceWorkspacePage() {
       )}
 
       {/* PANEL A: RESEARCH REQUEST INPUT & WORKFLOW CONTROLS */}
-      <section className="rounded-2xl border border-slate-200/80 dark:border-slate-800/80 bg-white/90 dark:bg-slate-900/80 p-6 shadow-sm space-y-5">
+      <section className="rounded-2xl border border-space-800 bg-space-900 p-5 sm:p-6 shadow-panel space-y-5">
         <div className="flex items-center justify-between flex-wrap gap-2">
           <div className="flex items-center gap-2.5">
-            <Sparkles className="w-5 h-5 text-orange-500" />
+            <Sparkles className="w-5 h-5 text-brand-intelligent dark:text-brand-light-cyan" />
             <h2 className="text-lg font-bold text-slate-900 dark:text-white">
               Panel A — Natural-Language Scientific Research Request
             </h2>
@@ -347,7 +420,7 @@ export default function ResearchIntelligenceWorkspacePage() {
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
             placeholder="Ask a scientific question about NASA microgravity combustion, material flammability, or dataset construction..."
-            className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-950/70 p-4 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-950/70 p-4 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-intelligent"
           />
 
           <div className="flex flex-wrap gap-2">
@@ -356,31 +429,31 @@ export default function ResearchIntelligenceWorkspacePage() {
                 key={idx}
                 type="button"
                 onClick={() => setQuestion(sample)}
-                className="text-left text-xs px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-100/70 dark:bg-slate-800/60 text-slate-700 dark:text-slate-300 hover:border-orange-500/40 hover:text-orange-600 dark:hover:text-orange-400 transition"
+                className="text-left text-xs px-3 py-1.5 rounded-xl border border-space-800 bg-brand-soft/60 dark:bg-space-950 text-fg-secondary hover:border-brand-intelligent/50 hover:text-brand-blue dark:hover:text-brand-light-cyan transition"
               >
                 Sample #{idx + 1}: {sample.slice(0, 68)}...
               </button>
             ))}
           </div>
 
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2 border-t border-slate-200/60 dark:border-slate-800/60">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-3 border-t border-space-800">
             <div className="flex flex-wrap items-center gap-6">
-              <label className="inline-flex items-center gap-2 text-xs font-medium text-slate-700 dark:text-slate-300 cursor-pointer">
+              <label className="inline-flex items-center gap-2 text-xs font-medium text-fg-secondary cursor-pointer">
                 <input
                   type="checkbox"
                   checked={requireApproval}
                   onChange={(e) => setRequireApproval(e.target.checked)}
-                  className="rounded border-slate-300 text-orange-600 focus:ring-orange-500"
+                  className="rounded border-space-700 text-brand-blue focus:ring-brand-intelligent"
                 />
                 Pause for Human-in-the-Loop File Approval (AWAITING_APPROVAL Gate)
               </label>
 
-              <label className="inline-flex items-center gap-2 text-xs font-medium text-slate-700 dark:text-slate-300 cursor-pointer">
+              <label className="inline-flex items-center gap-2 text-xs font-medium text-fg-secondary cursor-pointer">
                 <input
                   type="checkbox"
                   checked={forcePsiDiscovery}
                   onChange={(e) => setForcePsiDiscovery(e.target.checked)}
-                  className="rounded border-slate-300 text-orange-600 focus:ring-orange-500"
+                  className="rounded border-space-700 text-brand-blue focus:ring-brand-intelligent"
                 />
                 Force Full NASA PSI Catalog Discovery
               </label>
@@ -389,7 +462,7 @@ export default function ResearchIntelligenceWorkspacePage() {
             <button
               type="submit"
               disabled={loading}
-              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm text-white bg-gradient-to-r from-orange-600 to-amber-500 hover:from-orange-500 hover:to-amber-400 shadow-md disabled:opacity-50 transition cursor-pointer"
+              className="keep-white inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm text-white bg-brand-blue hover:bg-brand-intelligent shadow-md disabled:opacity-50 transition cursor-pointer"
             >
               {loading ? (
                 <>
@@ -410,7 +483,7 @@ export default function ResearchIntelligenceWorkspacePage() {
       {/* PANEL B & PANEL C: INTENT PREVIEW + 11-AGENT MONITOR */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* PANEL B: INTENT & COVERAGE */}
-        <section className="lg:col-span-5 rounded-2xl border border-slate-200/80 dark:border-slate-800/80 bg-white/90 dark:bg-slate-900/80 p-6 shadow-sm space-y-4">
+        <section className="lg:col-span-5 rounded-2xl border border-space-800 bg-space-900 p-5 sm:p-6 shadow-panel space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <SlidersHorizontal className="w-5 h-5 text-sky-500" />
@@ -434,7 +507,7 @@ export default function ResearchIntelligenceWorkspacePage() {
                 </div>
                 <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200/60 dark:border-slate-800">
                   <div className="text-slate-500 dark:text-slate-400">Target Campaigns</div>
-                  <div className="font-semibold text-orange-600 dark:text-orange-400 mt-0.5">
+                  <div className="font-semibold text-brand-blue dark:text-brand-light-cyan mt-0.5">
                     {(activeRequest.research_intent.target_investigations || []).join(", ")}
                   </div>
                 </div>
@@ -510,59 +583,111 @@ export default function ResearchIntelligenceWorkspacePage() {
         </section>
 
         {/* PANEL C: 11-AGENT ACTIVITY MONITOR */}
-        <section className="lg:col-span-7 rounded-2xl border border-slate-200/80 dark:border-slate-800/80 bg-white/90 dark:bg-slate-900/80 p-6 shadow-sm space-y-4">
-          <div className="flex items-center justify-between">
+        <section className="lg:col-span-7 rounded-2xl border border-space-800 bg-space-900 p-6 shadow-panel space-y-4">
+          <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center gap-2">
-              <GitBranch className="w-5 h-5 text-orange-500" />
-              <h2 className="text-base font-bold text-slate-900 dark:text-white">
-                Panel C — 11-Agent LangGraph Execution &amp; Audit Trace
-              </h2>
+              <div className="h-8 w-8 rounded-xl bg-brand-soft dark:bg-brand-blue/15 border border-brand-blue/25 flex items-center justify-center text-brand-blue dark:text-brand-light-cyan">
+                <GitBranch className="w-4 h-4" />
+              </div>
+              <div>
+                <h2 className="text-sm sm:text-base font-bold text-brand-navy dark:text-white">
+                  Panel C — 11-Agent LangGraph Execution &amp; Audit Trace
+                </h2>
+                <p className="text-[11px] text-fg-muted">
+                  Live agent status pipeline with timestamps and expandable tool telemetry
+                </p>
+              </div>
             </div>
-            <span className="text-xs font-mono text-slate-500 dark:text-slate-400">
+            <span className="px-2.5 py-1 rounded-full bg-brand-soft dark:bg-space-950 border border-space-800 text-xs font-mono font-semibold text-brand-blue dark:text-brand-light-cyan">
               {completedAgentIds.size} / 11 Agents Executed
             </span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-[340px] overflow-y-auto pr-1">
+          <div className="space-y-2.5 max-h-[380px] overflow-y-auto pr-1">
             {ALL_11_AGENTS.map((ag) => {
               const runRecord = (activeRequest?.agent_runs || []).find(
                 (r) => r.agent_id === ag.id
               );
               const isDone = completedAgentIds.has(ag.id);
+              const rawStatus = runRecord?.status || (isDone ? "completed" : "pending");
+              const normalized = normalizeAgentStatus(rawStatus);
+              const cardBorder =
+                normalized === "completed"
+                  ? "border-brand-success/35 bg-emerald-500/5"
+                  : normalized === "running"
+                    ? "border-brand-cyan/45 bg-brand-cyan/5"
+                    : normalized === "awaiting_approval" || normalized === "warning"
+                      ? "border-brand-flame-orange/45 bg-brand-flame-orange/5"
+                      : normalized === "failed"
+                        ? "border-brand-error/45 bg-red-500/5"
+                        : "border-space-800 bg-space-950/60";
+
               return (
                 <div
                   key={ag.id}
-                  className={`p-3 rounded-xl border text-xs transition ${
-                    isDone
-                      ? "border-emerald-500/30 bg-emerald-500/5"
-                      : "border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 opacity-75"
-                  }`}
+                  className={`p-3 rounded-xl border text-xs transition-colors ${cardBorder}`}
                 >
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="font-mono font-bold text-orange-600 dark:text-orange-400">
-                      {ag.id}
-                    </span>
-                    <span
-                      className={`px-2 py-0.5 rounded-full text-[10px] font-semibold ${
-                        isDone
-                          ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
-                          : "bg-slate-200 dark:bg-slate-800 text-slate-500"
-                      }`}
-                    >
-                      {isDone ? "COMPLETED" : "STANDBY"}
-                    </span>
-                  </div>
-                  <div className="font-semibold text-slate-900 dark:text-white mt-1">
-                    {ag.name}
-                  </div>
-                  <div className="text-slate-500 dark:text-slate-400 text-[11px]">
-                    {ag.role}
-                  </div>
-                  {runRecord && runRecord.tools_invoked?.length > 0 && (
-                    <div className="mt-1.5 pt-1.5 border-t border-slate-200/60 dark:border-slate-800/60 font-mono text-[10px] text-sky-600 dark:text-sky-400 truncate">
-                      Tools: {runRecord.tools_invoked.join(", ")}
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <span className="font-mono font-bold text-[11px] px-2 py-0.5 rounded-md bg-brand-soft dark:bg-space-900 border border-space-800 text-brand-blue dark:text-brand-light-cyan shrink-0">
+                        {ag.id}
+                      </span>
+                      <span className="font-bold text-brand-navy dark:text-white truncate">
+                        {ag.name}
+                      </span>
                     </div>
-                  )}
+
+                    <div className="flex items-center gap-2 shrink-0">
+                      {runRecord?.started_at && (
+                        <span className="hidden sm:inline-flex items-center gap-1 font-mono text-[10px] text-fg-muted">
+                          <Clock className="h-3 w-3" />
+                          {new Date(runRecord.started_at).toLocaleTimeString()}
+                          {runRecord.completed_at
+                            ? ` → ${new Date(runRecord.completed_at).toLocaleTimeString()}`
+                            : ""}
+                        </span>
+                      )}
+                      <AgentStatusIndicator
+                        status={rawStatus}
+                        label={runRecord ? runRecord.status.toUpperCase() : isDone ? "COMPLETED" : "QUEUED"}
+                        compact
+                      />
+                    </div>
+                  </div>
+
+                  <div className="text-fg-muted text-[11px] mt-1">{ag.role}</div>
+
+                  {runRecord &&
+                    (runRecord.tools_invoked?.length > 0 ||
+                      runRecord.error_message ||
+                      runRecord.output_summary) && (
+                      <details className="mt-2 pt-2 border-t border-space-800/80 group">
+                        <summary className="cursor-pointer list-none inline-flex items-center gap-1 text-[11px] font-semibold text-brand-blue dark:text-brand-light-cyan hover:underline">
+                          <ChevronDown className="h-3 w-3 transition-transform group-open:rotate-180" />
+                          Technical Trace &amp; Tool Telemetry
+                        </summary>
+                        <div className="mt-2 space-y-1.5 text-[11px] font-mono bg-space-950 rounded-lg p-2.5 border border-space-800">
+                          {runRecord.tools_invoked?.length > 0 && (
+                            <div className="text-brand-cyan break-words">
+                              Tools: {runRecord.tools_invoked.join(", ")}
+                            </div>
+                          )}
+                          {runRecord.started_at && (
+                            <div className="text-fg-muted">
+                              Window: {new Date(runRecord.started_at).toLocaleTimeString()}
+                              {runRecord.completed_at
+                                ? ` to ${new Date(runRecord.completed_at).toLocaleTimeString()}`
+                                : " (active)"}
+                            </div>
+                          )}
+                          {runRecord.error_message && (
+                            <div className="text-brand-error">
+                              Error: {runRecord.error_message}
+                            </div>
+                          )}
+                        </div>
+                      </details>
+                    )}
                 </div>
               );
             })}
@@ -616,15 +741,15 @@ export default function ResearchIntelligenceWorkspacePage() {
       {/* PANEL D & PANEL E: NASA PSI DISCOVERY + SMART FILE SELECTION */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* PANEL D: NASA PSI DISCOVERY */}
-        <section className="lg:col-span-5 rounded-2xl border border-slate-200/80 dark:border-slate-800/80 bg-white/90 dark:bg-slate-900/80 p-6 shadow-sm space-y-4">
+        <section className="lg:col-span-5 rounded-2xl border border-space-800 bg-space-900 p-5 sm:p-6 shadow-panel space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Search className="w-5 h-5 text-orange-500" />
+              <Search className="w-5 h-5 text-brand-intelligent dark:text-brand-light-cyan" />
               <h2 className="text-base font-bold text-slate-900 dark:text-white">
                 Panel D — NASA PSI Catalog Discovery
               </h2>
             </div>
-            <span className="text-xs font-mono px-2 py-0.5 rounded bg-orange-500/10 text-orange-600 dark:text-orange-400">
+            <span className="text-xs font-mono px-2 py-0.5 rounded bg-brand-soft text-brand-blue dark:text-brand-light-cyan">
               AGENT 04 ({activeRequest?.discovered_investigations?.length || 0} Campaigns)
             </span>
           </div>
@@ -637,7 +762,7 @@ export default function ResearchIntelligenceWorkspacePage() {
               >
                 <div className="flex items-center justify-between gap-2 flex-wrap">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-mono font-bold text-sm text-orange-600 dark:text-orange-400">
+                    <span className="font-mono font-bold text-sm text-brand-blue dark:text-brand-light-cyan">
                       {inv.acronym}
                     </span>
                     {inv.source_record_id ? (
@@ -685,7 +810,7 @@ export default function ResearchIntelligenceWorkspacePage() {
         </section>
 
         {/* PANEL E: SMART FILE SELECTION & SCORING */}
-        <section className="lg:col-span-7 rounded-2xl border border-slate-200/80 dark:border-slate-800/80 bg-white/90 dark:bg-slate-900/80 p-6 shadow-sm space-y-4">
+        <section className="lg:col-span-7 rounded-2xl border border-space-800 bg-space-900 p-5 sm:p-6 shadow-panel space-y-4">
           <div className="flex items-center justify-between flex-wrap gap-2">
             <div className="flex items-center gap-2">
               <FileCheck2 className="w-5 h-5 text-emerald-500" />
@@ -717,7 +842,7 @@ export default function ResearchIntelligenceWorkspacePage() {
                         type="checkbox"
                         checked={isChecked}
                         onChange={() => toggleFileCheckbox(file.file_identifier)}
-                        className="mt-0.5 rounded border-slate-300 text-orange-600 focus:ring-orange-500"
+                        className="mt-0.5 rounded border-slate-300 text-brand-blue focus:ring-brand-intelligent"
                       />
                       <div>
                         <div className="font-semibold text-slate-900 dark:text-white flex items-center gap-2 flex-wrap">
@@ -792,11 +917,11 @@ export default function ResearchIntelligenceWorkspacePage() {
 
       {/* PANEL F & PANEL G: DATASET CONSTRUCTION MONITOR + CANONICAL DATASET EXPLORER */}
       {datasetDetail && (
-        <section className="rounded-2xl border border-slate-200/80 dark:border-slate-800/80 bg-white/90 dark:bg-slate-900/80 p-6 shadow-sm space-y-6">
+        <section className="rounded-2xl border border-space-800 bg-space-900 p-5 sm:p-6 shadow-panel space-y-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200/70 dark:border-slate-800/70 pb-4">
             <div className="space-y-1">
               <div className="flex items-center gap-2.5">
-                <Database className="w-5 h-5 text-orange-500" />
+                <Database className="w-5 h-5 text-brand-intelligent dark:text-brand-light-cyan" />
                 <h2 className="text-lg font-bold text-slate-900 dark:text-white">
                   Panels F &amp; G — Dynamic Dataset Engine &amp; Canonical Explorer
                 </h2>
@@ -806,7 +931,7 @@ export default function ResearchIntelligenceWorkspacePage() {
               </div>
               <p className="text-xs text-slate-600 dark:text-slate-400">
                 SHA-256 Content Fingerprint:{" "}
-                <code className="font-mono text-orange-600 dark:text-orange-400">
+                <code className="font-mono text-brand-blue dark:text-brand-light-cyan">
                   {datasetDetail.latest_version?.content_fingerprint}
                 </code>
               </p>
@@ -820,9 +945,9 @@ export default function ResearchIntelligenceWorkspacePage() {
                   href={apiClient.getDatasetExportUrl(datasetDetail.id, fmt)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:border-orange-500 text-slate-800 dark:text-slate-200 transition"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:border-brand-intelligent text-slate-800 dark:text-slate-200 transition"
                 >
-                  <Download className="w-3.5 h-3.5 text-orange-500" />
+                  <Download className="w-3.5 h-3.5 text-brand-intelligent dark:text-brand-light-cyan" />
                   Export .{fmt.toUpperCase()}
                 </a>
               ))}
@@ -866,7 +991,7 @@ export default function ResearchIntelligenceWorkspacePage() {
               </div>
               <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200/70 dark:border-slate-800">
                 <div className="text-slate-500">Source Campaigns</div>
-                <div className="font-bold text-sm text-orange-600 dark:text-orange-400 mt-1">
+                <div className="font-bold text-sm text-brand-blue dark:text-brand-light-cyan mt-1">
                   {(datasetDetail.source_investigation_ids || []).join(", ")}
                 </div>
               </div>
@@ -890,7 +1015,7 @@ export default function ResearchIntelligenceWorkspacePage() {
                 onClick={() => setActiveDatasetTab(tab.key)}
                 className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer ${
                   activeDatasetTab === tab.key
-                    ? "bg-orange-500 text-white shadow-sm"
+                    ? "keep-white bg-brand-blue text-white shadow-sm"
                     : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
                 }`}
               >
@@ -921,7 +1046,7 @@ export default function ResearchIntelligenceWorkspacePage() {
                       key={item.id}
                       className="hover:bg-slate-50/80 dark:hover:bg-slate-900/50 transition"
                     >
-                      <td className="py-2.5 px-3 font-mono font-bold text-orange-600 dark:text-orange-400">
+                      <td className="py-2.5 px-3 font-mono font-bold text-brand-blue dark:text-brand-light-cyan">
                         {item.investigation_acronym}
                       </td>
                       <td className="py-2.5 px-3 font-mono text-slate-800 dark:text-slate-200">
@@ -960,7 +1085,7 @@ export default function ResearchIntelligenceWorkspacePage() {
           {/* TAB 2: COVERAGE & QUALITY ANALYSIS (PRIORITY 8) */}
           {activeDatasetTab === "coverage" && datasetCoverage && (
             <div className="space-y-4 text-xs">
-              <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 font-mono text-[11px] text-slate-600 dark:text-slate-300">
+              <div className="p-3.5 rounded-xl bg-brand-soft/60 dark:bg-space-950 border border-space-800 font-mono text-[11px] text-slate-600 dark:text-slate-300">
                 Formula: {datasetCoverage.quality_formula}
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -999,7 +1124,7 @@ export default function ResearchIntelligenceWorkspacePage() {
                     className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/50 space-y-2"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="font-mono font-bold text-orange-600 dark:text-orange-400">
+                      <span className="font-mono font-bold text-brand-blue dark:text-brand-light-cyan">
                         Row #{node.row_index}: {node.parameter_name} = {node.normalized_value} {node.normalized_unit}
                       </span>
                       <span className="font-mono text-[11px] text-emerald-600 dark:text-emerald-400">
@@ -1106,7 +1231,7 @@ export default function ResearchIntelligenceWorkspacePage() {
                       key={idx}
                       className="p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/50 space-y-1 font-mono"
                     >
-                      <div className="font-bold text-orange-600 dark:text-orange-400">
+                      <div className="font-bold text-brand-blue dark:text-brand-light-cyan">
                         {st.parameter_name} [{st.normalized_unit}] (n={st.sample_count})
                       </div>
                       <div>
@@ -1181,7 +1306,7 @@ export default function ResearchIntelligenceWorkspacePage() {
         <section className="rounded-2xl border border-slate-200/80 dark:border-slate-800/80 bg-white/90 dark:bg-slate-900/80 p-6 sm:p-8 shadow-sm space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200/70 dark:border-slate-800/70 pb-4">
             <div className="flex items-center gap-2.5">
-              <BookOpen className="w-5 h-5 text-orange-500" />
+              <BookOpen className="w-5 h-5 text-brand-intelligent dark:text-brand-light-cyan" />
               <h2 className="text-lg font-bold text-slate-900 dark:text-white">
                 Panel H — Evidence-Grounded Scientific Intelligence Synthesis (Agent 11)
               </h2>
@@ -1209,7 +1334,7 @@ export default function ResearchIntelligenceWorkspacePage() {
                         key={idx}
                         className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 text-xs space-y-1"
                       >
-                        <div className="font-mono font-bold text-orange-600 dark:text-orange-400">
+                        <div className="font-mono font-bold text-brand-blue dark:text-brand-light-cyan">
                           {qf.parameter_name} ({qf.unit})
                         </div>
                         <div className="text-slate-600 dark:text-slate-300">
@@ -1242,7 +1367,7 @@ export default function ResearchIntelligenceWorkspacePage() {
                         className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/50 text-xs space-y-1.5"
                       >
                         <div className="flex items-center justify-between">
-                          <span className="font-mono font-bold text-orange-600 dark:text-orange-400">
+                          <span className="font-mono font-bold text-brand-blue dark:text-brand-light-cyan">
                             [{cit.investigation_code}] {cit.document_title}
                           </span>
                           <span className="font-mono text-[11px] text-slate-500">

@@ -5,148 +5,318 @@
 @tailwind utilities;
 
 @layer base {
-  body {
-    background-color: var(--bg-deep-space);
-    color: var(--text-primary);
-    overflow-x: hidden;
-    transition: background-color 220ms ease, color 220ms ease;
-    position: relative;
+  html {
+    background-color: var(--bg-canvas);
+    color: var(--text-ink);
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    scroll-behavior: smooth;
+    overflow-x: clip;
+    max-width: 100%;
+    transition: background-color 200ms ease, color 200ms ease;
   }
 
-  /* Orbital Telemetry Grid & Atmospheric Aurora Backdrop */
+  body {
+    background-color: var(--bg-canvas);
+    color: var(--text-ink);
+    overflow-x: clip;
+    max-width: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Subtle Scientific Cleanroom & Orbital Telemetry Grid Backdrop */
   body::before {
     content: "";
     position: fixed;
     inset: 0;
     pointer-events: none;
-    z-index: 0;
+    z-index: -1;
     background-image:
-      radial-gradient(ellipse 75% 48% at 12% -8%, rgba(59, 130, 246, 0.18), transparent 70%),
-      radial-gradient(ellipse 55% 42% at 88% -4%, rgba(249, 115, 22, 0.12), transparent 65%),
-      radial-gradient(ellipse 60% 45% at 50% 105%, rgba(34, 211, 238, 0.09), transparent 70%),
-      linear-gradient(to right, rgba(56, 189, 248, 0.032) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(56, 189, 248, 0.032) 1px, transparent 1px);
-    background-size: 100% 100%, 100% 100%, 100% 100%, 36px 36px, 36px 36px;
+      radial-gradient(ellipse 80% 50% at 50% -10%, rgba(0, 110, 219, 0.08), transparent),
+      radial-gradient(circle at 88% 12%, rgba(0, 160, 240, 0.06), transparent 42%),
+      linear-gradient(to right, rgba(0, 80, 192, 0.028) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(0, 80, 192, 0.028) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 44px 44px, 44px 44px;
   }
 
-  html.light body::before {
+  html.dark body::before {
     background-image:
-      radial-gradient(ellipse 75% 48% at 12% -8%, rgba(37, 99, 235, 0.11), transparent 70%),
-      radial-gradient(ellipse 55% 42% at 88% -4%, rgba(245, 158, 11, 0.09), transparent 65%),
-      radial-gradient(ellipse 60% 45% at 50% 105%, rgba(8, 145, 178, 0.08), transparent 70%),
-      linear-gradient(to right, rgba(37, 99, 235, 0.042) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(37, 99, 235, 0.042) 1px, transparent 1px);
-    background-size: 100% 100%, 100% 100%, 100% 100%, 36px 36px, 36px 36px;
+      radial-gradient(ellipse 70% 45% at 72% 10%, rgba(255, 107, 36, 0.08), transparent 60%),
+      radial-gradient(circle at 20% 25%, rgba(57, 185, 235, 0.06), transparent 50%),
+      linear-gradient(to right, rgba(255, 255, 255, 0.016) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.016) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 56px 56px, 56px 56px;
   }
 }
 
-/* White "Cleanroom Lab" Mode high-contrast utility normalization */
-html.light .text-white:not([class*="bg-blue-6"]):not([class*="bg-blue-5"]):not([class*="bg-indigo-6"]):not([class*="bg-flame-"]):not([class*="bg-emerald-6"]):not([class*="bg-amber-6"]):not([class*="bg-red-6"]):not([class*="bg-cyan-6"]):not([class*="from-blue-6"]):not([class*="from-flame-5"]) {
-  color: #0F172A;
+/* Scientific Typography & Component Utilities */
+@layer utilities {
+  .text-gradient-brand {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-brand-navy via-brand-intelligent to-brand-cyan;
+  }
+
+  html.dark .text-gradient-brand {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-white via-brand-light-cyan to-brand-cyan;
+  }
+
+  .nav-header-surface {
+    background-color: var(--header-surface);
+    border-bottom: 1px solid var(--header-border);
+  }
+
+  html.dark .nav-header-surface {
+    box-shadow: 0 6px 28px rgba(0, 0, 0, 0.45), inset 0 -1px 0 rgba(98, 201, 245, 0.14);
+  }
+
+  .surface-card {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    box-shadow: var(--shadow-card);
+  }
+
+  .surface-soft {
+    background-color: var(--bg-surface-soft);
+    border: 1px solid var(--border-subtle);
+  }
 }
 
+/* Space Orbital & Zero-Gravity Motion Keyframes */
+@keyframes orbit-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes orbit-spin-reverse {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes space-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.06);
+  }
+}
+
+.animate-orbit-slow {
+  animation: orbit-spin 90s linear infinite;
+}
+
+.animate-orbit-reverse {
+  animation: orbit-spin-reverse 120s linear infinite;
+}
+
+.animate-space-pulse {
+  animation: space-pulse 14s ease-in-out infinite;
+}
+
+.animate-space-pulse-delayed {
+  animation: space-pulse 18s ease-in-out 4s infinite;
+}
+
+@keyframes zero-g-float {
+  0%,
+  100% {
+    translate: 0 0px;
+  }
+  50% {
+    translate: 0 -5px;
+  }
+}
+
+@keyframes zero-g-float-slow {
+  0%,
+  100% {
+    translate: 0 0px;
+  }
+  50% {
+    translate: 0 -8px;
+  }
+}
+
+.animate-zero-g {
+  animation: zero-g-float 6.8s ease-in-out infinite;
+  will-change: translate, transform;
+}
+
+.animate-zero-g-slow {
+  animation: zero-g-float-slow 9s ease-in-out infinite;
+  will-change: translate, transform;
+}
+
+.animate-zero-g:hover,
+.animate-zero-g:focus-within,
+.animate-zero-g-slow:hover,
+.animate-zero-g-slow:focus-within {
+  animation-play-state: paused;
+}
+
+.zero-g-delay-0 {
+  animation-delay: 0s;
+}
+.zero-g-delay-1 {
+  animation-delay: 0.9s;
+}
+.zero-g-delay-2 {
+  animation-delay: 1.8s;
+}
+.zero-g-delay-3 {
+  animation-delay: 2.7s;
+}
+
+/* Orbital Light Sheen Sweep on Card Hover */
+.card-space-sheen {
+  position: relative;
+  overflow: hidden;
+}
+
+.card-space-sheen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    112deg,
+    transparent 20%,
+    rgba(0, 160, 240, 0.08) 46%,
+    rgba(98, 201, 245, 0.14) 50%,
+    rgba(0, 160, 240, 0.08) 54%,
+    transparent 80%
+  );
+  transform: translateX(-120%);
+  transition: transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+  z-index: 1;
+}
+
+html.light .card-space-sheen::after {
+  background: linear-gradient(
+    112deg,
+    transparent 20%,
+    rgba(0, 110, 219, 0.05) 46%,
+    rgba(0, 160, 240, 0.1) 50%,
+    rgba(0, 110, 219, 0.05) 54%,
+    transparent 80%
+  );
+}
+
+.card-space-sheen:hover::after {
+  transform: translateX(120%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-orbit-slow,
+  .animate-orbit-reverse,
+  .animate-space-pulse,
+  .animate-space-pulse-delayed,
+  .animate-zero-g,
+  .animate-zero-g-slow {
+    animation: none !important;
+  }
+
+  .card-space-sheen::after {
+    display: none;
+  }
+}
+
+/* Custom Clean Scrollbar */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgb(var(--space-950));
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--space-700));
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--space-600));
+}
+
+/* ============================================================================
+   LIGHT MODE ("CLEANROOM LAB") COMPATIBILITY SAFEGUARDS FOR LEGACY CLASSES
+   ============================================================================ */
 html.light .text-slate-50,
 html.light .text-slate-100 {
-  color: #0F172A;
+  color: #10233F;
 }
 
 html.light .text-slate-200 {
-  color: #1E293B;
+  color: #1E3354;
 }
 
 html.light .text-slate-300 {
   color: #334155;
 }
 
-html.light .text-slate-400 {
-  color: #475569;
-}
-
+html.light .text-slate-400,
 html.light .text-slate-500 {
   color: #64748B;
 }
 
-html.light .text-blue-200,
-html.light .text-blue-300 {
-  color: #1D4ED8;
+html.light .text-white:not(.keep-white):not([class*="bg-brand-"]):not([class*="bg-blue-"]):not([class*="bg-cyan-"]):not([class*="bg-emerald-"]):not([class*="bg-red-"]):not([class*="bg-orange-"]):not([class*="bg-flame-"]):not([class*="bg-gradient-"]) {
+  color: #10233F;
 }
 
-html.light .text-blue-400,
-html.light .text-electric-400 {
-  color: #2563EB;
+html.light .hover\:text-white:hover:not(.keep-white):not([class*="hover:bg-blue-"]):not([class*="hover:bg-brand-"]) {
+  color: #001030;
 }
 
-html.light .text-cyan-200,
-html.light .text-cyan-300,
-html.light .text-cyan-400,
+html.light .bg-space-950\/40,
+html.light .bg-space-950\/50,
+html.light .bg-space-950\/60,
+html.light .bg-space-950\/70,
+html.light .bg-space-950\/80,
+html.light .bg-space-950\/90 {
+  background-color: #EDF5FC;
+}
+
+html.light .bg-space-900\/40,
+html.light .bg-space-900\/50,
+html.light .bg-space-900\/60,
+html.light .bg-space-900\/70,
+html.light .bg-space-900\/80,
+html.light .bg-space-900\/90,
+html.light .bg-space-900\/95 {
+  background-color: #FFFFFF;
+}
+
 html.light .text-plasma-400 {
-  color: #0E7490;
+  color: #006EDB;
 }
 
-html.light .text-amber-200,
-html.light .text-amber-300,
-html.light .text-amber-400 {
-  color: #B45309;
+html.light .text-electric-400,
+html.light .text-blue-400,
+html.light .text-sky-400 {
+  color: #0050C0;
 }
 
-html.light .text-orange-200,
-html.light .text-orange-300,
-html.light .text-orange-400,
-html.light .text-flame-400 {
-  color: #C2410C;
-}
-
-html.light .text-emerald-200,
-html.light .text-emerald-300,
 html.light .text-emerald-400 {
-  color: #047857;
+  color: #15966B;
 }
 
-html.light .text-red-200,
-html.light .text-red-300,
-html.light .text-red-400 {
-  color: #B91C1C;
+html.light .text-amber-400,
+html.light .text-amber-300 {
+  color: #B47814;
 }
 
-html.light [class*="bg-blue-950"] {
-  background-color: rgba(219, 234, 254, 0.8);
-}
-
-html.light [class*="bg-cyan-950"] {
-  background-color: rgba(207, 250, 254, 0.8);
-}
-
-html.light [class*="bg-amber-950"] {
-  background-color: rgba(254, 243, 199, 0.85);
-}
-
-html.light [class*="bg-orange-950"] {
-  background-color: rgba(255, 237, 213, 0.85);
-}
-
-html.light [class*="bg-emerald-950"] {
-  background-color: rgba(209, 250, 229, 0.8);
-}
-
-html.light [class*="bg-red-950"] {
-  background-color: rgba(254, 226, 226, 0.85);
-}
-
-/* Custom sleek scrollbars for scientific tables and panels */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--scrollbar-track);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--scrollbar-thumb);
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--scrollbar-thumb-hover);
+html.light .text-flame-400 {
+  color: #D96400;
 }

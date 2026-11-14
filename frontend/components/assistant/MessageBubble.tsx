@@ -18,7 +18,7 @@ export const MessageBubble: React.FC<{ message: ChatMessage }> = ({ message }) =
   return (
     <div
       className={cn(
-        "flex gap-3 text-xs leading-relaxed",
+        "flex gap-3 text-xs sm:text-sm leading-relaxed",
         isAssistant ? "items-start" : "items-start flex-row-reverse"
       )}
     >
@@ -26,8 +26,8 @@ export const MessageBubble: React.FC<{ message: ChatMessage }> = ({ message }) =
         className={cn(
           "h-8 w-8 rounded-full flex items-center justify-center shrink-0 border",
           isAssistant
-            ? "bg-flame-500/10 border-flame-500/30 text-flame-400"
-            : "bg-space-800 border-space-700 text-slate-300"
+            ? "bg-brand-soft dark:bg-brand-blue/15 border-brand-blue/30 text-brand-blue dark:text-brand-light-cyan"
+            : "bg-brand-navy text-white keep-white border-brand-navy"
         )}
       >
         {isAssistant ? <Bot className="h-4 w-4" /> : <User className="h-4 w-4" />}
@@ -35,16 +35,16 @@ export const MessageBubble: React.FC<{ message: ChatMessage }> = ({ message }) =
 
       <div
         className={cn(
-          "max-w-2xl rounded-2xl p-4 border",
+          "max-w-2xl rounded-2xl p-4 border shadow-sm",
           isAssistant
-            ? "bg-space-900 border-space-800 text-slate-200"
-            : "bg-flame-600/90 border-flame-500 text-white"
+            ? "bg-space-900 border-space-800 text-fg-primary"
+            : "keep-white bg-brand-blue border-brand-blue text-white"
         )}
       >
         <div className="whitespace-pre-wrap">{message.text}</div>
 
         {message.uncertaintyNote && (
-          <div className="mt-3 p-2 rounded bg-amber-500/10 border border-amber-500/20 text-amber-300/90 text-[11px] flex items-center gap-1.5">
+          <div className="mt-3 p-2.5 rounded-xl bg-amber-500/10 border border-brand-warning/30 text-amber-800 dark:text-brand-flame-yellow text-[11px] flex items-center gap-1.5">
             <AlertCircle className="h-3.5 w-3.5 shrink-0" />
             <span>{message.uncertaintyNote}</span>
           </div>

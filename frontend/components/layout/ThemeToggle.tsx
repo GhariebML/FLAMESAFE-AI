@@ -15,12 +15,12 @@ export const ThemeToggle: React.FC = () => {
   const { theme, resolvedTheme, setTheme, toggleTheme } = useTheme();
 
   return (
-    <div className="flex items-center">
-      {/* Desktop / Tablet Segmented 3-Way Pill */}
+    <div className="flex items-center shrink-0">
+      {/* Desktop / Tablet Segmented 3-Way Pill (Brand Blue / Scientific Cyan) */}
       <div
         role="group"
         aria-label="Interface theme mode selector (Alt+T)"
-        className="hidden sm:inline-flex items-center gap-0.5 p-1 rounded-full border border-space-700/90 bg-space-950/90 shadow-inner"
+        className="hidden sm:inline-flex items-center gap-0.5 p-0.5 rounded-full border border-space-800 bg-brand-soft/80 dark:bg-space-900/95 shadow-inner"
       >
         {OPTIONS.map(({ mode, label, shortLabel, Icon }) => {
           const isActive = theme === mode;
@@ -32,10 +32,10 @@ export const ThemeToggle: React.FC = () => {
               title={`${label} (Alt+T)`}
               aria-pressed={isActive}
               className={cn(
-                "flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold transition-all duration-150",
+                "flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all duration-150 whitespace-nowrap",
                 isActive
-                  ? "bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 text-white shadow-md shadow-blue-500/25"
-                  : "text-fg-muted hover:text-fg-primary hover:bg-space-800/70"
+                  ? "keep-white bg-brand-blue text-white dark:bg-brand-cyan dark:text-brand-navy shadow-sm"
+                  : "text-fg-muted hover:text-brand-navy dark:hover:text-white hover:bg-white/70 dark:hover:bg-space-800/80"
               )}
             >
               <Icon className="h-3 w-3 shrink-0" />
@@ -55,16 +55,16 @@ export const ThemeToggle: React.FC = () => {
             : "Switch to Black (Mission Control) Mode"
         }
         title="Toggle White / Black Mode (Alt+T)"
-        className="sm:hidden inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-space-700 bg-space-900 text-xs font-semibold text-fg-primary hover:bg-space-800 transition-colors"
+        className="sm:hidden inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-space-800 bg-space-900 text-xs font-semibold text-fg-primary hover:border-brand-intelligent transition-colors"
       >
         {resolvedTheme === "dark" ? (
           <>
-            <Sun className="h-3.5 w-3.5 text-amber-400" />
+            <Sun className="h-3.5 w-3.5 text-brand-flame-yellow" />
             <span>White</span>
           </>
         ) : (
           <>
-            <Moon className="h-3.5 w-3.5 text-blue-600" />
+            <Moon className="h-3.5 w-3.5 text-brand-blue" />
             <span>Black</span>
           </>
         )}

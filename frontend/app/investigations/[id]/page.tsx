@@ -5,8 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { InvestigationDetail } from "@/types/investigation";
 import { apiClient } from "@/lib/api/client";
 import { DetailView } from "@/components/investigations/DetailView";
-import { LoadingSkeleton } from "@/components/shared/LoadingSkeleton";
-import { Button } from "@/components/shared/Button";
+import { SecondaryButton, LoadingState, ErrorState, PageHeader } from "@/components/ui";
 import { ArrowLeft } from "lucide-react";
 
 export default function InvestigationDetailPage() {
@@ -18,7 +17,7 @@ export default function InvestigationDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const loadDetail = () => {
     if (!id) return;
     setIsLoading(true);
     apiClient
@@ -33,43 +32,60 @@ export default function InvestigationDetailPage() {
       .finally(() => {
         setIsLoading(false);
       });
+  };
+
+  useEffect(() => {
+    loadDetail();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   if (isLoading) {
     return (
-      <div className="max-w-4xl mx-auto space-y-6">
-        <LoadingSkeleton className="h-8 w-32" />
-        <LoadingSkeleton className="h-64" />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <LoadingSkeleton className="h-48" />
-          <LoadingSkeleton className="h-48" />
-        </div>
+      <div className="max-w-5xl mx-auto space-y-6">
+        <LoadingState
+          title="Loading Investigation Profile..."
+          description="Retrieving experimental objectives, test run boundaries, sensor types, and DOI-linked documents."
+          rows={5}
+        />
       </div>
     );
   }
 
   if (error || !investigation) {
     return (
-      <div className="max-w-xl mx-auto py-12 text-center space-y-4">
-        <h2 className="text-lg font-bold text-slate-200">Investigation Not Found</h2>
-        <p className="text-xs text-slate-400">{error || "Could not retrieve the requested investigation profile."}</p>
-        <Button variant="secondary" onClick={() => router.push("/investigations")} className="gap-2">
-          <ArrowLeft className="h-4 w-4" /> Back to Explorer
-        </Button>
+      <div className="max-w-2xl mx-auto py-8 space-y-4">
+        <ErrorState
+          title="Investigation Profile Unavailable"
+          message={error || "Could not retrieve the requested NASA PSI investigation profile."}
+          onRetry={loadDetail}
+        />
+        <div className="flex justify-center">
+          <SecondaryButton size="sm" onClick={() => router.push("/investigations")}>
+            <ArrowLeft className="h-4 w-4" /> Back to Investigations
+          </SecondaryButton>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6">
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => router.push("/investigations")}
-        className="gap-1.5 text-slate-400 hover:text-white"
-      >
-        <ArrowLeft className="h-4 w-4" /> Back to Investigations
-      </Button>
+    <div className="max-w-6xl mx-auto space-y-6">
+      <PageHeader
+        breadcrumbs={[
+          { label: "Home", href: "/" },
+          { label: "Investigations", href: "/investigations" },
+          { label: investigation.acronym },
+        ]}
+        eyebrow={`NASA PSI Program · ${investigation.psi_id}`}
+        badgeText={investigation.research_area}
+        badgeVariant="brand"
+        title={investigation.title}
+        actions={
+          <SecondaryButton size="sm" onClick={() => router.push("/investigations")}>
+            <ArrowLeft className="h-4 w-4" /> Back to Explorer
+          </SecondaryButton>
+        }
+      />
 
       <DetailView investigation={investigation} />
     </div>

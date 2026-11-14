@@ -17,10 +17,38 @@ import {
   Tooltip,
   Legend,
 } from "recharts";
-import { Sparkles, Sliders, ArrowRight, CheckCircle2, AlertCircle, ExternalLink } from "lucide-react";
+import { Sparkles, Sliders, ArrowRight, CheckCircle2, AlertCircle, ExternalLink, Flame } from "lucide-react";
+
+const DECISION_LAB_MODES = [
+  {
+    id: "prevention",
+    label: "Fire Prevention",
+    query: "Solid polymer flammability and limiting oxygen concentration in microgravity",
+    insight: "Screen cabin polymers below 16.5% O2 Limiting Oxygen Concentration (LOC).",
+  },
+  {
+    id: "detection",
+    label: "Fire Detection",
+    query: "Smoke aerosol particle size distribution and early fire detection in microgravity",
+    insight: "Calibrate photoelectric sensors for larger 0g smoke aggregates (SAME-R).",
+  },
+  {
+    id: "suppression",
+    label: "Fire Suppression",
+    query: "Droplet flame extinction radiative quenching and cool flame re-ignition",
+    insight: "Account for cool-flame re-ignition after radiative quenching (FLEX-2).",
+  },
+  {
+    id: "materials",
+    label: "Material Selection",
+    query: "Spacecraft composite material concurrent flame spread under forced ventilation",
+    insight: "Validate thin-fuel concurrent flame spread under 5–20 cm/s HVAC flow (SAFFIRE).",
+  },
+];
 
 export default function InsightsPage() {
   const chartTheme = useChartTheme();
+  const [selectedDecision, setSelectedDecision] = useState("prevention");
   const [query, setQuery] = useState(
     "Solid polymer flammability and airflow quench limits in microgravity"
   );
@@ -66,17 +94,91 @@ export default function InsightsPage() {
     "Measurement Completeness (%)": r.measurement_completeness ?? 100,
   }));
 
+  const activeDecisionObj =
+    DECISION_LAB_MODES.find((d) => d.id === selectedDecision) ?? DECISION_LAB_MODES[0];
+
   return (
-    <div className="max-w-7xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-xl sm:text-2xl font-bold text-slate-50 tracking-tight flex items-center gap-2">
-          <Sparkles className="h-6 w-6 text-amber-400 shrink-0" />
-          <span>Scientific Relevance Ranking & Coverage Insights</span>
-        </h1>
-        <p className="text-xs sm:text-sm text-slate-400 mt-1">
-          Transparent multi-factor scoring model (R = 0.30D + 0.25F + 0.20C + 0.15M + 0.10Q) with separate Measurement Completeness telemetry.
-        </p>
-      </div>
+    <div className="w-full max-w-[88rem] mx-auto space-y-8 min-w-0 pb-10">
+      {/* =====================================================================
+          DEDICATED STORYBOARD SHOWCASE: FIRE SAFETY DECISION LAB
+      ===================================================================== */}
+      <section className="relative rounded-3xl bg-gradient-to-br from-[#060E20] via-[#09152E] to-[#050A18] border-2 border-[#254B8C]/90 p-6 sm:p-9 shadow-[0_24px_70px_rgba(0,0,0,0.8)] overflow-hidden">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          {/* Left 6 Columns: 4 Safety Protocol Buttons + Active Insight */}
+          <div className="lg:col-span-6 space-y-5">
+            <div>
+              <span className="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-widest text-[#FF7A18]">
+                <Sparkles className="h-3.5 w-3.5 text-[#39B9EB]" />
+                MISSION SAFETY PROTOCOLS
+              </span>
+              <h1 className="mt-1 text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+                Fire Safety Decision Lab
+              </h1>
+              <p className="text-sm text-[#B4C6E4] mt-1">
+                Make informed decisions for safer space missions.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {DECISION_LAB_MODES.map((mode) => {
+                const active = selectedDecision === mode.id;
+                return (
+                  <button
+                    key={mode.id}
+                    type="button"
+                    onClick={() => {
+                      setSelectedDecision(mode.id);
+                      setQuery(mode.query);
+                    }}
+                    className={`flex items-center gap-3 px-4 py-3.5 rounded-2xl border text-left transition-all ${
+                      active
+                        ? "bg-[#11264E] border-[#FF7A18] text-white shadow-[0_0_20px_rgba(255,122,24,0.3)]"
+                        : "bg-[#07132A] border-[#1E3A6E] text-[#B4C6E4] hover:text-white hover:border-[#39B9EB]/60"
+                    }`}
+                  >
+                    <span className="h-8 w-8 rounded-full bg-[#FF7A18]/20 border border-[#FF7A18]/50 flex items-center justify-center shrink-0">
+                      <Flame className="h-4 w-4 text-[#FF7A18]" />
+                    </span>
+                    <span className="text-sm font-bold">{mode.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="rounded-2xl bg-[#071530]/90 border border-[#254B8C] p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <p className="text-xs sm:text-sm text-[#D6E4FF] leading-relaxed">
+                <strong className="text-[#FFB547] mr-1.5">{activeDecisionObj.label}:</strong>
+                {activeDecisionObj.insight}
+              </p>
+              <button
+                type="button"
+                onClick={executeRanking}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-[#FF7A18] to-[#E94B16] text-white keep-white font-bold text-xs whitespace-nowrap shadow-[0_6px_20px_rgba(255,122,24,0.4)] shrink-0"
+              >
+                <span>Get Safety Insight</span>
+                <ArrowRight className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          </div>
+
+          {/* Right 6 Columns: Realistic Astro-Flame Bot & Glowing Shield */}
+          <div className="lg:col-span-6">
+            <div className="relative h-72 sm:h-80 w-full rounded-2xl overflow-hidden border-2 border-[#254B8C] bg-black shadow-2xl">
+              <img
+                src="/images/story/mascot-shield.png"
+                alt="Realistic Astro-Flame Bot Fire Safety Decision Lab"
+                className="h-full w-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#040918]/85 via-transparent to-transparent" />
+              <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
+                <span className="text-xs font-extrabold text-white">
+                  Explainable Scoring Model (R = 0.30D + 0.25F + 0.20C + 0.15M + 0.10Q)
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Query Form */}
       <Card className="space-y-4 border-space-800 bg-space-900/80">
@@ -199,22 +301,22 @@ export default function InsightsPage() {
             <Card key={r.investigation_id} className="space-y-3 border-space-800 bg-space-900/80">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="font-mono text-sm font-bold text-amber-400">#{idx + 1}</span>
-                  <Badge variant="flame">{r.acronym}</Badge>
-                  <span className="text-sm sm:text-base font-bold text-white">{r.title}</span>
+                  <span className="font-mono text-sm font-bold text-brand-blue dark:text-brand-light-cyan">#{idx + 1}</span>
+                  <Badge variant="brand">{r.acronym}</Badge>
+                  <span className="text-sm sm:text-base font-bold text-brand-navy dark:text-fg-primary">{r.title}</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="text-right">
-                    <span className="block text-[10px] text-slate-400 uppercase">Completeness</span>
-                    <span className="font-mono text-xs font-semibold text-plasma-400">
+                    <span className="block text-[10px] text-fg-muted uppercase">Completeness</span>
+                    <span className="font-mono text-xs font-semibold text-brand-cyan">
                       {r.measurement_completeness ?? 100}%
                     </span>
                   </div>
                   <div className="text-right pl-3 border-l border-space-800">
-                    <span className="text-xl font-mono font-black text-white">
+                    <span className="text-xl font-mono font-black text-brand-navy dark:text-fg-primary">
                       {r.relevance_score}
                     </span>
-                    <span className="text-xs text-slate-400">/100</span>
+                    <span className="text-xs text-fg-muted">/100</span>
                   </div>
                 </div>
               </div>

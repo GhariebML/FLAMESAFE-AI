@@ -1,5 +1,5 @@
 import React from "react";
-import { Card } from "@/components/shared/Card";
+import { ScientificCard } from "@/components/shared/Card";
 
 interface DeltaProps {
   label: string;
@@ -19,28 +19,32 @@ export const ParameterDelta: React.FC<DeltaProps> = ({
   nameB,
 }) => {
   const hasBoth = valA !== null && valA !== undefined && valB !== null && valB !== undefined;
-  const delta = hasBoth ? (valB! - valA!) : null;
+  const delta = hasBoth ? valB! - valA! : null;
 
   return (
-    <Card className="p-3 text-xs flex items-center justify-between">
+    <ScientificCard className="p-3.5 text-xs flex items-center justify-between gap-3">
       <div>
-        <span className="font-semibold text-slate-200">{label}</span>
-        <div className="text-[11px] text-slate-400 mt-0.5">
+        <span className="font-bold text-brand-navy dark:text-fg-primary">{label}</span>
+        <div className="text-[11px] text-fg-muted mt-0.5">
           {nameA}: {valA !== null && valA !== undefined ? `${valA} ${unit}` : "N/A"} vs{" "}
           {nameB}: {valB !== null && valB !== undefined ? `${valB} ${unit}` : "N/A"}
         </div>
       </div>
       {delta !== null ? (
         <span
-          className={`font-mono font-bold ${
-            delta > 0 ? "text-flame-400" : delta < 0 ? "text-plasma-400" : "text-slate-400"
+          className={`font-mono font-bold shrink-0 ${
+            delta > 0
+              ? "text-brand-flame-orange"
+              : delta < 0
+                ? "text-brand-cyan"
+                : "text-fg-muted"
           }`}
         >
           {delta > 0 ? `+${delta}` : delta} {unit}
         </span>
       ) : (
-        <span className="text-[10px] text-slate-500 italic">No direct numerical diff</span>
+        <span className="text-[10px] text-fg-muted italic shrink-0">No numerical diff</span>
       )}
-    </Card>
+    </ScientificCard>
   );
 };

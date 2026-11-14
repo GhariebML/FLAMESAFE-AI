@@ -1,104 +1,145 @@
-/* FlameSafe AI — Dual-Theme Design System Tokens
- * White Mode (:root / html.light) — "Cleanroom Lab" High-Contrast Telemetry
- * Black Mode (html.dark) — "Mission Control" Deep Space Telemetry
- * Canonical Dark Hex Reference: #071525, #0D2035, #3B82F6, #22D3EE, #F59E0B, #F97316
- * Canonical Light Hex Reference: #F8FAFC, #FFFFFF, #2563EB, #0891B2, #D97706, #EA580C
- */
+/* ============================================================================
+   FLAMESAFE AI — OFFICIAL BRAND & DUAL-THEME DESIGN TOKENS
+   Scientific Telemetry Precision + NASA-Inspired Microgravity Intelligence
+   ============================================================================ */
 
 :root,
-html.light,
-[data-theme="light"] {
+html.light {
   color-scheme: light;
 
-  /* RGB Triplets for Tailwind Opacity Support */
-  --space-950: 248 250 252;
-  /* #F8FAFC — Cleanroom Alabaster Canvas */
-  --space-900: 255 255 255;
-  /* #FFFFFF — Pure Lab White Panel */
-  --space-800: 226 232 240;
-  /* #E2E8F0 — Instrument Hairline Border / Subtle Surface */
-  --space-700: 203 213 225;
-  /* #CBD5E1 — Interactive / Active Steel Border */
-  --space-600: 148 163 184;
-  /* #94A3B8 — Calibrated Muted Accent */
+  /* Official Brand Palette — Light ("Cleanroom Lab") Primary */
+  --brand-navy: #001030;
+  --brand-deep-navy: #001840;
+  --brand-blue: #0050C0;
+  --brand-intelligent-blue: #006EDB;
+  --brand-cyan: #00A0F0;
+  --brand-light-cyan: #62C9F5;
+  --brand-flame-orange: #F08000;
+  --brand-flame-red: #F04000;
+  --brand-flame-yellow: #FFC247;
 
-  /* Semantic Hex Tokens */
-  --bg-deep-space: #F8FAFC;
-  --bg-midnight-blue: #FFFFFF;
-  --border-orbital-slate: #E2E8F0;
-  --border-orbital-hover: #CBD5E1;
-  --accent-electric-blue: #2563EB;
-  --accent-scientific-cyan: #0891B2;
-  --accent-controlled-amber: #D97706;
-  --accent-coral-warning: #EA580C;
-  --accent-telemetry-emerald: #059669;
+  /* Light Surfaces & Borders */
+  --bg-canvas: #F5F8FC;
+  --bg-surface: #FFFFFF;
+  --bg-surface-soft: #EDF5FC;
+  --border-subtle: #E3EAF3;
+  --text-ink: #10233F;
+  --text-secondary-ink: #64748B;
+  --header-surface: rgba(255, 255, 255, 0.94);
+  --header-border: #E3EAF3;
 
-  /* Typography */
-  --text-primary: #0F172A;
-  --text-secondary: #334155;
-  --text-muted: #475569;
-  --text-slate-white: #0F172A;
-  --text-muted-slate: #475569;
+  /* Tailwind RGB Surface Tokens */
+  --space-950: 245 248 252; /* #F5F8FC */
+  --space-900: 255 255 255; /* #FFFFFF */
+  --space-800: 227 234 243; /* #E3EAF3 */
+  --space-700: 203 215 230; /* #CBD7E6 */
+  --space-600: 148 163 184; /* #94A3B8 */
 
-  /* Elevation & Scrollbars */
-  --shadow-panel: 0 4px 20px -2px rgba(15, 23, 42, 0.07), 0 1px 3px 0 rgba(15, 23, 42, 0.04);
-  --shadow-glow: 0 0 24px -4px rgba(37, 99, 235, 0.16);
-  --scrollbar-track: #F1F5F9;
-  --scrollbar-thumb: #CBD5E1;
-  --scrollbar-thumb-hover: #94A3B8;
+  --text-primary: 16 35 63;    /* #10233F */
+  --text-secondary: 51 65 85;  /* #334155 */
+  --text-muted: 100 116 139;   /* #64748B */
+
+  /* Semantic Telemetry Accents */
+  --bg-deep-space: #F5F8FC;
+  --bg-midnight-blue: #EDF5FC;
+  --bg-elevated-card: #FFFFFF;
+  --border-orbital-slate: #E3EAF3;
+  --accent-electric-blue: #0050C0;
+  --accent-intelligent-blue: #006EDB;
+  --accent-cyan-telemetry: #00A0F0;
+  --accent-cyan-soft: #62C9F5;
+  --accent-flame-orange: #F08000;
+  --accent-flame-red: #F04000;
+  --accent-flame-yellow: #FFC247;
+
+  /* Official Status Colors */
+  --status-success: #15966B;
+  --status-warning: #D99520;
+  --status-error: #D64545;
+
+  /* Canonical Dual-Theme Reference Tokens */
+  --light-canonical-bg: #F8FAFC;
+  --light-canonical-text: #0F172A;
+  --light-canonical-accent: #2563EB;
+  --dark-canonical-bg: #071525;
+  --dark-canonical-surface: #0D2035;
+  --dark-canonical-blue: #3B82F6;
+  --dark-canonical-cyan: #22D3EE;
+  --dark-canonical-amber: #F59E0B;
+  --dark-canonical-flame: #F97316;
+
+  /* Elevation & Radius */
+  --shadow-card: 0 1px 3px rgba(0, 16, 48, 0.05), 0 8px 24px rgba(0, 80, 192, 0.045);
+  --shadow-elevated: 0 14px 34px rgba(0, 16, 48, 0.09), 0 3px 10px rgba(0, 110, 219, 0.06);
+  --radius-card: 1rem;
+  --radius-control: 0.75rem;
+  --focus-ring: 0 0 0 3px rgba(0, 110, 219, 0.35);
 }
 
-html.dark,
-[data-theme="dark"] {
+html.dark {
   color-scheme: dark;
 
-  /* RGB Triplets for Tailwind Opacity Support */
-  --space-950: 7 21 37;
-  /* #071525 — Deep Space Navy */
-  --space-900: 13 32 53;
-  /* #0D2035 — Midnight Blue */
-  --space-800: 21 44 71;
-  /* #152C47 — Orbital Slate */
-  --space-700: 30 58 95;
-  /* #1E3A5F — Active Telemetry Slate */
-  --space-600: 43 82 130;
-  /* #2B5282 — Muted Orbital Blue */
+  /* FLAMESAFE — THE BLACK FIRE LAB (Official Black Dominant Identity) */
+  --black-lab-bg-primary: #080A0F;
+  --black-lab-bg-secondary: #0D1117;
+  --black-lab-surface-card: #121820;
+  --black-lab-surface-elevated: #191F28;
+  --black-lab-text-primary: #F7F7F5;
+  --black-lab-text-secondary: #A1A8B3;
+  --black-lab-flame-orange: #FF6B24;
+  --black-lab-deep-orange: #E94B16;
+  --black-lab-golden-flame: #FFB547;
+  --black-lab-brand-blue: #006EDB;
+  --black-lab-scientific-cyan: #39B9EB;
+  --black-lab-border: #252D38;
 
-  /* Semantic Hex Tokens */
+  /* Tailwind RGB Surface Tokens mapped to Black Fire Lab */
+  --space-950: 8 10 15;    /* #080A0F */
+  --space-900: 18 24 32;   /* #121820 */
+  --space-800: 37 45 56;   /* #252D38 */
+  --space-700: 52 63 78;   /* #343F4E */
+  --space-600: 100 112 128; /* #647080 */
+
+  --text-primary: 247 247 245;   /* #F7F7F5 */
+  --text-secondary: 161 168 179; /* #A1A8B3 */
+  --text-muted: 161 168 179;     /* #A1A8B3 */
+
+  --bg-canvas: #080A0F;
+  --bg-surface: #121820;
+  --bg-surface-soft: #191F28;
+  --border-subtle: #252D38;
+  --text-ink: #F7F7F5;
+  --text-secondary-ink: #A1A8B3;
+  --header-surface: rgba(8, 10, 15, 0.88);
+  --header-border: #252D38;
+
   --bg-deep-space: #071525;
   --bg-midnight-blue: #0D2035;
-  --border-orbital-slate: #152C47;
-  --border-orbital-hover: #1E3A5F;
+  --bg-elevated-card: #191F28;
+  --border-orbital-slate: #252D38;
   --accent-electric-blue: #3B82F6;
-  --accent-scientific-cyan: #22D3EE;
-  --accent-controlled-amber: #F59E0B;
-  --accent-coral-warning: #F97316;
-  --accent-telemetry-emerald: #10B981;
+  --accent-intelligent-blue: #006EDB;
+  --accent-cyan-telemetry: #39B9EB;
+  --accent-cyan-soft: #22D3EE;
+  --accent-flame-orange: #FF6B24;
+  --accent-flame-red: #E94B16;
+  --accent-flame-yellow: #FFB547;
 
-  /* Typography */
-  --text-primary: #F8FAFC;
-  --text-secondary: #CBD5E1;
-  --text-muted: #94A3B8;
-  --text-slate-white: #F8FAFC;
-  --text-muted-slate: #94A3B8;
+  --status-success: #15966B;
+  --status-warning: #F59E0B;
+  --status-error: #EF4444;
 
-  /* Elevation & Scrollbars */
-  --shadow-panel: 0 4px 20px -2px rgba(3, 10, 22, 0.65);
-  --shadow-glow: 0 0 24px -4px rgba(59, 130, 246, 0.22);
-  --scrollbar-track: #071525;
-  --scrollbar-thumb: #152C47;
-  --scrollbar-thumb-hover: #1E3A5F;
+  --shadow-card: 0 1px 0 rgba(255, 255, 255, 0.03) inset, 0 10px 30px rgba(0, 0, 0, 0.45);
+  --shadow-elevated: 0 1px 0 rgba(255, 255, 255, 0.05) inset, 0 20px 48px rgba(0, 0, 0, 0.65);
+  --focus-ring: 0 0 0 3px rgba(255, 107, 36, 0.38);
 }
 
-/* Accessible keyboard focus ring */
 *:focus-visible {
-  outline: 2px solid var(--accent-electric-blue);
+  outline: 2px solid var(--accent-intelligent-blue);
   outline-offset: 2px;
 }
 
-/* Respect reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
-
   *,
   *::before,
   *::after {

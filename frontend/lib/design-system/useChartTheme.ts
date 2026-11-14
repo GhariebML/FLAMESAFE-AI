@@ -3,7 +3,7 @@
 import { useTheme } from "@/components/layout/ThemeProvider";
 import { DESIGN_TOKENS } from "./tokens";
 
-export interface ChartTheme {
+export interface ChartThemeConfig {
   isLight: boolean;
   gridStroke: string;
   axisTickColor: string;
@@ -15,33 +15,23 @@ export interface ChartTheme {
   palette: readonly string[];
 }
 
-export function useChartTheme(): ChartTheme {
+/**
+ * Returns theme-aware Recharts styling synchronized with Official Brand Light & Dark modes.
+ */
+export function useChartTheme(): ChartThemeConfig {
   const { resolvedTheme } = useTheme();
   const isLight = resolvedTheme === "light";
-
-  if (isLight) {
-    return {
-      isLight: true,
-      gridStroke: "#E2E8F0",
-      axisTickColor: "#334155",
-      axisLineColor: "#CBD5E1",
-      tooltipBg: "#FFFFFF",
-      tooltipBorder: "#CBD5E1",
-      tooltipText: "#0F172A",
-      cursorFill: "rgba(37, 99, 235, 0.06)",
-      palette: DESIGN_TOKENS.colors.lightChartPalette,
-    };
-  }
+  const mode = isLight ? DESIGN_TOKENS.light : DESIGN_TOKENS.dark;
 
   return {
-    isLight: false,
-    gridStroke: "#152C47",
-    axisTickColor: "#CBD5E1",
-    axisLineColor: "#1E3A5F",
-    tooltipBg: "#0D2035",
-    tooltipBorder: "#1E3A5F",
-    tooltipText: "#F8FAFC",
-    cursorFill: "rgba(59, 130, 246, 0.08)",
-    palette: DESIGN_TOKENS.colors.chartPalette,
+    isLight,
+    gridStroke: mode.gridLine,
+    axisTickColor: isLight ? DESIGN_TOKENS.brand.textSecondary : mode.textMuted,
+    axisLineColor: mode.borderStrong,
+    tooltipBg: mode.tooltipBg,
+    tooltipBorder: mode.tooltipBorder,
+    tooltipText: mode.tooltipText,
+    cursorFill: isLight ? "rgba(0, 110, 219, 0.07)" : "rgba(0, 160, 240, 0.10)",
+    palette: isLight ? DESIGN_TOKENS.lightChartPalette : DESIGN_TOKENS.chartPalette,
   };
 }

@@ -27,7 +27,7 @@ export const Tabs: React.FC<TabsProps> = ({
       role="tablist"
       aria-label="Content view selector"
       className={cn(
-        "inline-flex flex-wrap items-center gap-1 p-1 rounded-xl bg-space-950 border border-space-800",
+        "inline-flex flex-wrap items-center gap-1 p-1 rounded-xl bg-brand-soft/80 dark:bg-space-950 border border-space-800",
         className
       )}
     >
@@ -43,18 +43,18 @@ export const Tabs: React.FC<TabsProps> = ({
             className={cn(
               "px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5",
               isSelected
-                ? "bg-blue-600/15 text-blue-700 dark:text-blue-300 border border-blue-500/40 shadow-sm font-semibold"
-                : "text-fg-muted hover:text-fg-primary hover:bg-space-900"
+                ? "bg-white dark:bg-space-900 text-brand-blue dark:text-brand-light-cyan border border-brand-blue/25 dark:border-brand-light-cyan/30 shadow-sm font-semibold"
+                : "text-fg-muted hover:text-fg-primary hover:bg-white/60 dark:hover:bg-space-900/60"
             )}
           >
             <span>{tab.label}</span>
             {typeof tab.count === "number" && (
               <span
                 className={cn(
-                  "px-1.5 py-0.2 rounded text-[10px] font-mono",
+                  "px-1.5 py-0.2 rounded-md text-[10px] font-mono",
                   isSelected
-                    ? "bg-blue-500/20 text-blue-800 dark:text-blue-200"
-                    : "bg-space-800 text-fg-muted"
+                    ? "bg-brand-blue/10 text-brand-blue dark:text-brand-light-cyan"
+                    : "bg-space-800/70 text-fg-muted"
                 )}
               >
                 {tab.count}

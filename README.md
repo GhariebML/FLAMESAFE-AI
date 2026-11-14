@@ -79,6 +79,42 @@ Spacecraft and extraterrestrial habitats face unique fire hazards. Decades of or
 
 **Who It Serves:** Aerospace fire-safety engineers, Environmental Control and Life Support System (ECLSS) architects, microgravity combustion researchers, and technical reviewers.
 
+### Platform at a Glance
+
+| Metric | Verified Count | Source |
+| :--- | :---: | :--- |
+| **Interactive Frontend Routes** | `10` | [`frontend/app/`](frontend/app) |
+| **LangGraph Scientific Agents** | `11` (`AGENT_01`–`AGENT_11`) | [`supervisor.py`](backend/app/agents/orchestrator/supervisor.py) |
+| **FastAPI `/api/v1` Router Modules** | `13` | [`router.py`](backend/app/api/v1/router.py) |
+| **NASA PSI Campaigns** | `5` seeded (`11` cataloged) | [`seed_investigations.json`](backend/data/seed/seed_investigations.json) |
+| **Database Schema Migrations** | `4` (`001`–`004`, `768d` vectors) | [`migrations/versions/`](backend/migrations/versions) |
+| **Automated Test Coverage** | `41` backend + `12` frontend | [`backend/app/tests/`](backend/app/tests) & [`frontend/tests/`](frontend/tests) |
+
+### Key Engineering Differentiators
+
+<table>
+  <tr>
+    <td width="50%">
+      <strong>1. Scientific Integrity &amp; Null Preservation</strong><br />
+      Missing measurements stay <code>null</code> (rendered as <code>Not recorded</code>)—never zero-filled or interpolated. Extrapolated Lunar (<code>0.166g</code>) and Martian (<code>0.38g</code>) regimes are explicitly separated from ISS <code>~0g</code> flight data.
+    </td>
+    <td width="50%">
+      <strong>2. Deterministic + LLM Hybrid Orchestration</strong><br />
+      One compiled LangGraph <code>StateGraph</code> coordinates 10 specialized nodes: only <code>AGENT_02</code> and <code>AGENT_11</code> invoke the LLM, while ingestion, SSRF checks, SI mapping, and bounds validation remain deterministic.
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <strong>3. Dual-Database Portability</strong><br />
+      Targets <strong>PostgreSQL 16 + pgvector</strong> (<code>768</code>-dim embeddings) in containerized deployments with automatic <strong>SQLite + aiosqlite</strong> fallback for zero-Docker local runs.
+    </td>
+    <td width="50%">
+      <strong>4. Cold-Start &amp; Edge Resilience</strong><br />
+      <code>GZipMiddleware</code> on FastAPI plus a <code>4.5s</code> frontend timeout, background <code>/health</code> warmup, and Next.js <code>/api/v1/[...slug]</code> fallback prevent blank screens on cold starts.
+    </td>
+  </tr>
+</table>
+
 ---
 
 ## Why Microgravity Combustion Matters
@@ -471,6 +507,16 @@ See [Scientific Integrity Policy](docs/scientific/scientific-integrity.md) and [
 Developed by **Team R²** for the **2026 NASA Space Apps Challenge (Cairo)**:
 
 **Mohamed Gharieb · Toka Reda · Mai Hamdy · Amany Atef**
+
+---
+
+## Contributing & Community
+
+Contributions are welcome! Please review our project standards before opening a Pull Request:
+- [Contributing Guide](CONTRIBUTING.md) — Branching strategy, Conventional Commits, and coding standards
+- [Security Policy](SECURITY.md) — Responsible disclosure and implemented SSRF/secret controls
+- [Changelog](CHANGELOG.md) — Release and milestone history
+- [Pull Request Template](.github/PULL_REQUEST_TEMPLATE.md) & [Documentation Hub](docs/README.md)
 
 ---
 

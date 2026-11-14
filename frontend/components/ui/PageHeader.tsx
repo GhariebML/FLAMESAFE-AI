@@ -24,18 +24,18 @@ function resolveMascotForTitle(title: string, custom?: string): string {
   if (custom) return custom;
   const lower = title.toLowerCase();
   if (lower.includes("agent") || lower.includes("research") || lower.includes("assistant")) {
-    return "/images/story/mascot-agents.png";
+    return "/images/story/mascot-agents.webp";
   }
   if (lower.includes("scenario") || lower.includes("oxygen") || lower.includes("insight") || lower.includes("safety")) {
-    return "/images/story/mascot-shield.png";
+    return "/images/story/mascot-shield.webp";
   }
   if (lower.includes("compare") || lower.includes("observatory")) {
-    return "/images/story/mascot-window.png";
+    return "/images/story/mascot-window.webp";
   }
   if (lower.includes("evidence") || lower.includes("mission") || lower.includes("overview")) {
-    return "/images/story/mascot-journey.png";
+    return "/images/story/mascot-journey.webp";
   }
-  return "/images/story/mascot-explorer.png";
+  return "/images/story/mascot-explorer.webp";
 }
 
 export const PageHeader: React.FC<PageHeaderProps> = ({
@@ -93,7 +93,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
         <div className="flex items-center gap-4 min-w-0 max-w-2xl">
           <div className="relative h-16 w-16 sm:h-20 sm:w-20 rounded-2xl border-2 border-[#39B9EB]/65 bg-[#050B18] overflow-hidden shrink-0 shadow-[0_0_24px_rgba(57,185,235,0.35)]">
             <img
-              src="/images/story/mascot-avatar.png"
+              src="/images/story/mascot-avatar.webp"
               alt="Astro-Flame Bot"
               className="h-full w-full object-cover"
             />

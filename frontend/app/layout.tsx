@@ -61,6 +61,24 @@ export default function RootLayout({
       className={`dark ${inter.variable} ${jetbrainsMono.variable}`}
       suppressHydrationWarning
     >
+      <head>
+        <link rel="preconnect" href="https://flamesafe-backend.onrender.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://flamesafe-backend.onrender.com" />
+        <link
+          rel="preload"
+          as="image"
+          href="/images/story/hero-mascot-earth.webp"
+          type="image/webp"
+          media="(min-width: 1024px)"
+        />
+        <link
+          rel="preload"
+          as="image"
+          href="/images/story/hero-mascot-mobile.webp"
+          type="image/webp"
+          media="(max-width: 1023px)"
+        />
+      </head>
       <body className="min-h-screen font-sans antialiased bg-[#080A0F] text-[#F7F7F5] selection:bg-[#FF6B24]/25 selection:text-white">
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         <ThemeProvider>

@@ -78,6 +78,30 @@ class APIError extends Error {
   }
 }
 
+const CACHE_TTL_MS = 60_000;
+const FAST_GET_TIMEOUT_MS = 4_500;
+const LONG_REQUEST_TIMEOUT_MS = 45_000;
+const responseCache = new Map<string, { ts: number; data: unknown }>();
+let warmupTriggered = false;
+
+function triggerBackgroundWarmup() {
+  if (warmupTriggered || typeof window === "undefined") return;
+  warmupTriggered = true;
+  fetch(`${DEFAULT_RENDER_API_URL}/health`, { mode: "cors" }).catch(() => {});
+}
+
+function isFastCacheableGet(endpoint: string, options: RequestInit): boolean {
+  const method = (options.method || "GET").toUpperCase();
+  if (method !== "GET") return false;
+  return (
+    endpoint === "/overview" ||
+    endpoint === "/investigations" ||
+    endpoint.startsWith("/investigations?") ||
+    endpoint === "/sources" ||
+    endpoint === "/ai/status"
+  );
+}
+
 async function fetchFromBase<T>(
   baseUrl: string,
   endpoint: string,
@@ -88,30 +112,60 @@ async function fetchFromBase<T>(
     "Content-Type": "application/json",
     ...options.headers,
   };
+  const method = (options.method || "GET").toUpperCase();
+  const isRemote = baseUrl.startsWith("http");
+  const timeoutMs =
+    method === "GET" && isRemote && !endpoint.includes("verify=true")
+      ? FAST_GET_TIMEOUT_MS
+      : LONG_REQUEST_TIMEOUT_MS;
 
-  const res = await fetch(url, { ...options, headers });
-  const payload = await res.json().catch(() => ({}));
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
 
-  if (!res.ok || payload.success === false) {
-    const err = payload.error || {};
-    throw new APIError(
-      err.message || `Request failed with status ${res.status}`,
-      err.code || "REQUEST_FAILED",
-      res.status,
-      err.details
-    );
+  try {
+    const res = await fetch(url, { ...options, headers, signal: controller.signal });
+    const payload = await res.json().catch(() => ({}));
+
+    if (!res.ok || payload.success === false) {
+      const err = payload.error || {};
+      throw new APIError(
+        err.message || `Request failed with status ${res.status}`,
+        err.code || "REQUEST_FAILED",
+        res.status,
+        err.details
+      );
+    }
+
+    return (payload as APIResponseEnvelope<T>).data;
+  } catch (err) {
+    if (isRemote && (err as Error)?.name === "AbortError") {
+      triggerBackgroundWarmup();
+    }
+    throw err;
+  } finally {
+    clearTimeout(timer);
   }
-
-  return (payload as APIResponseEnvelope<T>).data;
 }
 
 async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
+  const cacheable = isFastCacheableGet(endpoint, options);
+  if (cacheable) {
+    const cached = responseCache.get(endpoint);
+    if (cached && Date.now() - cached.ts < CACHE_TTL_MS) {
+      return cached.data as T;
+    }
+  }
+
   const candidates = getCandidateBaseUrls();
   let lastError: unknown = null;
 
   for (const baseUrl of candidates) {
     try {
-      return await fetchFromBase<T>(baseUrl, endpoint, options);
+      const data = await fetchFromBase<T>(baseUrl, endpoint, options);
+      if (cacheable) {
+        responseCache.set(endpoint, { ts: Date.now(), data });
+      }
+      return data;
     } catch (err) {
       lastError = err;
       if (err instanceof APIError && err.status !== 404 && err.status !== 0 && err.status < 500) {

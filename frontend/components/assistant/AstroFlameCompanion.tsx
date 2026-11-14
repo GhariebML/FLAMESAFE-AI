@@ -171,7 +171,7 @@ export const AstroFlameCompanion: React.FC = () => {
             <div className="flex items-center gap-3 min-w-0">
               <div className="relative h-10 w-10 rounded-full border border-[#39B9EB]/60 bg-[#080A0F] overflow-hidden shrink-0 shadow-[0_0_14px_rgba(255,107,36,0.35)]">
                 <img
-                  src="/images/story/mascot-avatar.png"
+                  src="/images/story/mascot-avatar.webp"
                   alt="Astro-Flame Companion"
                   className="h-full w-full object-cover"
                 />
@@ -485,7 +485,7 @@ export const AstroFlameCompanion: React.FC = () => {
           } bg-[#080A0F]`}
         >
           <img
-            src="/images/story/mascot-avatar.png"
+            src="/images/story/mascot-avatar.webp"
             alt="Astro-Flame AI Companion"
             className="h-full w-full object-cover"
           />

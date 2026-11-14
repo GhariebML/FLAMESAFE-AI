@@ -28,7 +28,7 @@ const MISSION_STATIONS = [
     subtitle: "Inspect BASS, SAFFIRE, FLEX, SAME & ACME flight experiments, fuels, and DOIs.",
     href: "/investigations",
     cta: "Explore Investigations",
-    image: "/images/story/inv-bass.png",
+    image: "/images/story/inv-bass.webp",
     badge: "NASA PSI Archive",
     icon: FlaskConical,
   },
@@ -38,7 +38,7 @@ const MISSION_STATIONS = [
     subtitle: "11 LangGraph agents orchestrating PSI discovery, schema normalization & RAG synthesis.",
     href: "/research",
     cta: "Launch AI Lab",
-    image: "/images/story/scientific-measurements.png",
+    image: "/images/story/scientific-measurements.webp",
     badge: "11 LangGraph Agents",
     icon: Cpu,
   },
@@ -48,7 +48,7 @@ const MISSION_STATIONS = [
     subtitle: "Compare 1g Earth buoyant flames, 0g ISS spherical diffusion & 0.16g lunar regimes.",
     href: "/compare",
     cta: "Open Data Observatory",
-    image: "/images/story/flame-in-space.png",
+    image: "/images/story/flame-in-space.webp",
     badge: "Multi-Regime Telemetry",
     icon: Scale,
   },
@@ -58,7 +58,7 @@ const MISSION_STATIONS = [
     subtitle: "Evaluate cabin O₂ concentration, pressure & airflow boundaries against empirical runs.",
     href: "/scenarios",
     cta: "Evaluate Cabin Conditions",
-    image: "/images/story/oxygen-chamber.png",
+    image: "/images/story/oxygen-chamber.webp",
     badge: "Boundary Coverage",
     icon: ShieldAlert,
   },
@@ -68,7 +68,7 @@ const MISSION_STATIONS = [
     subtitle: "Rank NASA investigations by explainable multi-factor relevance (R = 0.30D + 0.25F...).",
     href: "/insights",
     cta: "Inspect Safety Rankings",
-    image: "/images/story/inv-saffire.png",
+    image: "/images/story/inv-saffire.webp",
     badge: "Explainable Scoring",
     icon: Lightbulb,
   },
@@ -78,7 +78,7 @@ const MISSION_STATIONS = [
     subtitle: "Audit primary NASA PSI publications, page-level excerpts, and SHA-256 provenance.",
     href: "/evidence",
     cta: "Open Evidence Vault",
-    image: "/images/story/report-docs.png",
+    image: "/images/story/report-docs.webp",
     badge: "DOI & Page Citations",
     icon: BookOpenCheck,
   },
@@ -142,8 +142,10 @@ export default function OrbitalHomePage() {
           {/* Mobile & Tablet Dedicated Mascot Showcase (< lg) — 100% Unobstructed Character */}
           <div className="relative lg:hidden h-72 sm:h-96 w-full overflow-hidden bg-[#080A0F] border-b border-[#283340]/80">
             <img
-              src="/images/story/hero-mascot-mobile.png"
+              src="/images/story/hero-mascot-mobile.webp"
               alt="Astro-Flame 3D Mascot overlooking Earth in Orbit"
+              fetchPriority="high"
+              decoding="async"
               className="h-full w-full object-cover object-top"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[#0B1017] via-transparent to-[#080A0F]/25" />
@@ -160,8 +162,10 @@ export default function OrbitalHomePage() {
             {/* Desktop Wide Right-Aligned Mascot Backdrop (hidden on < lg) */}
             <div className="hidden lg:block absolute inset-0 pointer-events-none">
               <img
-                src="/images/story/hero-mascot-earth.png"
+                src="/images/story/hero-mascot-earth.webp"
                 alt="Astro-Flame 3D Mascot overlooking Earth in the Orbital Research Lab"
+                fetchPriority="high"
+                decoding="async"
                 className="h-full w-full object-cover object-right"
               />
               {/* Left reading zone gradient guarantee so text never competes with background */}
@@ -329,6 +333,8 @@ export default function OrbitalHomePage() {
                       <img
                         src={st.image}
                         alt={st.title}
+                        loading="lazy"
+                        decoding="async"
                         className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-[#080A0F]/85 via-transparent to-transparent" />
@@ -376,8 +382,10 @@ export default function OrbitalHomePage() {
             <div className="space-y-4">
               <div className="relative h-48 sm:h-52 w-full rounded-xl overflow-hidden border border-[#283340] bg-[#080A0F]">
                 <img
-                  src="/images/story/earth-applications.png"
+                  src="/images/story/earth-applications.webp"
                   alt="Earth combustion efficiency and fire sensor calibration transfer"
+                  loading="lazy"
+                  decoding="async"
                   className="h-full w-full object-cover"
                 />
                 <div className="absolute top-3 left-3 inline-flex items-center gap-1.5 rounded-full bg-[#10151D]/90 border border-[#22C55E]/40 px-3 py-1 text-[11px] font-semibold text-[#22C55E]">
@@ -418,8 +426,10 @@ export default function OrbitalHomePage() {
             <div className="space-y-4">
               <div className="relative h-48 sm:h-52 w-full rounded-xl overflow-hidden border border-[#283340] bg-[#080A0F]">
                 <img
-                  src="/images/story/research-gaps.png"
+                  src="/images/story/research-gaps.webp"
                   alt="Partial gravity flammability research gaps between 0g ISS and 0.16g Lunar regimes"
+                  loading="lazy"
+                  decoding="async"
                   className="h-full w-full object-cover"
                 />
                 <div className="absolute top-3 left-3 inline-flex items-center gap-1.5 rounded-full bg-[#10151D]/90 border border-[#FFB547]/40 px-3 py-1 text-[11px] font-semibold text-[#FFB547]">
@@ -484,8 +494,10 @@ export default function OrbitalHomePage() {
 
             <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-xl overflow-hidden border border-[#283340] shrink-0">
               <img
-                src="/images/story/report-docs.png"
+                src="/images/story/report-docs.webp"
                 alt="NASA Research Report Dossier"
+                loading="lazy"
+                decoding="async"
                 className="h-full w-full object-cover group-hover:scale-105 transition-transform"
               />
             </div>
@@ -493,8 +505,10 @@ export default function OrbitalHomePage() {
 
           <section className="lg:col-span-8 relative rounded-2xl bg-[#10151D]/88 border border-[#283340] overflow-hidden shadow-[0_18px_48px_rgba(0,0,0,0.65)] backdrop-blur-md min-h-[160px] flex items-center">
             <img
-              src="/images/story/footer-sunrise.png"
+              src="/images/story/footer-sunrise.webp"
               alt="Orbital horizon over Earth"
+              loading="lazy"
+              decoding="async"
               className="absolute inset-0 h-full w-full object-cover opacity-85"
             />
             <div className="absolute inset-0 bg-gradient-to-r from-[#080A0F]/92 via-[#080A0F]/65 to-[#080A0F]/90" />

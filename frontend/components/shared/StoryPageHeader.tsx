@@ -20,7 +20,7 @@ export const StoryPageHeader: React.FC<StoryPageHeaderProps> = ({
   title,
   highlight,
   hook,
-  mascotSrc = "/images/story/mascot-explorer.png",
+  mascotSrc = "/images/story/mascot-explorer.webp",
   actions,
 }) => {
   return (

@@ -110,7 +110,7 @@ export default function EvidenceCenterPage() {
           <div className="lg:col-span-4">
             <div className="relative h-48 rounded-xl overflow-hidden border border-[#283340] bg-[#080A0F] shadow-xl">
               <img
-                src="/images/story/report-docs.png"
+                src="/images/story/report-docs.webp"
                 alt="NASA PSI Primary Literature Dossier"
                 className="h-full w-full object-cover"
               />

@@ -127,7 +127,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       className="mt-6 rounded-2xl border border-[#1E3A6E] bg-gradient-to-br from-[#08152E] to-[#050C1C] p-3.5 text-xs flex items-center gap-3 hover:border-[#39B9EB]/60 transition-all"
     >
       <img
-        src="/images/story/mascot-avatar.png"
+        src="/images/story/mascot-avatar.webp"
         alt="Astro-Flame Bot"
         className="h-11 w-11 rounded-xl border border-[#39B9EB]/50 object-cover shrink-0"
       />

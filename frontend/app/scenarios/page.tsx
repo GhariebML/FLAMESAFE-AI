@@ -167,7 +167,7 @@ export default function ScenariosPage() {
           <div className="lg:col-span-7 space-y-3">
             <div className="relative h-72 sm:h-80 w-full rounded-xl overflow-hidden border border-[#283340] bg-[#080A0F] shadow-2xl">
               <img
-                src="/images/story/oxygen-chamber.png"
+                src="/images/story/oxygen-chamber.webp"
                 alt="ISS Microgravity Combustion Chamber"
                 className="h-full w-full object-cover"
               />

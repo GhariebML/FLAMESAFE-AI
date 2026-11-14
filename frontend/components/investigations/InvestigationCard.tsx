@@ -7,11 +7,11 @@ import { ArrowRight, Layers, FileText, Flame, ExternalLink } from "lucide-react"
 
 function resolveInvestigationThumb(acronym: string): string {
   const upper = acronym.toUpperCase();
-  if (upper.includes("ACME")) return "/images/story/inv-acme.png";
-  if (upper.includes("SAFFIRE")) return "/images/story/inv-saffire.png";
-  if (upper.includes("FLEX")) return "/images/story/inv-flex.png";
-  if (upper.includes("SAME")) return "/images/story/inv-same.png";
-  return "/images/story/inv-bass.png";
+  if (upper.includes("ACME")) return "/images/story/inv-acme.webp";
+  if (upper.includes("SAFFIRE")) return "/images/story/inv-saffire.webp";
+  if (upper.includes("FLEX")) return "/images/story/inv-flex.webp";
+  if (upper.includes("SAME")) return "/images/story/inv-same.webp";
+  return "/images/story/inv-bass.webp";
 }
 
 export const InvestigationCard: React.FC<{ investigation: InvestigationSummary }> = ({

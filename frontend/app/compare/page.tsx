@@ -165,7 +165,7 @@ export default function ComparePage() {
               >
                 <div className="relative h-48 w-full rounded-lg overflow-hidden bg-black">
                   <img
-                    src="/images/story/flame-on-earth.png"
+                    src="/images/story/flame-on-earth.webp"
                     alt="On Earth 1G Buoyant Teardrop Flame"
                     className="h-full w-full object-cover"
                   />
@@ -187,7 +187,7 @@ export default function ComparePage() {
               >
                 <div className="relative h-48 w-full rounded-lg overflow-hidden bg-black">
                   <img
-                    src="/images/story/flame-in-space.png"
+                    src="/images/story/flame-in-space.webp"
                     alt="In Space 0G Spherical Diffusion Flame"
                     className="h-full w-full object-cover"
                   />
@@ -209,7 +209,7 @@ export default function ComparePage() {
               >
                 <div className="relative h-48 w-full rounded-lg overflow-hidden bg-black">
                   <img
-                    src="/images/story/flame-lunar.png"
+                    src="/images/story/flame-lunar.webp"
                     alt="Lunar Gravity 0.16G Partial Buoyancy Concept"
                     className="h-full w-full object-cover"
                   />
@@ -228,7 +228,7 @@ export default function ComparePage() {
             <div className="rounded-xl bg-[#151D27] border border-[#283340] p-5 space-y-4">
               <div className="relative h-44 w-full rounded-lg overflow-hidden border border-[#283340] bg-[#080A0F]">
                 <img
-                  src="/images/story/scientific-measurements.png"
+                  src="/images/story/scientific-measurements.webp"
                   alt="Multi-Regime Flame Front Telemetry"
                   className="h-full w-full object-cover"
                 />

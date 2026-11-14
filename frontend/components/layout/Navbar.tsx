@@ -169,7 +169,7 @@ export const Navbar: React.FC<NavbarProps> = () => {
             className="group relative h-9 w-9 rounded-full border-2 border-[#39B9EB]/75 hover:border-[#FF6B24] overflow-hidden transition-transform hover:scale-105 shrink-0 shadow-[0_0_14px_rgba(57,185,235,0.35)] bg-[#10151D]"
           >
             <img
-              src="/images/story/mascot-avatar.png"
+              src="/images/story/mascot-avatar.webp"
               alt="Astro-Flame AI Companion"
               className="h-full w-full object-cover"
             />

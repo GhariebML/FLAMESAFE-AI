@@ -161,7 +161,7 @@ export default function DashboardPage() {
           <div className="lg:col-span-5">
             <div className="relative h-60 sm:h-64 w-full rounded-xl overflow-hidden border border-[#283340] bg-[#080A0F] shadow-xl">
               <img
-                src="/images/story/scientific-measurements.png"
+                src="/images/story/scientific-measurements.webp"
                 alt="Multi-Regime Microgravity Combustion Telemetry"
                 className="h-full w-full object-cover"
               />

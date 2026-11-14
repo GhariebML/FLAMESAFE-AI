@@ -22,25 +22,26 @@ import {
 } from "@/types/research";
 import { API_ENDPOINTS } from "./endpoints";
 
+const DEFAULT_RENDER_API_URL = "https://flamesafe-backend.onrender.com/api/v1";
+
+function isNonLocalBrowser(): boolean {
+  return (
+    typeof window !== "undefined" &&
+    window.location.hostname !== "localhost" &&
+    window.location.hostname !== "127.0.0.1"
+  );
+}
+
 function normalizeBaseUrl(raw?: string): string {
   const trimmed = (raw || "").trim().replace(/\/+$/, "");
   if (!trimmed) {
-    if (
-      typeof window !== "undefined" &&
-      window.location.hostname !== "localhost" &&
-      window.location.hostname !== "127.0.0.1"
-    ) {
-      return "/api/v1";
+    if (isNonLocalBrowser() || process.env.NODE_ENV === "production") {
+      return DEFAULT_RENDER_API_URL;
     }
     return "http://localhost:8001/api/v1";
   }
-  if (
-    typeof window !== "undefined" &&
-    window.location.hostname !== "localhost" &&
-    window.location.hostname !== "127.0.0.1" &&
-    (trimmed.includes("localhost") || trimmed.includes("127.0.0.1"))
-  ) {
-    return "/api/v1";
+  if (isNonLocalBrowser() && (trimmed.includes("localhost") || trimmed.includes("127.0.0.1"))) {
+    return DEFAULT_RENDER_API_URL;
   }
   return trimmed.endsWith("/api/v1") ? trimmed : `${trimmed}/api/v1`;
 }

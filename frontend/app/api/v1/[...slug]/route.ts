@@ -1044,6 +1044,48 @@ export async function GET(
     });
   }
 
+  if (path.endsWith("/export") && path.startsWith("datasets/")) {
+    const fmt = (req.nextUrl.searchParams.get("format") || "json").toLowerCase();
+    if (fmt === "csv") {
+      const headers = [
+        "id",
+        "investigation_acronym",
+        "parameter_name",
+        "normalized_value",
+        "normalized_unit",
+        "source_doi",
+        "page_number",
+      ];
+      const rows = SEED_DATASET_DETAIL.items.map((it) =>
+        [
+          it.id,
+          it.investigation_acronym,
+          it.parameter_name,
+          it.normalized_value ?? "",
+          it.normalized_unit,
+          it.source_doi,
+          it.page_number ?? "",
+        ]
+          .map((v) => `"${String(v).replace(/"/g, '""')}"`)
+          .join(",")
+      );
+      return new NextResponse([headers.join(","), ...rows].join("\n"), {
+        status: 200,
+        headers: {
+          "Content-Type": "text/csv; charset=utf-8",
+          "Content-Disposition": `attachment; filename="flamesafe-dataset-${SEED_DATASET_DETAIL.id}.csv"`,
+        },
+      });
+    }
+    return new NextResponse(JSON.stringify(SEED_DATASET_DETAIL, null, 2), {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+        "Content-Disposition": `attachment; filename="flamesafe-dataset-${SEED_DATASET_DETAIL.id}.json"`,
+      },
+    });
+  }
+
   if (path.startsWith("datasets/")) {
     return envelope(SEED_DATASET_DETAIL);
   }

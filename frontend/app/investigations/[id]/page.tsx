@@ -17,25 +17,35 @@ export default function InvestigationDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const loadDetail = () => {
+  const loadDetail = (isMounted?: () => boolean) => {
     if (!id) return;
     setIsLoading(true);
     apiClient
       .getInvestigationDetail(id)
       .then((data) => {
-        setInvestigation(data);
-        setError(null);
+        if (!isMounted || isMounted()) {
+          setInvestigation(data);
+          setError(null);
+        }
       })
       .catch((err) => {
-        setError(err.message || "Failed to load investigation details.");
+        if (!isMounted || isMounted()) {
+          setError(err.message || "Failed to load investigation details.");
+        }
       })
       .finally(() => {
-        setIsLoading(false);
+        if (!isMounted || isMounted()) {
+          setIsLoading(false);
+        }
       });
   };
 
   useEffect(() => {
-    loadDetail();
+    let mounted = true;
+    loadDetail(() => mounted);
+    return () => {
+      mounted = false;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 

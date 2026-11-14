@@ -20,7 +20,7 @@ async def check_health(db: AsyncSession = Depends(get_db)):
         db_status = f"error: {str(e)}"
 
     data = {
-        "status": "healthy",
+        "status": "healthy" if db_status == "connected" else "degraded",
         "app_name": settings.APP_NAME,
         "version": settings.APP_VERSION,
         "environment": settings.ENVIRONMENT,

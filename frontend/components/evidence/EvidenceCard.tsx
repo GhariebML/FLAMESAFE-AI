@@ -32,7 +32,7 @@ export const EvidenceCard: React.FC<{
       </div>
 
       <p className="text-xs text-slate-300 bg-space-950 p-3 rounded-lg border border-space-800 leading-relaxed italic">
-        "{excerpt}"
+        &ldquo;{excerpt}&rdquo;
       </p>
 
       {page && <div className="text-[10px] text-slate-500">Document Page: {page}</div>}
